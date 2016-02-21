@@ -72,6 +72,14 @@
 
 **** Classes
 
+*** Infoboxes
+
+    Infoboxes are tables displaying information about a wikipedia page
+    in a semi structured way. At the moment most of the data retrieved
+    by WikipadiaBase comes from infoboxes
+
+    {{TODO: example image}}
+
 ** Getting started
 
 *** Language
@@ -129,7 +137,10 @@
    - Postresql
    - Redis
 
-   The installation of these packages varies across platforms.
+   The installation of these packages varies across platforms. Both
+   these packages are databases. Their purpose is for caching and for
+   storing ahead-of-time compitations like infobox markup name to
+   rendered name matching.
 
 *** Backend databases or live data
 
@@ -233,7 +244,8 @@
      after the development of a system and they assert the correct
      overall functioning of the system. Regression tests are very akin
      to functional tests. They prove that a found bug was fixed and
-     assert that it will not appear again later. Functional and regression tests currently reside in tests/examples.py
+     assert that it will not appear again later. Functional and
+     regression tests currently reside in =tests/examples.py=
 
 *** Examples
 ** Synonyms
@@ -246,8 +258,52 @@
 *** Postgres
 ** Data sources
 ** Date parser
-*** Context free and context sensitive grammars
+
+   overlay-parser is a parser inspired, but eventually bearing little
+   resemblance to, haskell's pattern matching and typeclasses.
+
 *** Parsing to typeclasses
+    # TODO: Make this a bit clearer
+
+    We parse substrings of the original text into a set of basic
+    objects \(Text \rightarrow \{o_1, o_2, o_3, ...,
+    o_n\}\). Typically these objects are parsed using regular
+    expressions. Each object contains semantic information about the
+    corresponding substring. The substrings corresponding to an object
+    may overlap and there may be substrings of the original text that
+    do not correspond to any object. the pair of an object and it's
+    corresponding object we will call an overlay and we say that
+    overlay \(\alpha\) is consecutive to overlay \(\beta\) iff the
+    last character of the substring of \(\alpha\), is the previous
+    character of the first character of the substring of \(\beta\). In
+    otherwords consecutive overlays are non-overlapping overlays that
+    are separated by the empty string.
+
+    This way we can organize the set of objects \(\{o_1, o_2, ... ,
+    o_n\}\) into a set of sets of consecutive overlays. We shall call
+    each set of consecutive overlays an overlay sequence. It is worth
+    noting that an overlay may be a member of more than one overlay
+    sequence. For example {TODO}
+
+    Each overlay has a type, and each type implements a set of
+    typeclasses. The string "July" would be parsed into an object of
+    type \(T\) and typeclasses \(\{Month NameMonth, FullNameMonth\}\),
+    while the string "03" would be parsed into three objects of types
+
+    - \(T_1\) that would implement typeclasses \(\{Day, Numeric, ZeroPadded\}\)
+    - \(T_2\) that would implement \(\{Month, Numeric, ZeroPadded\}\)
+    - \(T_3\) that would implement \(\{Year, AC\}\)
+
+    We then match sub-sequences of the found overlay sequences to add
+    new overlay sequences to the original set.
+
+    It turns out that we can parse dates fairly efficiently by mining
+    sequences of overlays based on their idividual overlay's
+    typeclasses. For example we may want
+
+    Another way to look at this is that we assign a set of tags and an
+    object of arbitrary information to substrings in a text.
+
 *** The implementation
 *** Optimization
 **** Comparison
