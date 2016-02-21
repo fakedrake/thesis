@@ -1,0 +1,301 @@
+
+  WikipediaBase base is a backend to START responsible for providing
+  access to wikipedia related information. The WikipediaBase we refer
+  to is a python rewrite of the now deprecated Ruby WikipediaBase.
+
+
+** People
+
+   # TODO: rephrase this
+   The python implementation was initially written by Chris
+   Perivolaropoulos and was eventually handed over to
+
+   - Alvaro Morales
+   - Michael Silver
+   # TODO: add the rest of the people
+
+
+** Functionality
+
+   The WikipediaBase server provides operations to:
+
+   - find all classes that a Wikipedia term (object) belongs to, and
+   - given a specific wikipedia term and a class under which it
+     functions, provide information
+
+   # XXX: Examples
+
+*** Queries
+
+*** Ontology
+
+**** Terms
+
+**** Classes
+
+*** Infoboxes
+
+    Infoboxes are tables displaying information about a wikipedia page
+    in a semi structured way. At the moment most of the data retrieved
+    by WikipadiaBase comes from infoboxes
+
+    {{TODO: example image}}
+
+** Getting started
+
+*** Language
+
+    The WikipediaBase implementation that we refer to is written in
+    python. Previous implementations were written in Java and Ruby but
+    the language of choice for the rewrite was python for multiple
+    reasons:
+
+
+    - Python is in the pre-graduate curriculum of MIT computer science
+      department. This will ease the learning curve of new members of
+      Infolab.
+    - Python is a easy to learn and mature language with a rich and
+      evolving ecosystem. This fact eases the introduction of new
+      maintainers even further.
+
+*** Getting the code
+
+   The entire WikipediaBase resides in a git repository in infolab's
+   github orginization page
+
+   #+BEGIN_SRC sh
+   git clone git@github.com:infolab-csail/WikipediaBase
+   #+END_SRC
+
+*** Virtualenv and dependencies
+
+   WikipediaBase depends on multiple other python
+   packages. Fortunately, python is shipped not only with a great
+   package manager, but also with a mechanism called virtualenv that
+   isolates installations of a project's dependencies from the rest of
+   the system, thus avoiding problems like version or namespace
+   collisions. The way this effectively works is that the global
+   python installation is half copied half symlinked to a local
+   directory and the dependencies are installed only in the local
+   sandbox. To create and activate a python virtualenv:
+
+   #+BEGIN_SRC sh
+   $ virtualenv --no-site-packages py
+   $ . py/bin/activate
+   $ which python
+   /the/local/directory/py/bin/python
+   #+END_SRC
+
+   Now that we can safely install anything we want without breaking
+   any global installation
+
+   #+BEGIN_SRC sh
+   pip install -r requirements.txt
+   #+END_SRC
+
+   We will need some extra stuff for WikipediaBase to work:
+
+   - Postresql
+   - Redis
+
+   The installation of these packages varies across platforms. Both
+   these packages are databases. Their purpose is for caching and for
+   storing ahead-of-time compitations like infobox markup name to
+   rendered name matching.
+
+*** Backend databases or live data
+
+** Architecture
+
+
+*** Pipeline
+
+    When resolving a query WikipediaBase employs a pipeline of modules
+    to figure out what the best way to respond would be.
+
+**** Frontend
+
+     # Find the port
+
+     WikipediaBase can be used as a library but it's primary function
+     is as a backend to START. The communication between START and
+     WikipediaBase is carried out over a plaintext telnet connection on
+     port {port} using EDN-like sexpressions. The frontend handles the
+     network connection with START, translates the received queries
+     into calls to knowledgebase and then translate the knowledgebase
+     response into properly formulated sexpressions that it sends back
+     over the telnet connection.
+
+***** Protocol
+
+**** Knowledgebase
+
+     The knowledgebase is the entry point to the rest of
+     wikipediabase. It uses the Provider/Acquirer pattern to
+     transaprently provide the frontend with arbitrary methods. Those
+     methods are responsible for chosing whether we are to resort to
+     classifiers or resolvers (or any other mechanism) for answering
+     the query. Available classifiers and resolvers become accessible
+     to the knowledgebase automatically using their base class.
+
+**** Classifiers
+
+     Each classifier is a singleton that implements a heuristic for
+     assigning a class of an object. Thereare a couple classifiers
+     available at the moment.
+
+**** Resolvers
+
+     Resolvers are also singletons but their purpose is to find the
+     value of the requested property.
+
+**** Lisp types
+
+     Lisp type instances are wrappers for python objects or values
+     that are presentable in s-expression form that START can
+     understand. They are created either from the raw received query
+     and unwrapped to be useful to the pipeline, or by the answer
+     WikipediaBase comes up with and then encoded into a string sent
+     over telnet to START.
+
+*** Fetcher
+
+    The fetcher is an abstraction over the communicatioln of
+    WikipediaBase with the outside world. It is a singleton object
+    that implements a specific interface.
+
+*** Infobox
+
+*** Article
+
+** Provider/Acquirer model
+
+   WikipediaBase attempts to be modular and extendible. To accomplish
+   this it is often useful to have parts of the system that access
+   resources (eg. heuristic methods) without knowledge of what module
+   those came from. Additionally it is often the case that resources
+   come from many different modules. To avoid ad-hoc code and hard
+   dependencies the provider / acqirer model was created:
+
+   # XXX elaborate
+
+   - Subclass provider/Acquirer classes
+   - The Provider uses the =@provide= decorator to provide resources.
+   - The acquirer has transparent access to the aggregate of provided
+     values for a key.
+
+   # XXX: example
+
+** Testing
+*** Unit testing
+
+    The good functioning of WikipediaBase is assured by a
+    comprehensive test suite of unit tests, functional tests and
+    regression tests.
+
+**** Unit tests
+
+     Unit tests test small blocks of functionality, that are composed
+     to create the system at large. For unit testing we use python's
+     default testing library. Each test is a class the subclasses
+
+**** Functional and regression tests
+
+     Functional tests are tests written before, during or shortly
+     after the development of a system and they assert the correct
+     overall functioning of the system. Regression tests are very akin
+     to functional tests. They prove that a found bug was fixed and
+     assert that it will not appear again later. Functional and
+     regression tests currently reside in =tests/examples.py=
+
+*** Examples
+** Synonyms
+*** Good/Bad synonyms
+*** Synonym generation
+** Backend databases
+*** DBM
+*** SQLite
+*** Redis
+*** Postgres
+** Data sources
+** Date parser
+   # Make this included http://orgmode.org/manual/Include-files.html
+
+*** Parsing with overlays
+    # TODO: Make this a bit clearer
+
+    The concept of an overlay was inspired by emacs overlays. They are
+    objects that specify the behavior of a subset of a text, by
+    assigning properties to it. An overlay over a text \(t\) in our
+    context is tuple of the range within that text, a set of tags that
+    define semantic sets that the said substring is a member of, and
+    arbitrary information (of type \(A\)) that the underlying text
+    describes. More formally:
+
+    #+BEGIN_EXPORT latex
+    \begin{align*}
+    & o_i \in TextRange\(t\) \times Set(Tag) \times A \\
+    & Text \rightarrow \left\{o_1, o_2, ..., o_n\right\}
+    \end{align*}
+    #+END_EXPORT
+
+    So for example out of the text
+
+    #+BEGIN_EXPORT latex
+    \[
+    The weather today,
+    \overbrace{Tuesday}^\text{\(o_1\)} \,
+    \overbrace{21^{st}}^\text{\(o_2\)} \, of \,
+    \overbrace{November}^\text{\(o_3\)} \,
+    \overbrace{2016}^\text{\(o_4\)}, \, was \, sunny.
+    \]
+    #+END_EXPORT
+
+    We can extract overlays \(\left\{o_1, ... , o_4\right\}\), so that
+
+    #+BEGIN_EXPORT latex
+    \[
+    \begin{array}[b]{rlll}
+    o_1 = (&r("Tuesday"),  & \{\mathrm{DayOfWeek}, \mathrm{FullName}\}, & 2) \\
+    o_2 = (&r("21^{st}"),   & \{\mathrm{DayOfMonth}, \mathrm{Numeric}\}, & 21) \\
+    o_3 = (&r("November"), & \{\mathrm{Month}, \mathrm{FullName} \}, & 11) \\
+    o_4 = (&r("2016"),     & \{\mathrm{Year}, \mathrm{4digit} \}, & 2016)
+    \end{array}
+    \]
+    #+END_EXPORT
+
+    Notice how for all overlays of the example we have \(A =
+    \mathbb{N}\), as we encode day of the week, day of the month,
+    month and year as natural numbers. We encode more precise type
+    information (ie that a day is inherently different than a month)
+    in the tag set.
+
+    Once we have a set of overlays we can define overlay sequences as
+    overlays whose ranges are consecutive, that is their and their tag
+    sets match particular patterns. For example we can search for
+    sequences of overlays that match the pattern
+
+    \[
+    p = \mathrm{DayOfMonth}, \mathrm{Separator(/)}, (\mathrm{Month} \wedge \mathrm{Number}), \mathrm{Separator(/)}, \mathrm{Year}
+    \]
+
+    to match patterns like \(22/07/1991\), where \(Separator(/)\)
+    matches only the character "/"
+
+*** The implementation
+*** Optimization
+**** Comparison
+*** The dates example
+*** Benchmarks
+** Future
+*** Configuration
+**** Persistence
+**** Pass by reference
+**** Lenses
+**** Laziness
+***** Referential (Ref - Items)
+***** Computational
+*** START deployment
+*** Test suites
+*** Bugs
+*** Answer hierarchy
