@@ -1,0 +1,69 @@
+#+TITLE:       WikipediaBase Architecture
+#+AUTHOR:      Chris Perivolaropoulos
+#+DATE:        Sunday 21 February 2016
+#+EMAIL:       cperivol@csail.mit.edu
+#+DESCRIPTION: The underlying architecture of wikipediabase
+#+KEYWORDS:
+#+LANGUAGE:    en
+#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+STARTUP:     showall
+
+* Pipeline
+
+  When resolving a query WikipediaBase employs a pipeline of modules
+  to figure out what the best way to respond would be.
+
+** Frontend
+
+   # Find the port
+
+   WikipediaBase can be used as a library but it's primary function
+   is as a backend to START. The communication between START and
+   WikipediaBase is carried out over a plaintext telnet connection on
+   port {port} using EDN-like sexpressions. The frontend handles the
+   network connection with START, translates the received queries
+   into calls to knowledgebase and then translate the knowledgebase
+   response into properly formulated sexpressions that it sends back
+   over the telnet connection.
+
+*** Protocol
+
+** Knowledgebase
+
+   The knowledgebase is the entry point to the rest of
+   wikipediabase. It uses the Provider/Acquirer pattern to
+   transaprently provide the frontend with arbitrary methods. Those
+   methods are responsible for chosing whether we are to resort to
+   classifiers or resolvers (or any other mechanism) for answering
+   the query. Available classifiers and resolvers become accessible
+   to the knowledgebase automatically using their base class.
+
+** Classifiers
+
+   Each classifier is a singleton that implements a heuristic for
+   assigning a class of an object. Thereare a couple classifiers
+   available at the moment.
+
+** Resolvers
+
+   Resolvers are also singletons but their purpose is to find the
+   value of the requested property.
+
+** Lisp types
+
+   Lisp type instances are wrappers for python objects or values
+   that are presentable in s-expression form that START can
+   understand. They are created either from the raw received query
+   and unwrapped to be useful to the pipeline, or by the answer
+   WikipediaBase comes up with and then encoded into a string sent
+   over telnet to START.
+
+* Fetcher
+
+  The fetcher is an abstraction over the communicatioln of
+  WikipediaBase with the outside world. It is a singleton object
+  that implements a specific interface.
+
+* Infobox
+
+* Article

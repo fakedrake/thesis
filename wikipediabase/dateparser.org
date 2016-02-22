@@ -1,0 +1,78 @@
+#+TITLE:       Wikipediabase Date Parser
+#+AUTHOR:      Chris Perivolaropoulos
+#+DATE:        Sunday 21 February 2016
+#+EMAIL:       cperivol@csail.mit.edu
+#+DESCRIPTION: The date parsing package for wikipediabase
+#+KEYWORDS:
+#+LANGUAGE:    en
+#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+STARTUP:     showall
+
+Dateparser resides in a separate package called overlay-parse
+
+* Parsing with overlays
+  # TODO: Make this a bit clearer
+
+  The concept of an overlay was inspired by emacs overlays. They are
+  objects that specify the behavior of a subset of a text, by
+  assigning properties to it. An overlay over a text \(t\) in our
+  context is tuple of the range within that text, a set of tags that
+  define semantic sets that the said substring is a member of, and
+  arbitrary information (of type \(A\)) that the underlying text
+  describes. More formally:
+
+  #+BEGIN_EXPORT latex
+  \begin{align*}
+  & o_i \in TextRange\(t\) \times Set(Tag) \times A \\
+  & Text \rightarrow \left\{o_1, o_2, ..., o_n\right\}
+  \end{align*}
+  #+END_EXPORT
+
+  So for example out of the text
+
+  #+BEGIN_EXPORT latex
+  \[
+  The weather today,
+  \overbrace{Tuesday}^\text{\(o_1\)} \,
+  \overbrace{21^{st}}^\text{\(o_2\)} \, of \,
+  \overbrace{November}^\text{\(o_3\)} \,
+  \overbrace{2016}^\text{\(o_4\)}, \, was \, sunny.
+  \]
+  #+END_EXPORT
+
+  We can extract overlays \(\left\{o_1, ... , o_4\right\}\), so that
+
+  #+BEGIN_EXPORT latex
+  \[
+  \begin{array}[b]{rlll}
+  o_1 = (&r("Tuesday"),  & \{\mathrm{DayOfWeek}, \mathrm{FullName}\}, & 2) \\
+  o_2 = (&r("21^{st}"),   & \{\mathrm{DayOfMonth}, \mathrm{Numeric}\}, & 21) \\
+  o_3 = (&r("November"), & \{\mathrm{Month}, \mathrm{FullName} \}, & 11) \\
+  o_4 = (&r("2016"),     & \{\mathrm{Year}, \mathrm{4digit} \}, & 2016)
+  \end{array}
+  \]
+  #+END_EXPORT
+
+  Notice how for all overlays of the example we have \(A =
+  \mathbb{N}\), as we encode day of the week, day of the month,
+  month and year as natural numbers. We encode more precise type
+  information (ie that a day is inherently different than a month)
+  in the tag set.
+
+  Once we have a set of overlays we can define overlay sequences as
+  overlays whose ranges are consecutive, that is their and their tag
+  sets match particular patterns. For example we can search for
+  sequences of overlays that match the pattern
+
+  \[
+  p = \mathrm{DayOfMonth}, \mathrm{Separator(/)}, (\mathrm{Month} \wedge \mathrm{Number}), \mathrm{Separator(/)}, \mathrm{Year}
+  \]
+
+  to match patterns like \(22/07/1991\), where \(Separator(/)\)
+  matches only the character "/"
+
+* The implementation
+* Optimization
+** Comparison
+* The dates example
+* Benchmarks

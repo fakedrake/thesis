@@ -1,166 +1,27 @@
+#+TITLE:       Extracting relational data from wikipedia
+#+AUTHOR:      Chris Perivolaropoulos
+#+DATE:        Sunday 21 February 2016
+#+EMAIL:       cperivol@csail.mit.edu
+#+DESCRIPTION: Making sense of semi structured data in wikipedia.
+#+KEYWORDS:
+#+LANGUAGE:    en
+#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+STARTUP:     showall
+
 * Introduction
-** START
-
-   The START Natural Language System is a software system designed
-   to answer questions that are posed to it in natural
-   language. START parses incoming questions, matches the queries
-   created from the parse trees against its knowledge base and
-   presents the appropriate information segments to the user. In
-   this way, START provides untrained users with speedy access to
-   knowledge that in many cases would take an expert some time to
-   find.
-
-   START (SynTactic Analysis using Reversible Transformations) was
-   developed by Boris Katz at MIT's Artificial Intelligence
-   Laboratory. Currently, the system is undergoing further development by
-   the InfoLab Group, led by Boris Katz. START was first connected to the
-   World Wide Web in December, 1993, and in its several forms has to date
-   answered millions of questions from users around the world.
-
-   A key technique called "natural language annotation" helps START
-   connect information seekers to information sources. This technique
-   employs natural language sentences and phrases annotations as
-   descriptions of content that are associated with information
-   segments at various granularities. An information segment is
-   retrieved when its annotation matches an input question. This
-   method allows START to handle all variety of media, including
-   text, diagrams, images, video and audio clips, data sets, Web
-   pages, and others.
-
-   The natural language processing component of START consists of two
-   modules that share the same grammar. The understanding module analyzes
-   English text and produces a knowledge base that encodes information
-   found in the text. Given an appropriate segment of the knowledge base,
-   the generating module produces English sentences. Used in conjunction
-   with the technique of natural language annotation, these modules put
-   the power of sentence-level natural language processing to use in the
-   service of multi-media information access.
-
+  #+INCLUDE: "./introduction.org" :minlevel 2
 * Wikipediabase
-   #+INCLUDE: "./wikipediabase.org" :minlevel 2
+  # Make sure this is the case and fix the following: The minlevel is
+  # computed when a document is encountered. Change that to be depth
+  # first. The problem is this: A: Include (doc: B (include (doc:C,
+  # min2): , min:2) -> now C has minlevel 2, we want the minlevels to
+  # stack
+
+  #+INCLUDE: "./wikipediabase/index.org"
 * WikipediaMirror
-
-  # TODO: provide link
-
-  wikipedia-mirror is a tool for generating mirrors of wikipedia.org
-  using the dumps provided by wikipedia.org.
-
-** Mediawiki stack
-
-   Wikipedia-mirror builds upon the mediawiki stack provided by
-   bitnami. A service that builds the entire server within the
-   confines of a directory. This is useful because we avoided the
-   overhead of dealing with container or VM technologies and we had
-   direct access to the filesystem of the stack while still having
-   bitnami's build system do the tedious job of orchestrating the
-   various components and separating our sever from the rest of the
-   system.
-
-   The stack is comprised of
-
-   - An http server, in our case apache
-   - The web application runtime, in our case PHP
-   - A database, in our cas MySQL
-   - The web application itself, in our case mediawiki
-
-   All of the above are provided by the the bitnami mediawiki stack.
-
-   # TODO: more details about each element of the stack
-
-*** Extensions
-
-    For mediawiki to act like wikipedia a number of extensions are
-    required. The installation process of such extensions is not
-    automated or streamline. To automatically manage this complexity a
-    mechanism is provided for declaratively installing extensions.  To
-    add support for an extension to wikipediabase one needs to add the
-    following code in =Makefile.mwextnesions= (modifying accordingly):
-
-    #+BEGIN_SRC makefile
-      MW_EXTENSIONS += newextension
-      mw-newextension-url = url/to/new/extnesion/package.tar.gz
-      mw-newextension-php = NewExtensionFile.php
-      mw-newextension-config = '$$phpConfigVariable = "value";'
-    #+END_SRC
-
-    And wikipedia-mirror will take care of checking if the extension
-    is already installed and if not it will put the right files in the
-    right place and edit the appropriate configuration files. The
-    entry points for managing extensions are (provided that the name
-    of the registered extension is newextension):
-
-    #+BEGIN_SRC sh
-      make mw-print-registered-extensions # Output a list of the registed extensions
-      make mw-newextension-enable         # Install and/or enable the extension
-      make mw-newextension-reinstall      # Reinstall an extension
-      make mw-newextension-disable        # Disable the extension
-      make mw-newextension-clean          # Remove the extension
-    #+END_SRC
-
-    All registered extensions will be installed and enabled when
-    wikipedia-mirror is built.
-
-** Dumps
-
-   # TODO: Provide links
-   Wikipedia provides monthly dumps of all it's databases. The bulk of
-   the dumps come in XML format and they need to be encoded into MySQL
-   to be loaded into the wikipedia-mirror database. There are more
-   than one ways to do that.
-
-*** PHP script
-
-    # TODO: provide link
-    Mediawiki ships with a utility for importing the XML
-    dumps. However it's use for importing a full blown wikipedia
-    mirror is discouraged due to performance tradeoffs. Instead other
-    tools like mwdumper are recommended that transform the XML dump
-    into MySQL queries that populate the database.
-
-*** mwdumper
-
-    The recomended tool for translating the XML dumps into MySQL code
-    is mwdumper. Mwdumper is written in java and is shipped separately
-    from mediawiki.
-
-**** Xml sanitizer
-
-**** Article dropper
-
-** Automation
-*** Makefiles / laziness
-*** Shell scripts
-*** Bitnami
-** Performance
-
-
-*** Compile time
-
-    Compile time includes the time it takes for:
-
-    - Downloading all the components of a wikipedia server
-      - The bitnami stack
-      - mwdumper
-      - mediawiki-extensions
-    - Installing and building those components (~1 min)
-    - Downloading the wikipedia dumps
-    - Preprocessing the dumps (~10 mins)
-    - Populating the mysql database (~10 days)
-
-    # TODO: insert ashmore specifics
-    Builds were done on Infolab's Ashmore. The system's specs are
-    quite high end but the bottleneck was the disk IO so less than 1%
-    of the rest of the available resources were used during the MySQL
-    database population.
-
-**** Attempts to optimizing MySQL
-
-*** Runtime
-
-    Runtime of wikipedia mirror turned out to be too slow to be useful
-    and therefore the project was eventually abandoned. Namely for the
-    full wikipedia dump of July 2014 the load time for the Barack
-    Obama, not taking advantage of caching was at the order of ~30s.
-
+  #+INCLUDE: "./wikipediamirror/index.org"
 * Related CSAIL projects
   # See github
+* This document
+
+  This document was written using emacs org-mode.

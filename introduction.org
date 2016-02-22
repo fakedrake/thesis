@@ -1,0 +1,36 @@
+* START
+
+  The START Natural Language System is a software system designed
+  to answer questions that are posed to it in natural
+  language. START parses incoming questions, matches the queries
+  created from the parse trees against its knowledge base and
+  presents the appropriate information segments to the user. In
+  this way, START provides untrained users with speedy access to
+  knowledge that in many cases would take an expert some time to
+  find.
+
+  START (SynTactic Analysis using Reversible Transformations) was
+  developed by Boris Katz at MIT's Artificial Intelligence
+  Laboratory. Currently, the system is undergoing further development by
+  the InfoLab Group, led by Boris Katz. START was first connected to the
+  World Wide Web in December, 1993, and in its several forms has to date
+  answered millions of questions from users around the world.
+
+  A key technique called "natural language annotation" helps START
+  connect information seekers to information sources. This technique
+  employs natural language sentences and phrases annotations as
+  descriptions of content that are associated with information
+  segments at various granularities. An information segment is
+  retrieved when its annotation matches an input question. This
+  method allows START to handle all variety of media, including
+  text, diagrams, images, video and audio clips, data sets, Web
+  pages, and others.
+
+  The natural language processing component of START consists of two
+  modules that share the same grammar. The understanding module analyzes
+  English text and produces a knowledge base that encodes information
+  found in the text. Given an appropriate segment of the knowledge base,
+  the generating module produces English sentences. Used in conjunction
+  with the technique of natural language annotation, these modules put
+  the power of sentence-level natural language processing to use in the
+  service of multi-media information access.
