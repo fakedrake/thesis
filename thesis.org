@@ -11,12 +11,6 @@
 * Introduction
   #+INCLUDE: "./introduction.org" :minlevel 2
 * Wikipediabase
-  # Make sure this is the case and fix the following: The minlevel is
-  # computed when a document is encountered. Change that to be depth
-  # first. The problem is this: A: Include (doc: B (include (doc:C,
-  # min2): , min:2) -> now C has minlevel 2, we want the minlevels to
-  # stack
-
   #+INCLUDE: "./wikipediabase/index.org"
 * WikipediaMirror
   #+INCLUDE: "./wikipediamirror/index.org"

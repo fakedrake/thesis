@@ -109,12 +109,10 @@
    - Postresql
    - Redis
 
-   The installation of these packages varies across platforms. Both
-   these packages are databases. Their purpose is for caching and for
-   storing ahead-of-time compitations like infobox markup name to
-   rendered name matching.
-
-** Backend databases or live data
+   The installation process of these packages varies across
+   platforms. Both are databases. Their purpose is for caching
+   repeated computations and for storing ahead-of-time computation
+   like infobox markup name to rendered name maps and synonyms.
 
 * Architecture
 
@@ -123,20 +121,21 @@
 * Provider/Acquirer model
 
   WikipediaBase attempts to be modular and extendible. To accomplish
-  this it is often useful to have parts of the system that access
-  resources (eg. heuristic methods) without knowledge of what module
-  those came from. Additionally it is often the case that resources
-  come from many different modules. To avoid ad-hoc code and hard
-  dependencies the provider / acqirer model was created:
+  this it is often useful to multiplex multiple sources of the same
+  type of data resource. This is particularly useful when accessing
+  heuristic methods like classifier. To promote modularity and to
+  avoid hard dependencies the provider/acquirer model was created:
 
-  # XXX elaborate
+  A =Provider= is an object though which we can access resources that
+  are stored in a key-value fashion. The =Provider= class offers
+  facilities like decorators to make this provision easy. An
+  =Acquirer= has transparent access to the resources of multiple
+  =Provider= s as if they were a single key value store. This pattern
+  is most notably used for the =KnowledgeBase= to provide the
+  =Frontend= with the way of accessing resoruces.
 
-  - Subclass provider/Acquirer classes
-  - The Provider uses the =@provide= decorator to provide resources.
-  - The acquirer has transparent access to the aggregate of provided
-    values for a key.
 
-  # XXX: example
+** TODO Example
 
 * Testing
 ** Unit testing
@@ -160,7 +159,7 @@
     assert that it will not appear again later. Functional and
     regression tests currently reside in =tests/examples.py=
 
-** Examples
+** TODO Examples
 * Synonyms
 ** Good/Bad synonyms
 ** Synonym generation
