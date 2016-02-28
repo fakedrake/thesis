@@ -13,7 +13,7 @@
 wikipedia-mirror is a tool for generating mirrors of wikipedia.org
 using the dumps provided by wikipedia.org.
 
-* Mediawiki stack
+* Mediawiki stack overview
 
   Wikipedia-mirror builds upon the mediawiki stack provided by
   bitnami. A service that builds the entire server within the
@@ -32,45 +32,226 @@ using the dumps provided by wikipedia.org.
   - The web application itself, in our case mediawiki
 
   All of the above are provided by the the bitnami mediawiki stack.
+  Xampp used to be go-to for that but it is unmaintained so we decided
+  to go with bitnami which works pretty well.
 
-  # TODO: more details about each element of the stack
+  Once the stack is set up properly the wikipedia dump xml is
+  downloaded and then turned into an sql dump with mwdumper. Could be
+  piped directly to MySQL? but extracting can take time and things
+  tend to go wrong during the dumping step.
 
-** Extensions
+** Elements of the stack
+   # copy the shit out of wikipedia
 
-   For mediawiki to act like wikipedia a number of extensions are
-   required. The installation process of such extensions is not
-   automated or streamline. To automatically manage this complexity a
-   mechanism is provided for declaratively installing extensions.  To
-   add support for an extension to wikipediabase one needs to add the
-   following code in =Makefile.mwextnesions= (modifying accordingly):
+   We present each of the elements of the stack in more detail below.
 
-   #+BEGIN_SRC makefile
-     MW_EXTENSIONS += newextension
-     mw-newextension-url = url/to/new/extnesion/package.tar.gz
-     mw-newextension-php = NewExtensionFile.php
-     mw-newextension-config = '$$phpConfigVariable = "value";'
-   #+END_SRC
+*** Apache
 
-   And wikipedia-mirror will take care of checking if the extension
-   is already installed and if not it will put the right files in the
-   right place and edit the appropriate configuration files. The
-   entry points for managing extensions are (provided that the name
-   of the registered extension is newextension):
+    As per wikipedia:
+
+    #+BEGIN_EXAMPLE
+      The Apache HTTP Server, colloquially called Apache, is the world's
+      most used web server software. Originally based on the NCSA HTTPd
+      server, development of Apache began in early 1995 after work on the
+      NCSA code stalled. Apache played a key role in the initial growth of
+      the World Wide Web, quickly overtaking NCSA HTTPd as the dominant HTTP
+      server, and has remained most popular since April 1996. In 2009, it
+      became the first web server software to serve more than 100 million
+      websites.
+
+      Apache is developed and maintained by an open community of developers
+      under the auspices of the Apache Software Foundation. Most commonly
+      used on a Unix-like system (usually Linux), the software is available
+      for a wide variety of operating systems besides Unix, including
+      eComStation, Microsoft Windows, NetWare, OpenVMS, OS/2, and
+      TPF. Released under the Apache License, Apache is free and open-source
+      software.
+    #+END_EXAMPLE
+
+    it is fair to say that apache is at least one of the most popular
+    web servers on the internet. wikipedia.org itself seems to be
+    using a more complex stack involving [[https://en.wikipedia.org/wiki/Varnish_(software)][varnish]], an HTTP accelerator,
+    and [[https://en.wikipedia.org/wiki/Nginx][nginx]], an alternative, also quite popular HTTP server. We
+    arrive at this conclusion by inspecting the headers returned by
+    wikipedia.org. In the http://www.wikipedia.org case we are
+    redirected to the secure domain (pay attention to the =Server:=
+    line):
+
+    #+BEGIN_SRC sh
+      $ curl -s -D - http://www.wikipedia.org -o /dev/null
+      HTTP/1.1 301 TLS Redirect
+      Server: Varnish
+      [...]
+    #+END_SRC
+
+    And if we directly ask for https://www.wikipedia.org nginx seems
+    to be handling our request:
+
+    #+BEGIN_SRC sh
+      $ curl -s -D - https://www.wikipedia.org -o /dev/null
+      HTTP/1.1 200 OK
+      Server: nginx/1.9.4
+      [...]
+    #+END_SRC
+
+    However it is beyond the scope of the project to precisely
+    replicate wikipedia's infrastructure. We focus on the
+    functionality. Therefore due to the popularity, familiarity and by
+    virtue of apace being part of the automatically installable
+    bitnami mediawiki stack, we use it as our server.
+
+*** PHP
+
+    Mediawiki, which is discussed later, is written entirely in PHP, a
+    popular server side, dynamically typed, object oriented scripting
+    language. PHP is essential and is installed along the bitnami
+    mediawiki stack. PHP is popular among web developers partly due to
+    it's support for multiple relational database libraries (including
+    PostgreSQL, MySQL, Microsoft SQL Server and SQLite) and it
+    essentially being structred as a template language generating
+    HTML.
+
+*** MySQL
+
+    Mediawiki can use a number of different SQL database backends:
+
+    - *MSSQL:* An SQL database by Microsoft
+    - *MySQL:* Using the standard PHP library for MySQL.
+    - *MySQLi:* An extension to the MySQL backend
+    - *Oracle:* A propertiary SQL database by Oracle.
+    - *SQLite:* An SQL database that is typically accessed as a
+      library rather than over a client-server scheme as is the case
+      with the other options on the list.
+
+    Wikipedia provides multiple dump files for SQL tables of secondary
+    importance in MySQL format (eg. page redirects, categories etc)
+    and suggests =mwdumper= which parses the XML dumpls of the
+    wikipedia articles into MySQL. That and bitnami providing it as
+    part of it's automatically built stack, make MySQL the obvious
+    choice for the wikipedia-mirror stack.
+
+*** MediaWiki
+
+    Mediawiki is the beating heart of wikipedia.
+
+** Tools
+
+   A number of tools were developed in assisting the
+
+*** page_remover.c
+
+*** sql-clear.sh
+
+*** utf8thread.c
+
+*** webmonitor.py
+
+*** xml-parse.sh
+
+** Setting up
+
+   Following are step by step instructions First, clone the git repo:
 
    #+BEGIN_SRC sh
-     make mw-print-registered-extensions # Output a list of the registed extensions
-     make mw-newextension-enable         # Install and/or enable the extension
-     make mw-newextension-reinstall      # Reinstall an extension
-     make mw-newextension-disable        # Disable the extension
-     make mw-newextension-clean          # Remove the extension
+     $ git clone https://github.com/fakedrake/wikipedia-mirror
+     $ cd wikipedia-mirror
    #+END_SRC
 
-   All registered extensions will be installed and enabled when
-   wikipedia-mirror is built.
+   At this point in theory one can run =make sql-load-dumps= which
+   will take care of stting up everything needed to load the the
+   database dumps into the working SQL database. Of course for that to
+   happen first a couple of steps need to be carried out:
+
+   - Download the wikipedia database dumps in XML format.
+   - Transform them into a format that MySQL understands.
+   - Set up the bitnami stack that includes a local install of MySQL
+   - Load the MySQL dumps into MySQL
+
+   All of these steps are encoded as part of the a dependency
+   hierarchy encoded into makefile targets and are in theory taken
+   care of automatically, effectively yielding a functioning wikipedia
+   mirror. However this process is extremely long fragile so it is
+   advised that each of these steps be run individually by hand.
+
+   First, download and install bitnami. The following command will
+   fetch an executable from the bitnami website and make a local
+   installation of the bitnami stack discussed above:
+
+   #+BEGIN_SRC sh
+     $ make bmw-install
+   #+END_SRC
+
+   Next step is to make sure =maven=, the java is a software project
+   management and comprehension is installed, required to install and
+   setup mwdumper (see below). You can do that by making sure the
+   following succeeds:
+
+   #+BEGIN_SRC text
+     $ mvn --version
+   #+END_SRC
+
+   Note: if running on Ubuntu 14.04, you may need to install Maven
+   (for Java) using =sudo apt-get install maven=.
+
+   Now everything is installed to automatically download Wikipedia's
+   XML dumps and then convert them to SQL using maven. First maven
+   will be downloaded and built. Then the compressed XML dumps will be
+   downloaded from the wikipedia, they will be uncompressed and
+   finally converted to MySQL dumps using =mwdumper=. This is a fairly
+   lengthy process taking 6 to 11 hours on a typical machine:
+
+   #+BEGIN_SRC sh
+     $ make sql-dump-parts
+   #+END_SRC
+
+   After that's done successfully you can load the SQL dumps to the
+   MySQL database.
+
+   #+BEGIN_SRC sh
+     $ make sql-load-parts
+   #+END_SRC
+
+   Finally the
+
+   #+BEGIN_SRC sh
+     $ make mw-extensions
+   #+END_SRC
+
+* Mediawiki Extensions
+
+  For mediawiki to act like wikipedia a number of extensions are
+  required. The installation process of such extensions is not
+  automated or streamline. To automatically manage this complexity a
+  mechanism is provided for declaratively installing extensions.  To
+  add support for an extension to wikipediabase one needs to add the
+  following code in =Makefile.mwextnesions= (modifying accordingly):
+
+  #+BEGIN_SRC makefile
+    MW_EXTENSIONS += newextension
+    mw-newextension-url = url/to/new/extnesion/package.tar.gz
+    mw-newextension-php = NewExtensionFile.php
+    mw-newextension-config = '$$phpConfigVariable = "value";'
+  #+END_SRC
+
+  And wikipedia-mirror will take care of checking if the extension
+  is already installed and if not it will put the right files in the
+  right place and edit the appropriate configuration files. The
+  entry points for managing extensions are (provided that the name
+  of the registered extension is newextension):
+
+  #+BEGIN_SRC sh
+    make mw-print-registered-extensions # Output a list of the registed extensions
+    make mw-newextension-enable         # Install and/or enable the extension
+    make mw-newextension-reinstall      # Reinstall an extension
+    make mw-newextension-disable        # Disable the extension
+    make mw-newextension-clean          # Remove the extension
+  #+END_SRC
+
+  All registered extensions will be installed and enabled when
+  wikipedia-mirror is built.
 
 * Dumps
 
-  # TODO: Provide links
   Wikipedia provides monthly dumps of all it's databases. The bulk of
   the dumps come in XML format and they need to be encoded into MySQL
   to be loaded into the wikipedia-mirror database. There are more
@@ -107,19 +288,19 @@ using the dumps provided by wikipedia.org.
    Compile time includes the time it takes for:
 
    - Downloading all the components of a wikipedia server
-     - The bitnami stack
+   - The bitnami stack
      - mwdumper
      - mediawiki-extensions
-   - Installing and building those components (~1 min)
-   - Downloading the wikipedia dumps
-   - Preprocessing the dumps (~10 mins)
-   - Populating the mysql database (~10 days)
+     - Installing and building those components (~1 min)
+     - Downloading the wikipedia dumps
+     - Preprocessing the dumps (~10 mins)
+     - Populating the mysql database (~10 days)
 
-   # TODO: insert ashmore specifics
-   Builds were done on Infolab's Ashmore. The system's specs are
-   quite high end but the bottleneck was the disk IO so less than 1%
-   of the rest of the available resources were used during the MySQL
-   database population.
+                 # TODO: insert ashmore specifics
+                 Builds were done on Infolab's Ashmore. The system's specs are
+                 quite high end but the bottleneck was the disk IO so less than 1%
+                 of the rest of the available resources were used during the MySQL
+                 database population.
 
 *** Attempts to optimizing MySQL
 

@@ -8,8 +8,16 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
+* Abstract
+
+  My work for extracting relational information from wikipedia for the
+  use of MiT InfoLab's START is divided in two parts: wikipediabase,
+  directly communicating with an instance of wikipedia.org to answer
+  queries posed by START, and, wikipedia mirror, a program for
+  generating full wikipedia.org mirror on a local machine.
+
 * Introduction
-  #+INCLUDE: "./introduction.org" :minlevel 2
+  #+INCLUDE: "./introduction.org"
 * Wikipediabase
   #+INCLUDE: "./wikipediabase/index.org"
 * WikipediaMirror

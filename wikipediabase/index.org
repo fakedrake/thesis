@@ -28,29 +28,7 @@
 
 * Functionality
 
-  The WikipediaBase server provides operations to:
-
-  - find all classes that a Wikipedia term (object) belongs to, and
-  - given a specific wikipedia term and a class under which it
-    functions, provide information
-
-  # XXX: Examples
-
-** Queries
-
-** Ontology
-
-*** Terms
-
-*** Classes
-
-** Infoboxes
-
-   Infoboxes are tables displaying information about a wikipedia page
-   in a semi structured way. At the moment most of the data retrieved
-   by WikipadiaBase comes from infoboxes
-
-   {{TODO: example image}}
+  #+INCLUDE: functionality.org
 
 * Getting started
 

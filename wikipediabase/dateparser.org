@@ -32,7 +32,7 @@ Dateparser resides in a separate package called overlay-parse
 
   #+BEGIN_EXPORT latex
   \[
-  The weather today,
+  The\,weather\,today,\,
   \overbrace{Tuesday}^\text{\(o_1\)} \,
   \overbrace{21^{st}}^\text{\(o_2\)} \, of \,
   \overbrace{November}^\text{\(o_3\)} \,
@@ -72,7 +72,6 @@ Dateparser resides in a separate package called overlay-parse
   matches only the character "/"
 
 * The implementation
-* Optimization
 ** Comparison
 * The dates example
 * Benchmarks
