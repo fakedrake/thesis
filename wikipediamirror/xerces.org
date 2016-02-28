@@ -1,0 +1,272 @@
+#+TITLE:       The bug in apache Xerces
+#+AUTHOR:      Chris Perivolaropoulos
+#+EMAIL:       cperivol@csail.mit.edu
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:    en
+#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+STARTUP:     showall
+
+
+At the time of writing mwdumper a strange, semi-random bug. While
+=make sql-dump-parts= is running the following is encountered:
+
+#+BEGIN_SRC text
+  ...
+
+  376,000 pages (14,460.426/sec), 376,000 revs (14,460.426/sec)
+  377,000 pages (14,458.848/sec), 377,000 revs (14,458.848/sec)
+  Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 2048
+          at org.apache.xerces.impl.io.UTF8Reader.read(Unknown Source)
+          at org.apache.xerces.impl.XMLEntityScanner.load(Unknown Source)
+          at org.apache.xerces.impl.XMLEntityScanner.scanContent(Unknown Source)
+          at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanContent(Unknown Source)
+          at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch(Unknown Source)
+          at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
+          at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+          at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+          at org.apache.xerces.parsers.XMLParser.parse(Unknown Source)
+          at org.apache.xerces.parsers.AbstractSAXParser.parse(Unknown Source)
+          at org.apache.xerces.jaxp.SAXParserImpl$JAXPSAXParser.parse(Unknown Source)
+          at javax.xml.parsers.SAXParser.parse(SAXParser.java:392)
+          at javax.xml.parsers.SAXParser.parse(SAXParser.java:195)
+          at org.mediawiki.importer.XmlDumpReader.readDump(XmlDumpReader.java:88)
+          at org.mediawiki.dumper.Dumper.main(Dumper.java:142)
+  make: *** [/scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql] Error 1
+#+END_SRC
+
+Inspecting the makefules and running =make --just-print
+sql-dump-parts= we find out that the failing command is:
+
+#+BEGIN_SRC sh
+  $ java -jar /scratch/cperivol/wikipedia-mirror/tools/mwdumper.jar   --format=sql:1.5 /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml > /root/path/wikipedia-parts//enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql
+#+END_SRC
+
+Fortunately this does not run for too long so we can safely
+experiment. Here is the =time= output:
+
+#+BEGIN_SRC sh
+  26.65s user 1.73s system 78% cpu 35.949 total
+#+END_SRC
+
+The error seems to be during reading of the XML dump so it is not
+specific to SQL output. This could be useful for figuring out which
+article causes the error, removing which will hopefully resolve the
+error. To find that out we first try exporting to XML:
+
+#+BEGIN_SRC sh
+  $ java -jar /scratch/cperivol/wikipedia-mirror/tools/mwdumper.jar   --format=xml /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml > /tmp/just-a-copy.xml
+#+END_SRC
+
+As expected the same error as above is yielded. We then look for the
+last article two it tried to export by printing in reverse order the
+output xml file, finding the last two occurances of /<title>/ with
+=grep= and reverse again to print them in the original order (note
+that =tac= is like =cat=, only that yields lines in reverse order):
+
+#+BEGIN_SRC sh
+  $ tac /tmp/just-a-copy.xml | grep "<title>" -m 2 | tac
+        <title>The roaring 20s</title>
+        <title>Cranopsis bocourti</title> # <- This is the last one
+#+END_SRC
+
+This operation finishes quickly despite =/tmp/just-a-copy.xml= being
+fairly large because =tac= seeks to the end of the file and reads
+backwards until =grep= finds the 2 occurances it is looking for and
+quits. On ext3 the seek operation does not traverse the entire
+file. Indeed from the =tac= source code:
+
+#+BEGIN_SRC c
+  if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      error (0, errno, _("%s: seek failed"), quotef (file));
+  /* Shift the pending record data right to make room for the new.
+     The source and destination regions probably overlap.  */
+  memmove (G_buffer + read_size, G_buffer, saved_record_size);
+  past_end = G_buffer + read_size + saved_record_size;
+  /* For non-regexp searches, avoid unnecessary scanning. */
+  if (sentinel_length)
+      match_start = G_buffer + read_size;
+  else
+      match_start = past_end;
+
+  if (safe_read (input_fd, G_buffer, read_size) != read_size)
+  {
+      error (0, errno, _("%s: read error"), quotef (file));
+      return false;
+  }
+#+END_SRC
+
+Let's save the path of the original xml file in a variable as we
+will be using it a lot. So from now on =$ORIGINAL_XML= will be the
+path of the original xml.
+
+#+BEGIN_SRC sh
+  $ export ORIGINAL_XML=/scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml
+#+END_SRC
+
+First let's see if there is anything strange going on in the xml
+file:
+
+#+BEGIN_SRC sh
+  $ grep "<title>Cranopsis bocourti</title>" -A 200 -B 100 $ORIGINAL_XML | less
+#+END_SRC
+
+=| less= is to browse and =-A 200 -B 100= means /"show 200 lines
+after and 100 before the matching line"/. Nothing peculiar was
+found, so we can't really fix the problem in-place, we will try
+crudely removing the entire article and hope it works (spoiler
+alert: it does).
+
+We will try to inspect the parents of the =title= of the breaking
+article. Fortunately the generated xml is indented so we can find
+the parents based on that. We count 6 spaces of indentation so we
+will search backwards from there on each level of indentation. The
+first line we find on each case will be a direct parent of the
+article.
+
+#+BEGIN_SRC sh
+  $ for i in {0..6}; do \
+      echo "Level $i:"; \
+      tac /tmp/just-a-copy.xml | grep "^ \{$i\}<[^/]" -m 1 -n | tac; \
+  done
+
+  Level 0:
+  17564960:<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd" version="0.3" xml:lang="en">
+  Level 1:
+  Level 2:
+  38:  <page>
+  Level 3:
+  Level 4:
+  35:    <revision>
+  Level 5:
+  Level 6:
+  26:      <text xml:space="preserve">&lt;!-- This article was auto-generated by [[User:Polbot]]. --&gt;
+#+END_SRC
+
+Looks like the xml is just =page= s thrown in a grand domain called
+=mediawiki=. We could have seen that from the java source too but as
+expensive as this is, it is much faster than dealing with the source
+of =mwdumper=.
+
+The easiest way to cut off this article would be =awk= but that will
+take ages and we want to optimize and automate this entire
+process. First let's try just plain comparing the articles:
+
+#+BEGIN_SRC sh
+  $ cmp /tmp/just-a-copy.xml $ORIGINAL_XML
+  /tmp/just-a-copy.xml /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml differ: byte 2, line 1
+#+END_SRC
+
+That was fast... Let's see what went wrong:
+
+#+BEGIN_SRC sh
+  $ head $ORIGINAL_XML
+  <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.8/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.8/ http://www.mediawiki.org/xml/export-0.8.xsd" version="0.8" xml:lang="en">
+    <siteinfo>
+      <sitename>Wikipedia</sitename>
+      <base>http://en.wikipedia.org/wiki/Main_Page</base>
+      <generator>MediaWiki 1.23wmf4</generator>
+      <case>first-letter</case>
+      <namespaces>
+        <namespace key="-2" case="first-letter">Media</namespace>
+        <namespace key="-1" case="first-letter">Special</namespace>
+        <namespace key="0" case="first-letter" />
+
+  $ head /tmp/just-a-copy.xml
+  <?xml version="1.0" encoding="utf-8" ?>
+  <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd" version="0.3" xml:lang="en">
+    <siteinfo>
+      <sitename>Wikipedia</sitename>
+      <base>http://en.wikipedia.org/wiki/Main_Page</base>
+      <generator>MediaWiki 1.23wmf4</generator>
+      <case>first-letter</case>
+      <namespaces>
+        <namespace key="-2">Media</namespace>
+#+END_SRC
+
+The attributes of the xml tags are quite different. Our best chance
+is if the line numbers match up. We count the numbers of lines in
+=/tmp/just-a-copy.xml= and hope that the corresponding line number
+in =$ORIGINAL_XML= will be the same line. If that is so we can
+ignore the the contextual xml information and just blank out the
+problematic article. We will use =wc= which is also quite fast.
+
+#+BEGIN_SRC sh
+  $ wc -l /tmp/just-a-copy.xml
+  17564961 /tmp/just-a-copy.xml
+#+END_SRC
+
+And the corresponding line in =$ORIGINAL_XML= would be about:
+
+#+BEGIN_SRC sh
+  $ sed "17564960q;d" $ORIGINAL_XML
+  [[Willie Jones (American football)|Willie Jones]],
+#+END_SRC
+
+Football... nothing to do with frogs. Looks like there is no
+avoiding some level of parsing.
+
+
+** Parsing
+
+   We will make the following assumptions to avoid properly parsing
+   the document:
+
+   - The XML in the original file is valid
+   - Any XML within the articles is HTML escaped
+
+   First off working with lines is slow because user space code needs
+   to look for newlines. Working bytes delegates work to the kernel,
+   speeding things up considerably. So the =dd= is the right tool for
+   the job. So we will first find at which byte is the article I am
+   interested in.
+
+   #+BEGIN_SRC sh
+     $ grep -b "<title>Cranopsis bocourti</title>" -m 1 $ORIGINAL_XML
+     1197420547:    <title>Cranopsis bocourti</title>
+   #+END_SRC
+
+   This may take a little while but you are stuck with it
+   unfortunately. Our stategy is to make two files:
+   =/tmp/original_tail.xml= that will contain all the data /after/ the
+   page we want to remove and =/tmp/original_head.xml= that will
+   contain all the data /before/ the page we want to remove.
+
+   Now we will use =sed= to look for =</page>= after byte 1197420547
+   which will be point \(x\) we will and dump the contents of
+   =$ORIGINAL_XML= after point \(x\):
+
+   #+BEGIN_SRC sh
+     $ dd if=$ORIGINAL_XML skip=1197420547 ibs=1 | sed '0,/<\/page>/d' > /tmp/original_tail.xml
+   #+END_SRC
+
+   Great, that worked! =dd= does not copy in reverse so we will need
+   to do something more complex to construct
+   =/tmo/original_head.xml=. Let's say the position where we found the
+   title of the page we want to remove is \(\alpha = 1197420547\) and
+   the point where the page starts is point \(\beta\). It is fairly
+   safe to assume that \( \beta > \alpha - 1000 \) (we can calibrate
+   the constant 1000 if that assumption is wrong, but it turns out
+   that it isn't). This way we only need to search into 1Kb for
+   =<page>=. Effectively instead of copying the bytes in range \([0,
+   \beta)\) we are concatenating two ranges \( [0,\alpha - 1000] \cup
+   (\alpha - 1000, \beta) \) by making a subshell that will first
+   output the first range and then output \( (\alpha - 1000, \alpha)
+   \) stopping when it finds =<page>=. Here is the one liner:
+
+   #+BEGIN_SRC sh
+     $ (dd count=$((1197420547-1000)) ibs=1 if=$ORIGINAL_XML; \
+        dd if=$ORIGINAL_XML count=1000 skip=$((1197420547-1000)) ibs=1 \
+            | tac | sed '/<page>/,$d' | tac) > /tmp/original_head.xml
+   #+END_SRC
+
+   # There is some semi-interesting stuff going on when one parses
+   # just the article. Maybe include that later...
+   # https://github.com/infolab-csail/wikipedia-mirror/issues/3#issuecomment-40738778
+
+* Covering up with spaces
+
+* The sed command
+
+  Above we kind of glazed over our use the =sed= command but it might
+  be interesting to spend some time on it.
