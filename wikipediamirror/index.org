@@ -8,12 +8,12 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
-# TODO: provide link
 
-wikipedia-mirror is a tool for generating mirrors of wikipedia.org
-using the dumps provided by wikipedia.org.
+* The xerces bug
 
-* Mediawiki stack overview
+  #+INCLUDE: xerces.org
+
+* mediawiki stack overview
 
   Wikipedia-mirror builds upon the mediawiki stack provided by
   bitnami. A service that builds the entire server within the
@@ -282,7 +282,6 @@ using the dumps provided by wikipedia.org.
 ** Bitnami
 * Performance
 
-
 ** Compile time
 
    Compile time includes the time it takes for:
@@ -296,11 +295,11 @@ using the dumps provided by wikipedia.org.
      - Preprocessing the dumps (~10 mins)
      - Populating the mysql database (~10 days)
 
-                 # TODO: insert ashmore specifics
-                 Builds were done on Infolab's Ashmore. The system's specs are
-                 quite high end but the bottleneck was the disk IO so less than 1%
-                 of the rest of the available resources were used during the MySQL
-                 database population.
+       # TODO: insert ashmore specifics
+       Builds were done on Infolab's Ashmore. The system's specs are
+       quite high end but the bottleneck was the disk IO so less than 1%
+       of the rest of the available resources were used during the MySQL
+       database population.
 
 *** Attempts to optimizing MySQL
 
