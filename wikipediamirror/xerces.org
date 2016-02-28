@@ -7,7 +7,6 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
-
 At the time of writing mwdumper a strange, semi-random bug. While
 =make sql-dump-parts= is running the following is encountered:
 
@@ -269,4 +268,53 @@ avoiding some level of parsing.
 * The sed command
 
   Above we kind of glazed over our use the =sed= command but it might
-  be interesting to spend some time on it.
+  be interesting to spend some ink on it. Sed is a unix tool found in
+  [[http://lingrok.org/xref/coreutils/][coreutils]] that according to it's man page is a
+
+  #+BEGIN_QUOTE
+  stream editor for filtering and transforming text.
+  #+END_QUOTE
+
+  The basic premise is that the /"pattern space"/, or the input stream
+  which is a normal unix stream coming from a file, a pipe or just
+  stdin, is passed through a programmable pipeline. Either the
+  modified pattern space itself is printed or, with the use of the
+  =-n= flag, selected parts of it. Let's look at the use that we have
+  made for sed above
+
+  Initially we used sed to print a specific line in a file:
+
+  #+BEGIN_SRC sh
+    $ sed "17564960q;d"
+  #+END_SRC
+
+  This sed program is separated by a semicolon. Sed iterates over the
+  lines of the input stream and runs each of the =;= separated
+  commands on them in sequence until one succeeds. The commands here
+  are =17564960q= and =d=. =17564960q= will quit sed once line
+  17564960 is reached. =d= will discard the current line. So sed
+  discards lines until it reaches line 17564960 which it prints and
+  quits.
+
+  We then used a sed command as part of a series of shell commands
+  piped together in order to print all the lines of a stream after a
+  specific pattern (in our case =</page>=).
+
+  #+BEGIN_SRC sh
+    $ sed '0,/<\/page>/d'
+  #+END_SRC
+
+  This time we have only a single sed command, =d=. Sed iterates over
+  the lines in the stream, discarding lines in the range of lines 0 to
+  the line that matches =<\/page>=, effectively only printing lines
+  after =</page>=.
+
+  Our final use of sed is the inverse of the aforementioned one,
+
+  #+BEGIN_SRC sh
+    $ sed '/<page>/,$d'
+  #+END_SRC
+
+  Here sed iterates again over all the lines of the stream this time
+  discarding lines in the range between the first line that matches
+  =<page>= until the final line, denoted with a =$=.
