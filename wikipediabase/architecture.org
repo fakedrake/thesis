@@ -8,6 +8,165 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
+* Infobox
+
+  Infoboxes are tables that are commonly used in wikipedia to provide
+  an overview of the information in an article in a semi structured
+  way. Infoboxes are the main source of information for WikipediaBase.
+
+  #+CAPTION: An example of an infobox
+  #+NAME:   fig:infobox-example
+  #+attr_latex: :placement [H] :height 12cm
+  [[./alonzo-church-infobox.png]]
+
+  In mediawiki markup terms an infobox is a markup template with a
+  type that gets rendered into html so that the provided information
+  makes sense in the context that it is provided. For example:
+
+  #+BEGIN_SRC text
+    {{Infobox scientist
+    | name              = Gerhard Gentzen
+    | image             = Gerhard Gentzen.jpg
+    | image_size        =
+    | alt               =
+    | caption           = Gerhard Gentzen in Prague, 1945.
+    | birth_date        = {{Birth date|1909|11|24}}
+    | birth_place       = [[Greifswald]], [[Germany]]
+    | death_date        = {{Death date and age|1945|8|4|1909|11|24}}
+    | death_place       = [[Prague]], [[Czechoslovakia]]
+    | nationality       = [[Germany|German]]
+    | fields            = [[Mathematics]]
+    | workplaces        =
+    | alma_mater        = [[University of Gottingen]]
+    | doctoral_advisor  = [[Paul Bernays]]
+    | doctoral_students =
+    | known_for         =
+    | awards            =
+    }}
+  #+END_SRC
+
+  will yield:
+
+  #+CAPTION: An example of an infobox
+  #+NAME:   fig:redered-infobox-exampl
+  #+attr_latex: :placement [H] :height 12cm
+  [[./gentzen-infobox.png]]
+
+  Infobox types are organized into a fairly wide hierarchy. For
+  example [[https://en.wikipedia.org/wiki/Template:Infobox_Austrian_district][Template:Infobox Austrian district]] is a special case of a
+  [[https://en.wikipedia.org/wiki/Template:Infobox_settlement][Template:Infobox settlement]] and each is rendered differently. For
+  our purposes, and to mirror the markup definition of infoboxes, an
+  infobox \(I\) with attributes \(a_i\) and values \(v_i\) is a set of
+  pairs \({(a_i, v_i)}\) together with a infobox type \(t\). Each
+  attribute \(a_i\) and value \(v_i\) have two forms:
+
+  - a rendered form, \(a^r_i\) and \(v^r_i\) respectively, which is
+    the rendered HTML representation and
+  - a markup form, \(a^m_i\) and \(v^m_i\) which is the mediawiki
+    markup code that corresponds to them.
+
+  An article may have more than one infoboxes, for example [[https://en.wikipedia.org/w/index.php?title=Bill_Clinton&action=edit][Bill
+  Clinton]] article has both [[https://en.wikipedia.org/wiki/Template:Infobox_officeholder][Infobox Officeholder]] and [[https://en.wikipedia.org/wiki/Template:Infobox_president][Infobox President]]
+  infoboxes.
+
+  The =Infobox= class is the basic data type for accessing information
+  from the infobox of an article. =Infobox=, as well as =Article=, are
+  what one would use were they to use wikipediabase as a python
+  library. The methods provided by an infobox are:
+
+  # SUGGESTION: retrieve infoboxes in a list.
+  - types :: Because we retrieve an infobox based on a symbol name (ie
+       page name), a single =Infobox= may actually be an interface for
+       multiple infoboxes. There is a separate method, based on this
+       one, for getting types in a format suitable for START.
+  - Value access :: is possible provided either \(a^r_i\) or \(a^m_i\).
+  - Rendered keys :: are provided using the =MetaInfobox= (see below).
+  - Infobox export :: to python types, namely:
+       - dict for \(a^r_i \rightarrow v^r_i\) or \(a^m_i \rightarrow
+         v^m_i\)
+       - the entire infobox rendered, or in markup form.
+
+* Infobox tree
+
+* MetaInfobox
+
+  The =MetaInfobox= is a subclass of the =Infobox= that provodes
+  information about the infobox, most importantly a map between markup
+  attributes. Say we have an infobox of type \(I\) which has
+  attributes \({a_1, ... , a_n}\). Each instance of that infobox \(I\) defines
+
+  It is an infobox with all the valid
+  attributes and each value is all the names of all attributes that
+  are equivalent to them. Eg An infobox of type Foo that has valid
+  attributes A, B, C and D and A, B and C are equivalent has a meta
+  infobox that looks something like:
+
+  | Attribute | Value                   |
+  |-----------+-------------------------|
+  | A         | !!!A!!! !!!B!!! !!!C!!! |
+  | B         | !!!A!!! !!!B!!! !!!C!!! |
+  | C         | !!!A!!! !!!B!!! !!!C!!! |
+  | D         | !!!D!!!                 |
+
+* Article
+
+  The =Article= data structure is responsible for accessing any
+  resource relevant to the article at large.
+
+* Fetcher
+
+  The fetcher is an abstraction over the communicatioln of
+  WikipediaBase with the outside world. It is a singleton object
+  that implements a specific interface.
+
+  Fetchers are organized in an inheriting hierarchiy
+
+  - BaseFetcher :: The baseclass for fetchers, it will return the
+       symbol instead of trying to resolve it in any way
+  - Fetcher :: contains the core functionality of a a fetcher. It will
+       fetch articles from /wikipedia.org/. It is possible to direct
+       it to a mirror but wikipedia-mirror's runtime performance
+       turned out to be prohibitive.
+  - CachingFetcher :: inherits fetcher and retains it's functionality,
+       only it uses Redis to cache the fetched symbols. It is the
+       default fetcher for wikipediabase.
+  - StaticFetcher :: is a class that implements the =BaseFetcher=
+       interface but instead of reaching out to some data source for
+       the data the return values are statically defined. It is used
+       most notably by =MetaInfobox= to use the =Infobox=
+       functionality to convey arbitrary information.
+
+  By default, markup is fetched from the backend. If force_live is set
+  to True, the markup will be fetched from live wikipedia.org
+
+  When tests are ran on TravisCI, we always want to use live data. We
+  check if Travis is running tests by looking at the
+  WIKIPEDIABASE_FORCE_LIVE env variable.
+
+* Renderer
+
+  Renderers are singleton classes that are useful for rendering
+  mediawiki markup into HTML. Originally the wikiepedia sandbox was
+  used by wikipediabase for rendering pages because it is slightly
+  faster than the API, but the wikipedia-mirror was really slow at
+  this and wikipedia.org would consider it an abuse of the service and
+  block our IP. For that reason we eventually switched to the API with
+  Redis caching, which works out pretty well because =Renderer=
+  objects end up being used only my =MetaInfobox= which has quite a
+  limited scope, making thus cache misses rarely.
+
+* Caching
+
+  TODO, check what alvaro did with this
+
+* Logging
+
+* Utilities
+
+** General
+
+** Database utilities
+
 * Pipeline
 
   When resolving a query WikipediaBase employs a pipeline of modules
@@ -26,8 +185,6 @@
    response into properly formulated sexpressions that it sends back
    over the telnet connection.
 
-*** Protocol
-
 ** Knowledgebase
 
    The knowledgebase is the entry point to the rest of
@@ -44,10 +201,28 @@
    assigning a class of an object. Thereare a couple classifiers
    available at the moment.
 
+*** Term
+
+*** Section
+
+*** Infobox
+
+*** Person
+
 ** Resolvers
 
    Resolvers are also singletons but their purpose is to find the
    value of the requested property.
+
+*** Error
+
+*** Infobox
+
+*** Person
+
+*** Section
+
+*** Term
 
 ** Lisp types
 
@@ -57,13 +232,3 @@
    and unwrapped to be useful to the pipeline, or by the answer
    WikipediaBase comes up with and then encoded into a string sent
    over telnet to START.
-
-* Fetcher
-
-  The fetcher is an abstraction over the communicatioln of
-  WikipediaBase with the outside world. It is a singleton object
-  that implements a specific interface.
-
-* Infobox
-
-* Article

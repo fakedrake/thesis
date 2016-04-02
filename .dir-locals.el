@@ -2,7 +2,7 @@
 ;;; For more information see (info "(emacs) Directory Variables")
 
 ((nil
-  (org-latex-packages-alist . (("" "listings")))
+  (org-latex-packages-alist . (("" "listings") ("" "float")))
   (org-latex-listings . t)
   (org-latex-listings-options . (("columns" "fixed")
                                  ("breaklines")

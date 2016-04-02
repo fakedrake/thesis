@@ -32,22 +32,19 @@
 
 * Getting started
 
-** Language
-
-   The WikipediaBase implementation that we refer to is written in
-   python. Previous implementations were written in Java and Ruby but
-   the language of choice for the rewrite was python for multiple
-   reasons:
+  The WikipediaBase implementation that we refer to is written in
+  python. Previous implementations were written in Java and Ruby but
+  the language of choice for the rewrite was python for multiple
+  reasons:
 
 
-   - Python is in the pre-graduate curriculum of MIT computer science
-     department. This will ease the learning curve of new members of
-     Infolab.
-   - Python is a easy to learn and mature language with a rich and
-     evolving ecosystem. This fact eases the introduction of new
-     maintainers even further.
+  - Python is in the pre-graduate curriculum of MIT computer science
+    department. This will ease the learning curve of new members of
+    Infolab.
+  - Python is a easy to learn and mature language with a rich and
+    evolving ecosystem. This fact eases the introduction of new
+    maintainers even further.
 
-** Getting the code
 
    The entire WikipediaBase resides in a git repository in infolab's
    github orginization page
@@ -56,7 +53,6 @@
    git clone git@github.com:infolab-csail/WikipediaBase
    #+END_SRC
 
-** Virtualenv and dependencies
 
    WikipediaBase depends on multiple other python
    packages. Fortunately, python is shipped not only with a great
@@ -148,7 +144,7 @@
 ** Postgres
 * Data sources
 * Date parser
-  #+INCLUDE: dateparser.org
+  #+INCLUDE: dateparsχβψωer.org
 * Future
 ** Configuration
 *** Persistence

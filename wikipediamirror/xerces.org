@@ -263,7 +263,54 @@ avoiding some level of parsing.
    # just the article. Maybe include that later...
    # https://github.com/infolab-csail/wikipedia-mirror/issues/3#issuecomment-40738778
 
+* The final solution
+
+  All the above was used to compose a script that lives in
+  =data/xml-parse.sh= which is utilised by the makefiles to remove all
+  problematic articles. If mwdumper fails, we identify the article that
+  caused the breakage and remove it using =xml-parse.sh=. Then we
+  rerun mwdumper. We repeat that until mwdumper succeeds. In total the
+  conflicting articles are aboit 10-15, and are different depending
+  on the dump being used.
+
 * Covering up with spaces
+
+  From the above exploration of ways for circumventing the issue of
+  the breaking article we omitted a fairly obvious, but thematically
+  different approach: covering up breaking article with spaces. Once
+  we find out the range in which the page resides we can =mmap=
+  precisely in that part of =$ORIGINAL_XML= and then =memset= covering
+  it up with space characters. The actual implementation lives in
+  =data/page_remover.c=, below we present the call to mmap:
+
+  #+BEGIN_SRC c
+    ctx->off = off-pa_off;
+    ctx->fd = open(fname, O_RDWR, 0x0666);
+    if (ctx->fd == -1) {
+        perror("open");
+        return NULL;
+    }
+
+    ctx->size = len;
+    ctx->data = mmap(0, len+ctx->off, PROT_READ | PROT_WRITE,
+  		   MAP_SHARED, ctx->fd, pa_off);
+    if (ctx->data == MAP_FAILED) {
+        perror ("mmap");
+        return NULL;
+    }
+  #+END_SRC
+
+  and the =mmemset=:
+
+  #+BEGIN_SRC c
+    /* You MIGHT want to thread this but I dont think it will make
+     * much more difference than memset. */
+    memset(ctx->data + ctx->off, ' ', ctx->size);
+  #+END_SRC
+
+  Surprisingly this did not fix the mwdumper issue which points to a
+  possible memory leak on the part of xerces but it is beyond the
+  scope of this project to debug fix that if we have a choice.
 
 * The sed command
 
