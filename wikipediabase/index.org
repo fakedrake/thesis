@@ -144,7 +144,7 @@
 ** Postgres
 * Data sources
 * Date parser
-  #+INCLUDE: dateparsχβψωer.org
+  #+INCLUDE: dateparser.org
 * Future
 ** Configuration
 *** Persistence
