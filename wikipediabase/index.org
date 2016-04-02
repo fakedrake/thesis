@@ -135,14 +135,198 @@
 
 ** TODO Examples
 * Synonyms
+
+  Before we talk about synonyms it is important to concretely define
+  symbols in the context of the omnibase universe:
+
+  #+BEGIN_QUOTE
+  Symbols are identifiers of "objects" in a data source. (The term
+  "symbol" is unfortunate, since it has so many meanings in computer
+  science, but we're stuck with it for historical reasons.)
+  #+END_QUOTE
+
+  Since language tends to have multiple ways of referring to the same
+  things, defining aliases for symbols is imperative.
+
+  #+BEGIN_QUOTE
+  Synonyms are names which users can use to refer to symbols. (The
+  term "synonym" is unfortunate, because this is really a one-way
+  mapping -"gloss" would be a better term but we're stuck with
+  "synonym" for hysterical raisins.)
+  #+END_QUOTE
+
+  The definition of synonyms is the job of the backend
+  itself. Therefore it is the job of WikipediaBase to define the set
+  of synonyms required.
+
 ** Good/Bad synonyms
+
+   There are rules to what is considered a good and what a bad
+   synonym. In short synonyms:
+
+   - Should not lead with articles ("the", "a", "an")
+   - Should not lead with "File:" or "TimedText:".
+   - Should not fragment anchors. Eg "Alexander_Pushkin#Legacy"
+   - Should not start with the following:
+     - "List of "
+     - "Lists of "
+     - "Wikipedia: "
+     - "Category: "
+     - ":Category: "
+     - "User: "
+     - "Image: "
+     - "Media: "
+     - "Arbitration in location"
+     - "Communications in location"
+     - "Constitutional history of location"
+     - "Economy of location"
+     - "Demographics of location"
+     - "Foreign relations of location"
+     - "Geography of location"
+     - "History of location"
+     - "Military of location"
+     - "Politics of location"
+     - "Transport in location"
+     - "Outline of topic"
+
+   - Should not match =\d\d\d\d in location= or =location in \d\d\d\d=
+   - Should not be names of disabiguation pages. To make this
+     inclusive for all relevant pages, including typos, that means
+     symbols that match =\([Dd]isambig[^)]*\)=
+   - Synonyms that both a) could be mistaken for ones that start with
+     articles and b) might subsume something useful. That means that
+     for example "A. House" (synonym of "Abraham House") is
+     disqualified because it might mislead START in the case of
+     questions like "How much does a house cost in the Silicon
+     Valley?". On the other hand "a priori" can be kept because there
+     are no sensible queries where "a" is an article before "priori".
+
 ** Synonym generation
+
+   To accommodate these restrictions two methods are
+   employed. Disqualification and modification of synonym
+   candidates. First modification is attempted and if that fails we
+   disqualify. The rules for modification are as follows:
+
+   - Strip determiners (articles) that are at the beginning of a
+     synonym (or would be at the beginning if not for punctuation):
+     - "A "
+     - "An "
+     - "The "
+     - '(The) '
+     - The&nbsp;
+     - etc.
+
+   - Generate both versions, with and without paren. Eg given symbol
+     "Raven (journal)" generate both:
+       - "Raven (journal)"
+       - "Raven"
+
+   - Generate before and after slash, but not the original symbol, e.g.:
+     - Given symbol "Russian language/Russian alphabet" generate both
+       - "Russian language"
+       - "Russian alphabet"
+
+   - Reverse inverted synonyms with commas. Eg given synonym "Congo,
+     Democratic Republic Of The" invert it to get "Democratic
+     Republic Of The Congo"
+
+   - As usual, get rid of leading articles if necessary. Eg given
+     synonym "Golden ratio, the" replace it with "the Golden ratio",
+     then strip articles to get: "Golden ratio" same goes for a, an,
+     etc.
+
+   This way we generate an initial set of synonyms from the name of
+   the object itself. Furthermore we can generate a set of synonyms
+   from wikipedia redirects to the article. Wikipedia kindly provides
+   an SQL dump for all redirects.
+
+   To load the table, in your database where you have loaded the
+   wikipedia data, you should load the redirects table:
+
+   #+BEGIN_SRC sh
+     wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz \
+       -O redirect.sql.gz && gzcat redirect.sql.gz | mysql
+   #+END_SRC
+
+   And then from the SQL db to find all (good and bad) synonyms to
+   Bill Clinton you can:
+
+  #+BEGIN_SRC sql
+    mysql> select page_title, rd_title from redirect join page on rd_from = page_id and (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
+    +-------------------------------------+--------------+
+    | page_title                          | rd_title     |
+    +-------------------------------------+--------------+
+    | BillClinton                         | Bill_Clinton |
+    | William_Jefferson_Clinton           | Bill_Clinton |
+    | President_Clinton                   | Bill_Clinton |
+    | William_Jefferson_Blythe_IV         | Bill_Clinton |
+    | Bill_Blythe_IV                      | Bill_Clinton |
+    | Clinton_Gore_Administration         | Bill_Clinton |
+    | Buddy_(Clinton's_dog)               | Bill_Clinton |
+    | Bill_clinton                        | Bill_Clinton |
+    | William_Jefferson_Blythe_III        | Bill_Clinton |
+    | President_Bill_Clinton              | Bill_Clinton |
+    | Bull_Clinton                        | Bill_Clinton |
+    | Clinton,_Bill                       | Bill_Clinton |
+    | William_clinton                     | Bill_Clinton |
+    | 42nd_President_of_the_United_States | Bill_Clinton |
+    | Bill_Jefferson_Clinton              | Bill_Clinton |
+    | William_J._Clinton                  | Bill_Clinton |
+    | Billl_Clinton                       | Bill_Clinton |
+    | Bill_Clinton\                       | Bill_Clinton |
+    | Bill_Clinton's_Post_Presidency      | Bill_Clinton |
+    | Bill_Clinton's_Post-Presidency      | Bill_Clinton |
+    | Klin-ton                            | Bill_Clinton |
+    | Bill_J._Clinton                     | Bill_Clinton |
+    | William_Jefferson_"Bill"_Clinton    | Bill_Clinton |
+    | William_Blythe_III                  | Bill_Clinton |
+    | William_J._Blythe                   | Bill_Clinton |
+    | William_J._Blythe_III               | Bill_Clinton |
+    | Bil_Clinton                         | Bill_Clinton |
+    | WilliamJeffersonClinton             | Bill_Clinton |
+    | William_J_Clinton                   | Bill_Clinton |
+    | Bill_Clinton's_sex_scandals         | Bill_Clinton |
+    | Billy_Clinton                       | Bill_Clinton |
+    | Willam_Jefferson_Blythe_III         | Bill_Clinton |
+    | William_"Bill"_Clinton              | Bill_Clinton |
+    | Billll_Clinton                      | Bill_Clinton |
+    | Bill_Klinton                        | Bill_Clinton |
+    | William_Clinton                     | Bill_Clinton |
+    | Willy_Clinton                       | Bill_Clinton |
+    | William_Jefferson_(Bill)_Clinton    | Bill_Clinton |
+    | Bubba_Clinton                       | Bill_Clinton |
+    | MTV_president                       | Bill_Clinton |
+    | MTV_President                       | Bill_Clinton |
+    | The_MTV_President                   | Bill_Clinton |
+    | Howard_G._Paster                    | Bill_Clinton |
+    | Clintonesque                        | Bill_Clinton |
+    | William_Clinton                     | Bill_Clinton |
+    | William_Jefferson_Clinton           | Bill_Clinton |
+    +-------------------------------------+--------------+
+    46 rows in set (11.77 sec)
+#+END_SRC
+
 * Backend databases
 ** DBM
 ** SQLite
 ** Redis
 ** Postgres
 * Data sources
+** HTML
+
+   The initial approach to getting the data is to retrieve the normal
+   HTML versions of wikipedia articles and using edit pages to
+   retrieve the mediawiki markup. We invariably use the original
+   wikipedia.org site for performance reasons (See wikipedia-mirror
+   runtime performance section).
+
+** API
+
+   # XXX: Short overview of the API infrastructure.
+   # https://www.mediawiki.org/wiki/API:Main_page
+
+** Dumps / Database
 * Date parser
   #+INCLUDE: dateparser.org
 * Future
