@@ -140,6 +140,16 @@
 
 *** page_remover.c
 
+    As previously discussed, the =xerces= library that =mwdumper=
+    depends on fails, seemingly at random, to process certain
+    pages. To address this issue we remove the pages completely and
+    retry. Since this task is fairly straight forward yet performance
+    sensitive we resorted to writing a small low level program in C to
+    address it, =page_remove.c=. Page remover accepts as input the
+    path of the XML wikipedia dump, the offset of the article and the
+    size of the article. It then uses the =mmap= system call to
+    random-access the data within the file.
+
 *** sql-clear.sh
 
 *** utf8thread.c
