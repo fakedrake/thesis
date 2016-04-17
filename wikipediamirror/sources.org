@@ -1,0 +1,618 @@
+#+TITLE:       Appendix: Wikipedia mirror scripts
+#+AUTHOR:      Chris Perivolaropoulos
+#+DATE:        Sunday 21 February 2016
+#+EMAIL:       cperivol@csail.mit.edu
+#+DESCRIPTION: The full so8rce code of the helper scripts of wikipedia mirror.
+#+KEYWORDS:
+#+LANGUAGE:    en
+#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+STARTUP:     showall
+
+
+* page_remover.c
+
+  #+BEGIN_SRC c
+    /*
+     * Copyright 2014 Chris Perivolaropoulos <cperivol@csail.mit.edu>
+     *
+     * This program is free software: you can redistribute it and/or
+     * modify it under the terms of the GNU General Public License as
+     * published by the Free Software Foundation, either version 3 of the
+     * License, or (at your option) any later version.
+     *
+     * This program is distributed in the hope that it will be useful, but
+     * WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     *
+     * See the GNU General Public License for more details.  You should
+     * have received a copy of the GNU General Public License along with
+     * this program.
+     *
+     * If not, see <http://www.gnu.org/licenses/>.
+     *
+     * This should fill a range in a file with spaces. This is an in-place
+     * operation so it should be pretty fast.
+     *
+     * Usage: page_remover PATH OFFSET LENGHT
+     */
+
+    #include <assert.h>
+    #include <fcntl.h>
+    #include <pthread.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <sys/mman.h>
+    #include <sys/stat.h>
+    #include <sys/types.h>
+    #include <semaphore.h>
+    #include <unistd.h>
+    #include <unistd.h>
+
+    #define USAGE_INFO "page_remover PATH OFFSET LENGTH"
+    #define PRINT(ctx, args...) do { sem_wait(&ctx->stdio_mutex);	\
+  				   printf(args);			\
+  				   fflush(stdout);		\
+  				   sem_post(&ctx->stdio_mutex);	\
+  				   } while(0)
+
+    typedef struct context {
+        int fd;
+        size_t size;
+        off_t off;
+        sem_t stdio_mutex;
+        void* data;
+    } context_t;
+
+    context_t* context_init(char* fname, off_t off, size_t len)
+    {
+        context_t * ctx = (context_t*)malloc(sizeof(context_t));
+        off_t pa_off = off & ~(sysconf(_SC_PAGE_SIZE) - 1);
+
+        sem_init(&ctx->stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
+
+        PRINT(ctx, "Opening %s at %lu (len: %lu)\n", fname, off, len);
+
+        ctx->off = off-pa_off;
+        ctx->fd = open(fname, O_RDWR, 0x0666);
+        if (ctx->fd == -1) {
+  	  perror("open");
+  	  return NULL;
+        }
+
+        ctx->size = len;
+        ctx->data = mmap(0, len+ctx->off, PROT_READ | PROT_WRITE,
+  		       MAP_SHARED, ctx->fd, pa_off);
+        if (ctx->data == MAP_FAILED) {
+  	  perror ("mmap");
+  	  return NULL;
+        }
+
+        return ctx;
+    }
+
+    void context_destroy(context_t* ctx)
+    {
+        if (close (ctx->fd) == -1)
+  	  perror ("close");
+
+        if (munmap ((void*)ctx->data, ctx->size) == -1)
+  	  perror ("munmap");
+
+        sem_destroy(&ctx->stdio_mutex);
+        free(ctx);
+    }
+
+    int main(int argc, char *argv[])
+    {
+        if (argc != 4)
+  	  fprintf(stderr, USAGE_INFO);
+
+        context_t *ctx = context_init(argv[1], atoi(argv[2]), atoi(argv[3]));
+
+        /* You MIGHT want to thread this but I dont think it will make
+         ,* much more difference than memset. */
+        memset(ctx->data + ctx->off, ' ', ctx->size);
+
+        context_destroy(ctx);
+        return 0;
+    }
+
+  #+END_SRC
+
+* utf8thread.c
+
+  #+BEGIN_SRC c
+    #include <assert.h>
+    #include <fcntl.h>
+    #include <pthread.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <sys/mman.h>
+    #include <sys/stat.h>
+    #include <sys/types.h>
+    #include <semaphore.h>
+    #include <unistd.h>
+    #include <unistd.h>
+
+    sem_t stdio_mutex;
+
+    #define PRINT(args...) do {sem_wait(&stdio_mutex);	\
+  	  printf(args);					\
+  	  fflush(stdout);					\
+  	  sem_post(&stdio_mutex);				\
+        } while(0)
+
+    /* #define DEBUG(args...)		PRINT(args) */
+    #define DEBUG(...)
+
+    #define DEFAULT_CHAR ' '
+    #define WORKERS 8
+    #define MESSAGE_DENSITY 1000000000
+
+    typedef unsigned long long u64;
+
+    #define UTF_LC(l) ((0xff >> (8 - (l))) << (8 - (l)))
+    #define UTF_CHECK(l, c) (((UTF_LC(l) & (c)) == UTF_LC(l)) && (0 == ((c) & (1 << (7-(l))))))
+
+
+    #define UTF_LEN(x) (UTF_CHECK(6, x) ? 6 :	\
+  		      UTF_CHECK(5, x) ? 5 :	\
+  		      UTF_CHECK(4, x) ? 4 :	\
+  		      UTF_CHECK(3, x) ? 3 :	\
+  		      UTF_CHECK(2, x) ? 2 : -1)
+
+    struct crange {
+        u64 start, end;
+    };
+
+    /* Get return the next character after the last correct one. */
+    inline u64 valid_utf8(u64 c)
+    {
+        char i;
+        /* Ascii */
+        if ((*(char*)c & 0x80) == 0)
+  	  return c+1;
+
+        /*  */
+        for (i = UTF_LEN(*(char*)c)-1; i>0; i--) {
+  	  c++;
+  	  if (!UTF_CHECK(1, *(char*)c)) {
+  	      return (u64)NULL;
+  	  }
+        }
+
+        return i<0 ? 0 : c+1;
+    }
+
+
+    void* fix_range(void* _r)
+    {
+        struct crange* r = _r;
+        u64 tmp, id = r->start;
+        long long unsigned count = 0;
+
+        while ((u64)r->start < (u64)r->end) {
+  	  if (count++ % MESSAGE_DENSITY == 0)
+  	      printf ("[worker: 0x%016llx] Done with %lluK.\n", id, count % 1024);
+
+  	  if (!(tmp = valid_utf8(r->start))){
+  	      PRINT("Invalid char 0x%x (next: 0x%x)\n",
+  		    ,*(char*)r->start, *(char*)(r->start+1));
+  	      ,*((char*)r->start) = DEFAULT_CHAR;
+  	      (r->start)++;
+  	  } else {
+  	      r->start = tmp;
+  	  }
+        }
+
+        PRINT ("[worker: 0x%016llx] OUT\n", id);
+        return NULL;
+    }
+
+    void run(u64 p, u64 sz)
+    {
+        int n, i;
+        u64 wsize;
+        pthread_t workers[WORKERS];
+        struct crange rngs[WORKERS];
+
+        wsize = sz/WORKERS + 1;
+        printf("Base address: 0x%016llx, step size: 0x%016llx\n", p, wsize);
+
+        for (i=0; i<WORKERS; i++){
+  	  rngs[i].start = p + wsize*i;
+  	  rngs[i].end = p + wsize*i + wsize;
+
+  	  PRINT("Spawning worker %d on range [0x%016llx, 0x%016llx), %llu bytes...", i, rngs[i].start, rngs[i].end, wsize);
+  	  if ((n = pthread_create(workers+i, NULL, fix_range, (void*)(rngs+i)))) {
+  	      PRINT("FAIL\n");
+  	      perror("worker");
+  	      return;
+  	  }
+  	  PRINT("OK\n");
+        }
+
+        PRINT ("Wrapping up...\n");
+        for (i=0; i<WORKERS; i++) {
+  	  PRINT ("Joining worker %d...", i);
+  	  pthread_join(workers[i], NULL);
+  	  PRINT ("OK\n");
+  	  PRINT("Worker %d went through %llu bytes.\n",
+  	        i, (u64)rngs[i].end - (u64)rngs[i].start);
+        }
+    }
+
+
+    int main(int argc, char *argv[])
+    {
+        int fd;
+        long long int sz, p;
+        struct stat buf;
+
+        sem_init(&stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
+
+        fd = open(argv[1], O_RDWR, 0x0666);
+        if (fd == -1) {
+  	  perror("open");
+  	  return 1;
+        }
+
+        fstat(fd, &buf);
+        sz = buf.st_size;
+        printf("File size: 0x%016llx\n", sz);
+
+        p = (u64)mmap (0, buf.st_size, PROT_READ | PROT_WRITE , MAP_SHARED, fd, 0);
+        if (p == -1) {
+  	  perror ("mmap");
+  	  return 1;
+        }
+
+        run(p, buf.st_size);
+
+        if (close (fd) == -1) {
+  	  perror ("close");
+  	  return 1;
+        }
+
+
+        if (munmap ((void*)p, buf.st_size) == -1) {
+  	  perror ("munmap");
+  	  return 1;
+        }
+
+        sem_destroy(&stdio_mutex);
+
+        return 0;
+    }
+  #+END_SRC
+
+* sql-clear.sh
+
+  #+BEGIN_SRC sh
+    #!/bin/bash
+    MUSER="$1"
+    MPASS="$2"
+    MDB="$3"
+    MYSQL=$4
+
+    # Detect paths
+    AWK=$(which awk)
+    GREP=$(which grep)
+
+    if [ $# -ne 4 ]
+    then
+  	  echo "Usage: $0 {MySQL-User-Name} {MySQL-User-Password} {MySQL-Database-Name} {MySQL executable to use}"
+  	  echo "Drops all tables from a MySQL"
+  	  exit 1
+    fi
+
+    TABLES=$($MYSQL -u $MUSER -p$MPASS $MDB -e 'show tables' | $AWK '{ print $1}' | $GREP -v '^Tables' )
+
+    for t in $TABLES
+    do
+  	  echo "Clearing $t table from $MDB database..."
+  	  $MYSQL -u $MUSER -p$MPASS $MDB -e "truncate table $t"
+    done
+  #+END_SRC
+
+* webmonitor.py
+
+  #+BEGIN_SRC python
+    """
+    Just feed pairs of
+
+    <epoc date> <float value>
+
+    or even just
+
+    <float value>
+
+    One way to do that would be
+
+        $ <cmd> stdbuf -oL awk "{print \$1/$$max}" | python webmonitor.py
+
+    and I will plot them on port 8888. This will also pipe the input right
+    out to the output. Strange input will be ignored and piped this way,
+    but this needs to be done by awk aswell in the above example.
+    """
+
+    import sys
+    import json
+    import time
+
+    from threading import Thread
+    from collections import deque
+
+    import tornado.websocket as websocket
+    import tornado.ioloop
+    import tornado.web
+
+    HTML = """
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>DrNinjaBatmans Websockets</title>
+
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
+        <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+
+        <script>
+    var chart; // global
+    var url = location.hostname + ':' + (parseInt(location.port));
+    var ws = new WebSocket('ws://' + url + '/websocket');
+    ws.onmessage = function(msg) {
+        add_point(msg.data);
+    };
+
+    // ws.onclose = function() { alert('Connection closed.'); };
+
+    var add_point = function(point) {
+        var series = chart.series[0],
+  	  shift = series.data.length > %d;
+        chart.series[0].addPoint(eval(point), true, shift);
+    };
+
+    $(document).ready(function() {
+        chart = new Highcharts.Chart(JSON.parse('%s'));
+    });
+        </script>
+
+      </head><body><div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div></body></html>
+    """
+
+    config = {
+        'visible_points': 10,
+        'py_chart_opts': { 'chart': { 'renderTo': 'container',
+                                      'defaultSeriesType': 'spline'},
+                           'title': { 'text': 'DrNinjaBatmans data'},
+                           'xAxis': { 'type': 'datetime',
+                                      'tickPixelInterval': '150'},
+                           'yAxis': { 'minPadding': 0.2,
+                                      'maxPadding': 0.2,
+                                      'title': {'text': 'Value',
+                                                'margin': 80}
+                                  },
+                           'series': [{ 'name': 'Data',
+                                        'data': []}]}
+
+    }
+
+    def date_float(s):
+        try:
+            date, val = s.split()
+        except ValueError:
+            val = s.strip()
+            date = time.time()
+
+        return int(date), float(val)
+
+
+    def send_stdin(fn=date_float):
+        for raw in sys.stdin:
+            sys.stdout.write(raw)
+
+            # Ignore strange input.
+            try:
+                jsn = json.dumps(fn(raw))
+
+                buf.append(jsn)
+
+                for w in websockets:
+                    try:
+                        w.write_message(jsn)
+                    except websocket.WebSocketClosedError:
+                        pass
+
+            except:
+                pass
+
+        for ws in websockets:
+            ws.close()
+
+    class StdinSocket(websocket.WebSocketHandler):
+        def open(self):
+            for i in buf:
+                self.write_message(i)
+
+            websockets.append(self)
+
+
+        def closs(self):
+            websockets.remove(self)
+
+    class MainHandler(tornado.web.RequestHandler):
+        def get(self):
+            self.write(HTML % (int(config['visible_points']),
+                               json.dumps(config['py_chart_opts'])))
+
+
+    if __name__ == "__main__":
+        application = tornado.web.Application([
+            (r"/", MainHandler),
+            (r'/websocket', StdinSocket),
+        ])
+        buf = deque(maxlen=int(config['visible_points']))
+        websockets = []
+
+
+        config['args'] = []
+        for a in sys.argv[1:]:
+            if '=' in a:
+                k, v = a.split('=', 1)
+                config[k] = v
+            else:
+                config['args'].append(a)
+
+        Thread(target=send_stdin).start()
+        application.listen(8888)
+        tornado.ioloop.IOLoop.instance().start()
+
+  #+END_SRC
+
+* xml-parse.sh
+
+  #+BEGIN_SRC sh
+      #!/bin/bash
+    #
+    # Simply removing specific articles fixes the xerces error with
+    # UTF8. If the articles are alone the error goes away
+    # aswell. Extremely weird but that's life. Fortunately the article is
+    # just a stub about some toad (Cranopsis bocourti)
+    #
+    # xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]
+    #
+    # if `inplace` is there the c program will be used to cover the article
+    # with spaces. This is much faster. Should be anyway. Otherwise the
+    # page is just ommited and the result is dumped in stdout. Helping
+    # messages are dumped in stderr After this you can run:
+    #
+    # java -jar tools/mwdumper.jar RESULTING_XML --format=sql:1.5 > SQL_DUMP
+
+    set -e
+    set -o pipefail
+
+    if [[ $# -lt 2 ]]; then
+        echo "xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]" 1>&2
+        exit 0
+    fi
+
+    function my_dd {
+        coreutils_version=$(dd --version | head -1 | cut -d\  -f3 | colrm 2 2 )
+        if [[ $coreutils_version -ge 822 ]]; then
+  	  eval "dd iflag=count_bytes iflag=direct oflag=seek_bytes ibs=1M $@"
+        else
+  	  echo "Your coreutils may be a bit old ($coreutils_version). 822 is the one cool kids use." >&2
+  	  eval "dd $@ ibs=1"
+        fi
+    }
+
+    ORIGINAL_XML=$1
+
+    # Dump a part of the file in sdout using dd.
+    # Usage:
+    # file_range <filename> <first_byte> <start|end|length>
+    #
+    # Length can be negative
+    function file_range {
+        file=$1
+        start=$2
+        len=$3
+
+
+        case $len in
+  	  "end") my_dd if=$file skip=$start || exit 1; return 0;;
+  	  "start") my_dd if=$file count=$start || exit 1; return 0;;
+  	  "") echo "len was empty (file: $file, start: $start, len $len). Correct format <filename> <byte start> <length|'start'|'end'>" 1>&2; exit 1;;
+  	  ,*) ;;
+        esac
+
+        if [[ $len -gt 0 ]]; then
+  	  # Dump to stdout
+  	  my_dd if=$file skip=$start count=$len || exit 1
+        else
+  	  skip=$(($start + ($len)))
+  	  len=$((- ($len)))
+
+  	  if [[ $skip -lt 0 ]]; then
+  	      skip=0
+  	      len=$start
+  	  fi
+
+  	  # Dump to stdout
+            my_dd if=$file skip=$skip count=$len || exit 1
+        fi
+    }
+
+    function backwards {
+        tac -b | rev
+    }
+
+    function byte_offset {
+        grep -b -o -m 1 -F  "$1" | cut -d : -f1
+    }
+
+    # Throw everything but the page in stdout
+    #
+    # neg_xml_page "Barack Obama"
+    function neg_xml_page {
+        term="<title>$1</title>"
+        title_offset=$(cat $ORIGINAL_XML | byte_offset "$term")
+        echo -e "\n\tMethod: $2(blank is ok)" 1>&2
+        echo -e "\tsearch term: $term" 1>&2
+        echo -e "\tfile: $ORIGINAL_XML" 1>&2
+        echo -e "\ttitle offset: $title_offset" 1>&2
+
+        # Fail the term is invalid
+        if [ -z "$title_offset" ]; then
+  	  echo "Found '$title_offset' Grep-ing (cat  $ORIGINAL_XML | grep -b -m 1 -F \"$term\" | cut -d: -f1)" 1>&2
+  	  exit 1
+        fi
+
+        to_page_start=$(($(file_range $ORIGINAL_XML $title_offset -1000 | backwards | byte_offset "$(echo '<page>' | rev)")+7))
+        echo -e "\tto page start (relative): $to_page_start" 1>&2
+
+        file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>" >&2
+        echo $(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) >&2
+        to_page_end=$(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) # len('</page>') == 7
+        echo -e "\tto page end (relative): $to_page_end" 1>&2
+
+        page_start=$(($title_offset - $to_page_start +1 ))
+        echo -e "\tpage start: $page_start" 1>&2
+
+        page_end=$(($title_offset + $to_page_end))
+        echo -e "\tpage end: $page_end" 1>&2
+
+        echo -e "\tbytes to copy: $(($(du -b $ORIGINAL_XML | cut -f1) - $page_start + $page_end))" 1>&2
+
+        echo "Going to copy $page_start bytes" 1>&2
+        file_range $ORIGINAL_XML $page_start start
+        echo "Finished the first half up to $page_start, $(( $(du -b $ORIGINAL_XML | cut -f 1) - $page_end )) to go" 1>&2
+        file_range $ORIGINAL_XML $page_end end
+        echo "Finished the whole thing." 1>&2
+    }
+
+    # Put stdin betwinn mediawiki tags and into stdout
+    function mediawiki_xml {
+        (head -1 $ORIGINAL_XML; sed -n "/<siteinfo>/,/<\/siteinfo>/p;/<\/siteinfo>/q" $ORIGINAL_XML ; cat - ; tail -1 $ORIGINAL_XML )
+    }
+
+    # 1: XML File
+    # 2: Article
+    # 3: Method (leave blank)
+    # Assert that the file is there and is not empty
+    fsize=$(du -b $ORIGINAL_XML | cut -f1)
+    if [[ 0 -eq $fsize ]]; then
+        echo "ERROR: empty xml file $ORIGINAL_XML" 1>&2
+        exit 1
+    fi
+
+    echo "Will remove article '$2' from file $1 (size: $fsize)" 1>&2
+    if ! neg_xml_page "$2" "$3"; then
+        ret=$?
+        echo "XML parsing script failed" 1>&2
+        exit $ret;
+    fi
+  #+END_SRC

@@ -148,13 +148,106 @@
     address it, =page_remove.c=. Page remover accepts as input the
     path of the XML wikipedia dump, the offset of the article and the
     size of the article. It then uses the =mmap= system call to
-    random-access the data within the file.
+    random-access the data within the file and fill the article with
+    withespace characters. =page_remover.c= is not threaded as the
+    bottleneck is the HDD IO speed.
 
 *** sql-clear.sh
 
+    =sql-clear.sh= is a small bash script that truncates all tables
+    from a database. Truncating means leaving the table scheamata
+    unaffected and delete all internal data.
+
 *** utf8thread.c
 
+    =utf8thread.c= is another low level program that blanks out all
+    invalid utf-8 characters from a file. We used =pthreads= to speed
+    things up.
+
 *** webmonitor.py
+
+    =webmonitor.py= is a python script that sets up a web page that
+    shows live data in the form of a histogram about the progress of
+    the database population. =webmonitor.py= serves a static html page
+    and then deeds it the data over websocket. Webmonitor can show any
+    stream of =<epoc date> <float value>= pairs that it receives in
+    it's input. As a sample:
+
+    #+BEGIN_SRC sh
+    $ pip install tornado
+    #+END_SRC
+
+    First install the dependencies of the script. That would be
+    tornado, an asynchronous web framework supporting websockets. We
+    will instruct =tornado= tornado will serve the following page:
+
+    #+BEGIN_SRC html
+      <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+      <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+          <title>DrNinjaBatmans Websockets</title>
+
+          <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
+          <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+
+          <script>
+           var chart; // global
+           var url = location.hostname + ':' + (parseInt(location.port));
+           var ws = new WebSocket('ws://' + url + '/websocket');
+           ws.onmessage = function(msg) {
+               add_point(msg.data);
+           };
+
+           // ws.onclose = function() { alert('Connection closed.'); };
+
+           var add_point = function(point) {
+               var series = chart.series[0],
+    	       shift = series.data.length > %d;
+
+               chart.series[0].addPoint(eval(point), true, shift);
+           };
+
+           $(document).ready(function() {
+               chart = new Highcharts.Chart(JSON.parse('%s'));
+           });
+          </script>
+
+        </head>
+        <body>
+            <div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
+        </body>
+      </html>
+    #+END_SRC
+
+    In essence this page expects to read a stream of values from a
+    websocket at =ws://localhost:8888/hostname= -- although it is
+    smart enough to change the =localhost:8888= if you are serving
+    this to another location -- and plot them in real time using
+    =highcharts.js=.
+
+    The attentive reader may notice that the above is not quite HTML
+    but rather a python formatted string. That is for two
+    reasones. First because the script handles the configuration (see
+    =chart = new Highcharts.Chart(JSON.parse('%s'));=). Second because
+    the width of the graph will is calulated at page load time and the
+    plot needs to be shifted to only show the most recent points.
+
+    #+BEGIN_SRC sh
+      $ for i in {1..100}; do echo $i;  sleep  1; done | \
+          awk -oL "{print \$1/100}" | \
+          python webmonitor.py
+    #+END_SRC
+
+    This will produce, in 1 second intervals, numbers from 1
+    to 100. Then it normalizes them using =awk= and feeds them to
+    webmonitor. After this command executes we can open the browser
+    and then navigate to =localhost:8888=.
+
+    # XXX: Screenshot
+
+    We utilize this to remotely monitor the total size of data that
+    =mysql= consumes.
 
 *** xml-parse.sh
 
@@ -319,3 +412,7 @@
    and therefore the project was eventually abandoned. Namely for the
    full wikipedia dump of July 2014 the load time for the Barack
    Obama, not taking advantage of caching was at the order of ~30s.
+
+* Appendix (script sources)
+
+  #+INCLUDE: sources.org

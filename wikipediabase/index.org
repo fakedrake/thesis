@@ -308,7 +308,22 @@
 #+END_SRC
 
 * Backend databases
+
+  Wikipediabase uses primarily a remote data store that implements the
+  mediawiki interface and attempts to deal with the arising
+  performance issues by aggressively caching pages to a backend
+  key-value based database. The interface with the database is
+  abstracted by using a python-style dictionary interface.
+
 ** DBM
+
+   Several dbm implementations are provided by the python standard
+   library. These include:
+
+*** ndbm
+
+
+
 ** SQLite
 ** Redis
 ** Postgres
@@ -326,7 +341,17 @@
    # XXX: Short overview of the API infrastructure.
    # https://www.mediawiki.org/wiki/API:Main_page
 
+   Mediawiki provides an API for all the required functionality.
+
+*** Performance
+
 ** Dumps / Database
+
+   Direct interface with a local database, besides caching using mdb
+   and/or sqlite was not implemented as part of the thesis. However
+   shotrly after caching and compile time data pools in redis and
+   postrgres were implemented.
+
 * Date parser
   #+INCLUDE: dateparser.org
 * Future

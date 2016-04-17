@@ -34,3 +34,11 @@
   with the technique of natural language annotation, these modules put
   the power of sentence-level natural language processing to use in the
   service of multi-media information access.
+
+* Omnibase
+
+* Wikipedia
+
+* WikipediaBase
+
+* Wikipedia mirror
