@@ -1,0 +1,23 @@
+* Overview [0%]
+** TODO Introduction for each project
+* Wikipediabase [0%]
+** TODO People
+** TODO Code examples from wikipediabase
+** TODO Unit test examples
+** TODO DBM databases supported by python
+** TODO Sqlite
+** TODO Redis
+** TODO Postgres usage
+** TODO mediawikie Api overview
+* WikipediaMirror [0%]
+** TODO Mediawiki description from wikipedia.
+** TODO Bitnami
+** TODO Makefile functions
+** TODO Ashmore specifics
+** TODO Attempts at optimizing MySQL
+
+* References [0%]
+** TODO Links to the elements of the stack
+** TODO Links to the elements of the wikipediabase stack
+** TODO Links to the makefile tutorial
+** TODO Omnibase papers
