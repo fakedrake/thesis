@@ -74,7 +74,6 @@
   what one would use were they to use wikipediabase as a python
   library. The methods provided by an infobox are:
 
-  # SUGGESTION: retrieve infoboxes in a list.
   - types :: Because we retrieve an infobox based on a symbol name (ie
        page name), a single =Infobox= may actually be an interface for
        multiple infoboxes. There is a separate method, based on this
@@ -86,7 +85,10 @@
          v^m_i\)
        - the entire infobox rendered, or in markup form.
 
-* Infobox tree
+  Infoboxes are organized in a wide hierarchy that in the
+  WikiepdiaBase codebase is refered to as infobox tree. The infobox
+  tree is retrieved from the [[https://en.wikipedia.org/wiki/Wikipedia:List_of_infoboxes][list of infoboxes]] wikipedia page and is
+  used to deduce the ontology of wikipedia terms.
 
 * MetaInfobox
 
@@ -111,7 +113,8 @@
 * Article
 
   The =Article= data structure is responsible for accessing any
-  resource relevant to the article at large.
+  resource relevant to the article at large. This includes paragraphs,
+  headings, markup source and the mediawiki categores.
 
 * Fetcher
 
@@ -155,17 +158,15 @@
   objects end up being used only my =MetaInfobox= which has quite a
   limited scope, making thus cache misses rarely.
 
-* Caching
-
-  TODO, check what alvaro did with this
-
-* Logging
-
-* Utilities
-
-** General
-
-** Database utilities
+  An interesting anecdote about the =Renderer= class was that it was
+  the reason for a couple of CSAIL IPs to get temporarily banned from
+  editing wikipedia. While wikipedia.org has a very lenient policy
+  when it comes to banning people who are spamming their servers,
+  repeated testing of the =Renderer= class targeting wikipedia's
+  [[https://en.wikipedia.org/wiki/Wikipedia:Sandbox][sandbox]] caused the testing machine's ip to be temporarily banned on
+  the grounds that "its activity does not promote the imporovement of
+  wikipedia". We reimplemented the =Renderer= to use the wikipedia API
+  and we never had a problem with wikipedia moderation again.
 
 * Pipeline
 
@@ -363,20 +364,34 @@
 ** Resolvers
 
    Resolvers are also singletons but their purpose is to find the
-   value of the requested property.
+   value of the requested property. All resolvers descend from
+   =BaseResolver= and should implement the following methods:
 
-*** Error
+   - =resolve(class, symbol, attribute)=: get the value of the
+     =attribute= of symbol =symbol= as =class=
+   - =attributes(class, symbol)=: get a list of the attributes this
+     resolver can resolve.
 
-*** Infobox
+   The implemented resolvers are the following:
 
-*** Person
-
-*** Section
-
-*** Term
-
-    If the article matches one or more of the following categories:
-
+   - Error :: the minimum priority resolver, it will always resolve to
+        an error.
+   - Infobox :: Resolve attributes found on infoboxes of a symbol.
+   - Person :: resolve the following specific attributes of symbols
+        referring to people:
+     - =birth-date=
+     - =death-date=
+     - =gender=
+   - Sections :: resolve the content of sections in an article.
+   - Term :: Can resolve a fixed set of ad-hoc attributes:
+     - =coordinates= /The coordinates of a geographical location/
+     - =image= /The image in the infobox/
+     - =number= /True if the symbol is plural (eg The Beatles)/
+     - =proper= /True if it refers to a unique entity./
+     - =short-article= /A summary of the article. Typically the first
+       paragraph/
+     - =url= /The article url/
+     - =word-cout= /The size of the article/
 
 ** Lisp types
 

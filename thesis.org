@@ -4,29 +4,23 @@
 #+EMAIL:       cperivol@csail.mit.edu
 #+DESCRIPTION: Making sense of semi structured data in wikipedia.
 #+KEYWORDS:
+#+LATEX_CLASS: report
 #+LANGUAGE:    en
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
-* Acknowledgements
-
 * Abstract
 
   MiT InfoLab's START (SynTactic Analysis using Reversible
-  Transformations) is the worlds first question answering system. It
-  was developed in the early 80s and went online in 1993. For
-  accessing most data sources it takes advantage of, START depends on
-  Omnibase, the /"virtual database"/ providing uniform access to
-  multiple sources on the web. Wikipedia surfaced at about the same
-  time as Omnibase, during the early 00s, and did not gain popularity
-  until the mid 00s. So, while wikipedia can provide a vast amount of
-  information, Omnibase does not include it in it's data sources. Our
-  work is divided in two parts: WikipediaBase, and wikipedia
-  mirror. WikipediaBase provides START access to information in
-  wikipedia with an interface similar to Omnibase's. Wikipedia mirror
-  is a program that automates the creation of wikipedia.org mirrors on
-  a local machine, to provide control and unrestricted access to the
-  dataset without depending or abusing wikipedia.org.
+  Transformations) is the worlds first question answering system. For
+  accessing most data sources it takes advantage of Omnibase, the
+  /"virtual database"/ providing uniform access to multiple sources on
+  the web. We developed WikipediaBase to provide an Omnibase-like way
+  for START to access unstructured and semi-structured information in
+  Wikipedia. As part of this goal we also created wikipedia-mirror, a
+  program to create Wikipedia clones that can be run locally, to
+  provide control and unrestricted access to the wikpedia dataset
+  without depending on or abusing wikipedia.org.
 
 * Introduction
   #+INCLUDE: "./introduction.org"

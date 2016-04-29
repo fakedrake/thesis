@@ -11,19 +11,22 @@
 * Introduction
 
   WikipediaBase base is a backend to START responsible for providing
-  access to wikipedia related information. The WikipediaBase we refer
-  to is a python rewrite of the now deprecated Ruby WikipediaBase.
+  access to wikipedia related information, that mimics the API
+  interface provided by the Omnibase. Wikipediabase has gone through a
+  couple of rewrites. The initial version was written in Java. It was
+  then rewritten in Ruby copying the original architecture and design
+  and now it is rewritten in python and rearchitectured from
+  scratch. There are two main reasons for this: python is taught as a
+  pre-graduate course in MiT, and therefore a Python codebase will make
+  initiation of new MiT students smoother and, more importantly, while
+  the initial design of the previous WikipediaBase should have been
+  adequate, it grew to a point where the code was ad-hoc and hard to
+  understand, reason about and extend.
 
-
-* People
-
-  # TODO: rephrase this
   The python implementation was initially written by Chris
-  Perivolaropoulos and was eventually handed over to
-
-  - Alvaro Morales
-  - Michael Silver
-  # TODO: add the rest of the people
+  Perivolaropoulos in close association with Dr Sue Felshin and was
+  eventually handed over to Sue Felshin, Alvaro Morales and Michael
+  Silver. Other students have also joined the project shortly after.
 
 * Functionality
 
@@ -93,146 +96,7 @@
 
 * Provider/Acquirer model
 
-  WikipediaBase attempts to be modular and extendible. To accomplish
-  this it is often useful to multiplex multiple sources of the same
-  type of data resource. This is particularly useful when accessing
-  heuristic methods like classifier. To promote modularity and to
-  avoid hard dependencies the provider/acquirer model was created:
-
-  A =Provider= is an object though which we can access resources that
-  are stored in a key-value fashion. The =Provider= class offers
-  facilities like decorators to make this provision easy. An
-  =Acquirer= has transparent access to the resources of multiple
-  =Provider= s as if they were a single key value store. This pattern
-  is most notably used for the =KnowledgeBase= to provide the
-  =Frontend= with the way of accessing resoruces.
-
-
-** TODO Example
-
-   We demostrate the pattern with an example: we will embed a small
-   lisp to python
-
-   #+BEGIN_SRC python
-     from wikipediabase.provider import Provider, Acquirer, provide
-
-
-     class EvalContext(Acquirer):
-         def __init__(self, closures):
-             super(EvalContext, self).__init__(closures)
-             self.closures = closures
-
-         def __call__(self, _ctx, expr):
-             if isinstance(expr, list):
-                 # Handle quotes
-                 if expr[0] is 'quote':
-                     return expr[1]
-
-                 # Call the lambda
-                 fn = self(_ctx, expr[0])
-                 return fn(self, *[self(_ctx, e) for e in expr[1:]])
-
-             if isinstance(expr, basestring) and expr in self.resources():
-                 return self(_ctx, self.resources()[expr])
-
-             return expr
-
-
-     class Lambda(Acquirer):
-         def __init__(self, args, expr, env):
-             # Get your symbols from all the available closures plus an
-             # extra for local variables
-             super(Lambda, self).__init__([env] + [Symbols()])
-             self.args = args
-             self.expr = expr
-
-         def __call__(self, _ctx, *args):
-             # Add another closure to the list
-             arg_provider = Provider();
-             for s, v in zip(self.args, args):
-                 arg_provider.provide(s, v)
-
-             # Build an eval context and run it
-             ctx = EvalContext([arg_provider, Provider(self.resources())])
-             return [ctx(ctx, e) for e in self.expr][-1]
-
-     class Symbols(Provider):
-         @provide('setq')
-         def setq(self, ctx, symbol, val):
-             self.provide(symbol, val)
-
-     class Builtins(Provider):
-         @provide('lambda')
-         def _lambda(self, ctx, args, *body):
-             return Lambda(args, list(body), Provider(ctx.resources()))
-
-         @provide('if')
-         def _if(self, ctx, proposition, then, _else):
-             if ctx(ctx, proposition):
-                 return ctx(ctx, then)
-             else:
-                 return ctx(ctx, _else)
-
-     GLOBAL_EVAL = EvalContext([Builtins(), Symbols()])
-   #+END_SRC
-
-   This little lisp supports:
-
-   - lambdas
-   - A global symbol table
-   - lexical scoping
-   - conditionals
-   - Quoted literals
-
-   It really is very far from being remotely close to a usable
-   language but it can do some cute tricks:
-
-   We can evaluate python types:
-
-   #+BEGIN_SRC python
-     >>> GLOBAL_EVAL({}, 1)
-     1
-     >>> GLOBAL_EVAL({}, True)
-     True
-     >>> GLOBAL_EVAL({}, "hello")
-     'hello'
-     >>> GLOBAL_EVAL({}, list)
-     <type 'list'>
-   #+END_SRC
-
-   We can define lambdas and call them. The following is equivalent to
-   \((\lambda a. a) 1\), which should evaluate to =1=:
-
-   #+BEGIN_SRC python
-     >>> GLOBAL_EVAL({}, [["lambda", ['quote', ['a']], 'a'], 1])
-     1
-   #+END_SRC
-
-   Our little lisp is not pure since we have a global symbol
-   table. The best way to sequence expressions is to wrap them all up
-   in a =lambda= and then evaluate that:
-
-   #+BEGIN_SRC python
-     >>> GLOBAL_EVAL({}, [['lambda', ['quote', []], ['setq', 'b', 2], 'b']])
-     2
-   #+END_SRC
-
-   The attentive reader may have noticed the quoted list for lambda
-   arguments. The reason is that we do not want the list to be
-   evaluated.
-
-   Back on our main subject. At each point in the code of our embedded
-   lisp symbols derive meaning from multiple sources:
-
-   - The local closure
-   - The arguments of the lambda
-   - Builtin functions
-
-   All the above are abstracted using the provider-aquirer model. At
-   each point a different =EvaluationContext= is responsible for
-   evaluating and each =EvaluationContext= has access to it's known
-   symbols via an array of providers that are abstracted using the
-   discussed model.
+  #+INCLUDE: provider.org
 
 * Testing
 ** Unit testing
@@ -257,6 +121,184 @@
     regression tests currently reside in =tests/examples.py=
 
 ** TODO Examples
+
+   Virtually all tests begin witht he following snippet:
+
+   #+BEGIN_SRC python
+     from __future__ import unicode_literals
+
+     try:
+         import unittest2 as unittest
+     except ImportError:
+         import unittest
+
+     from wikipediabase import fetcher
+   #+END_SRC
+
+   The above is specific for the =fetcher= module. As is apparent we
+   are using the =unittest= module from the standard python
+   library. The test itself has the following format:
+
+   #+BEGIN_SRC python
+     class TestFetcher(unittest.TestCase):
+
+         def setUp(self):
+             self.fetcher = fetcher.get_fetcher()
+
+         def test_html(self):
+             html = self.fetcher.html_source("Led Zeppelin")
+             self.assertIn("Jimmy Page", html)
+
+   #+END_SRC
+
+   The =setUp= method runs before each test of the =TestCase=. Tests
+   of the testcase are represented by methods of the class whose name
+   begins with =test_=. In this particular case we are getting the
+   wikipedia page for Led Zeppelin and making sure the name of Jimmy
+   Page is mentioned at least once. This is obviously not conclusive
+   that fetcher did not for example bring up the page for The
+   Yardbirds, Page's first band. For this reason we write a couple of
+   these sort of tests. In the case of the fetcher, to stick with the
+   example, the entire test is:
+
+   #+BEGIN_SRC python
+     class TestFetcher(unittest.TestCase):
+         def setUp(self):
+             self.fetcher = fetcher.get_fetcher()
+
+         def test_html(self):
+             html = self.fetcher.html_source("Led Zeppelin")
+             self.assertIn("Jimmy Page", html)
+
+         def test_markup_source(self):
+             src = self.fetcher.markup_source("Led Zeppelin")
+             self.assertIn("{{Infobox musical artist", src)
+
+
+         def test_unicode_html(self):
+             html = self.fetcher.html_source(u"Rhône")
+             self.assertIn("France", html)
+
+         def test_unicode_source(self):
+             src = self.fetcher.markup_source("Rhône")
+             self.assertIn("Geobox|River", src)
+
+         def test_silent_redirect(self):
+             # redirects are only supported when force_live is set to True
+             src = self.fetcher.markup_source("Obama", force_live=True)
+             self.assertFalse(re.match(fetcher.REDIRECT_REGEX, src))
+   #+END_SRC
+
+   We wrote multiple such tests to test every part of WikipediaBase.
+
+** Running tests
+
+   We employ the =nosetests= tool to find and run our tests. To do so
+   we add a test requirement in =setup.py= and assign =nose.collector=
+   to manage our test suite:
+
+   #+BEGIN_SRC python
+     from setuptools import setup
+
+     setup(
+         tests_require=[
+             'nose>=1.0',
+             ...
+         ],
+         ...
+         test_suite='nose.collector',
+         ...
+     )
+   #+END_SRC
+
+   Then to run the tests
+
+   #+BEGIN_SRC sh
+     $ python setup.py test
+   #+END_SRC
+
+   Nose will find all files that are in =tests/= and have the prefix
+   =test_=, for example =test_fetcher.py=. Inside those files nose
+   looks into classes that subclass =TestCase= and whose name begins
+   with =Test=, for example =TestFetcher=. It then runs all methods of
+   the collected classes that have the =test_= prefix.
+
+   It is also possible to run specific tests.
+
+   #+BEGIN_SRC sh
+     $ python setup.py test --help
+     Common commands: (see '--help-commands' for more)
+
+       setup.py build      will build the package underneath 'build/'
+       setup.py install    will install the package
+
+     Global options:
+       --verbose (-v)  run verbosely (default)
+       --quiet (-q)    run quietly (turns verbosity off)
+       --dry-run (-n)  don't actually do anything
+       --help (-h)     show detailed help message
+       --no-user-cfg   ignore pydistutils.cfg in your home directory
+
+     Options for 'test' command:
+       --test-module (-m)  Run 'test_suite' in specified module
+       --test-suite (-s)   Test suite to run (e.g. 'some_module.test_suite')
+       --test-runner (-r)  Test runner to use
+
+     usage: setup.py [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+        or: setup.py --help [cmd1 cmd2 ...]
+        or: setup.py --help-commands
+        or: setup.py cmd --help
+   #+END_SRC
+
+   For example:
+
+   #+BEGIN_SRC sh
+     $ python setup.py test -s tests.test_lispify
+     running test
+     running egg_info
+     writing requirements to wikipediabase.egg-info/requires.txt
+     writing wikipediabase.egg-info/PKG-INFO
+     writing top-level names to wikipediabase.egg-info/top_level.txt
+     writing dependency_links to wikipediabase.egg-info/dependency_links.txt
+     writing entry points to wikipediabase.egg-info/entry_points.txt
+     reading manifest file 'wikipediabase.egg-info/SOURCES.txt'
+     reading manifest template 'MANIFEST.in'
+     writing manifest file 'wikipediabase.egg-info/SOURCES.txt'
+     running build_ext
+     test_bool (tests.test_lispify.TestLispify) ... ok
+     test_bool_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_date_multiple_voting (tests.test_lispify.TestLispify) ... ok
+     test_date_simple (tests.test_lispify.TestLispify) ... ok
+     test_date_with_range (tests.test_lispify.TestLispify) ... ok
+     test_dict (tests.test_lispify.TestLispify) ... ok
+     test_dict_with_escaped_string (tests.test_lispify.TestLispify) ... ok
+     test_dict_with_list (tests.test_lispify.TestLispify) ... ok
+     test_double_nested_list (tests.test_lispify.TestLispify) ... ok
+     test_error (tests.test_lispify.TestLispify) ... ok
+     test_error_from_exception (tests.test_lispify.TestLispify) ... ok
+     test_keyword (tests.test_lispify.TestLispify) ... ok
+     test_keyword_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_list (tests.test_lispify.TestLispify) ... ok
+     test_list_of_dict (tests.test_lispify.TestLispify) ... ok
+     test_list_of_dict_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_list_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_nested_list (tests.test_lispify.TestLispify) ... ok
+     test_none (tests.test_lispify.TestLispify) ... ok
+     test_none_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_number (tests.test_lispify.TestLispify) ... ok
+     test_number_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_string (tests.test_lispify.TestLispify) ... ok
+     test_string_escaped (tests.test_lispify.TestLispify) ... ok
+     test_string_not_keyword (tests.test_lispify.TestLispify) ... ok
+     test_string_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_unicode_string (tests.test_lispify.TestLispify) ... ok
+
+     ----------------------------------------------------------------------
+     Ran 27 tests in 0.047s
+
+     OK
+   #+END_SRC
+
 * Synonyms
 
   Before we talk about synonyms it is important to concretely define
@@ -436,20 +478,125 @@
   mediawiki interface and attempts to deal with the arising
   performance issues by aggressively caching pages to a backend
   key-value based database. The interface with the database is
-  abstracted by using a python-style dictionary interface.
+  abstracted by using a python-style dictionary interface, which is
+  implemented in =persistentkv.py=. Implemented backends are presented
+  below, but it is trivial to provide any backend one can come up
+  with.
+
+  Another feature that the interface to the database should be able to
+  handle is the encoding of the saved objects. Because virtually all
+  of the stored data is text, the underlying database should be able
+  to reliably retrieve exactly the text that was saved, taking into
+  account the encoding. Because of DBM's limitation that keys should
+  only be ASCII encoded the base class for interfacing with the
+  database, =EncodedDict=, implements the =_encode_key= and
+  =_decode_key= methods (that default to identity functions) to
+  provide an easy hook for implementations to deal with this possible
+  issue.
 
 ** DBM
 
    Several dbm implementations are provided by the python standard
-   library. These include:
+   library. None of the implementations shipped with python are part
+   of the python standard library itself however. Some of the DBM
+   implementations that are available via the standard python library
+   are:
 
-*** ndbm
+   - AnyDBM
+   - GNU DBM
+   - Berkeley DBM
+
+   It is worth noting that the performance and smooth functioning of
+   these libraries is highly dependent on the underlying platform.
+
+   As mentioned above, the interface classes to DBM transcode keys to
+   ASCII. The precise way that is done is:
+
+   #+BEGIN_SRC python
+         def _encode_key(self, key):
+             if isinstance(key, unicode):
+                 return key.encode('unicode_escape')
+
+             return str(key)
+
+         def _decode_key(self, key):
+             return key.decode('unicode_escape')
+
+   #+END_SRC
 
 ** SQLite
-** Redis
-** Postgres
+
+   SQLite was also considered as caching backend
+   database. Unfortunately it's perfomance for our particular purpose
+   was disappointing.
+
+   We used a very thin wrapper, =sqlitedict=, to get a key-value
+   interface to SQLite -- a relational database. The related
+   WikipediaBase code is very short:
+
+   #+BEGIN_SRC python
+     from sqlitedict import SqliteDict
+
+     class SqlitePersistentDict(EncodedDict):
+         def __init__(self, filename, configuration=configuration):
+             if not filename.endswith('.sqlite'):
+                 filename += '.sqlite'
+
+             db = SqliteDict(filename)
+             super(SqlitePersistentDict, self).__init__(db)
+
+         def sync(self):
+             self.db.close()
+             super(SqlitePersistentDict, self).sync()
+   #+END_SRC
+
+   Below are two benchmark functions that will read/write 100000 times
+   to a key-value database.
+
+   #+BEGIN_SRC python
+     def benchmark_write(dic, times=100000):
+         for i in xrange(times):
+             dic['o' + str(i)] = str(i) * 1000
+
+     def benchmark_read(dic, times=100000):
+         for i in xrange(times):
+             dic['o' + str(i)]
+   #+END_SRC
+
+   And here they are run over memory based =tmpfs= on deban.
+
+   #+BEGIN_SRC python
+     >>> import timeit
+     >>> sqlkv = SqlitePersistentDict('/tmp/bench1.sqlite')
+     >>> timeit.timeit(lambda : benchmark_write(sqlkv), number=100)
+     10.847157955169678
+     >>> timeit.timeit(lambda : benchmark_read(sqlkv), number=100)
+     18.88098978996277
+     >>> dbmkv = DbmPersistentDict('/tmp/bench.dbm')
+     >>> timeit.timeit(lambda : benchmark_write(dbmkv), number=100)
+     0.18030309677124023
+     >>> timeit.timeit(lambda : benchmark_read(dbmkv), number=100)
+     0.14914202690124512
+   #+END_SRC
+
+   The DBM database is nearly 10 times faster than sqlite. The
+   difference in perfomance is due to the different committing
+   policies of the two. It might be possible to callbrate SQLite to be
+   as fast as DBM but not in any trivial way.
+
+** Other backends
+
+   Other backends were considered, most notably Redis which was
+   actually implemented shortly after the project handoff by Alvaro
+   Morales. The reason we did not initially use it was that it is
+   modeled as a server-client which adds complexity to an aspect of
+   the system that should be as simple as possible. Another reason for
+   our initial skepticism towards third party -- ie. not shipped with
+   python -- databases was to avoid extra dependencies, especially
+   when they are the cool database du jour.
+
 * Data sources
-** HTML
+** HTML and MediaWiki API
 
    The initial approach to getting the data is to retrieve the normal
    HTML versions of wikipedia articles and using edit pages to
@@ -457,14 +604,29 @@
    wikipedia.org site for performance reasons (See wikipedia-mirror
    runtime performance section).
 
-** API
+   Mediawiki provides a RESTful API for all the required
+   functionality. The basic premise is that one can send requests with
+   =POST= or =GET= methods and get a response formulated in XML or
+   JSON. The prefered response type for WikipediaBase was sending
+   =GET= HTTP requests to receive =JSON= data. =GET= was selected
+   because it is explicitly suggested in the mediawiki API page
+   because caching happens at the HTTP level.
 
-   # XXX: Short overview of the API infrastructure.
-   # https://www.mediawiki.org/wiki/API:Main_page
+   #+BEGIN_QUOTE
+   Per the HTTP specification, POST requests cannot be
+   cached. Therefore, whenever you're reading data from the web
+   service API, you should use GET requests, not POST.
 
-   Mediawiki provides an API for all the required functionality.
+   Also note that a request cannot be served from cache unless the URL is
+   exactly the same. If you make a request for
+   api.php?....titles=Foo|Bar|Hello, and cache the result, then a request
+   for api.php?....titles=Hello|Bar|Hello|Foo will not go through the
+   cache  even though MediaWiki returns the same data!
+   #+END_QUOTE
 
-*** Performance
+   =JSON= was selected simply because the python =json= package in the
+   standard library is much easier to use than =lxml=, the library we
+   use for XML/HTML parsing.
 
 ** Dumps / Database
 

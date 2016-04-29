@@ -11,15 +11,19 @@
 Dateparser resides in a separate package called overlay-parse
 
 * Parsing with overlays
-  # TODO: Make this a bit clearer
 
   The concept of an overlay was inspired by emacs overlays. They are
   objects that specify the behavior of a subset of a text, by
-  assigning properties to it. An overlay over a text \(t\) in our
-  context is tuple of the range within that text, a set of tags that
-  define semantic sets that the said substring is a member of, and
-  arbitrary information (of type \(A\)) that the underlying text
-  describes. More formally:
+  assigning properties to it, making for example text clickable or
+  highlighted. An overlay over part of text \(t\) in our context is
+
+  - a tuple representing the range within that text
+  - a set of tags that define semantic sets that the said substring is
+    a member of
+  - arbitrary information (of type \(A\)) that the underlying text
+    describes.
+
+  More formally:
 
   #+BEGIN_EXPORT latex
   \begin{align*}
@@ -71,7 +75,32 @@ Dateparser resides in a separate package called overlay-parse
   to match patterns like \(22/07/1991\), where \(Separator(/)\)
   matches only the character "/"
 
-* The implementation
-** Comparison
+
 * The dates example
-* Benchmarks
+
+  The working example and motivation of the package is date
+  parsing. The =dates= submodule is itself about 200 lines of code
+  exposes two main entry points:
+
+  - =just_dates= that looks for dates in a text.
+  - =just_ranges= that looks for data ranges in a corpus.
+
+  Below are presented some examples. Note that =0= means =unspecified=
+
+  #+BEGIN_SRC python
+    >>> from overlay_parse.dates  import just_dates, just_ranges, just_props
+    >>> just_dates("Timestamp: 22071991: She said she was \
+            coming on april the 18th, it's 26 apr 2014 and hope is leaving me.")
+    ... [(22, 7, 1991), (18, 4, 0), (26, 4, 2014)]
+    >>> dates = just_dates("200 AD 300 b.c.")
+    >>> just_dates("200 AD 300 b.c.")
+    [(0, 0, 200), (0, 0, -300)]
+    >>> just_ranges(u"I will be there from 2008 to 2009")
+    [((0, 0, 2008), (0, 0, 2009))]
+    >>> just_ranges("I will stay from July the 20th until today")
+    [((20, 7, 0), (29, 4, 2016))]
+    >>> just_dates('{{Birth date and age|1969|7|10|df=y}}')
+    [(10, 7, 1969)]
+    >>> just_ranges(u'German: [\u02c8v\u0254lf\u0261a\u014b ama\u02c8de\u02d0\u028as \u02c8mo\u02d0tsa\u0281t], English see fn.;[1] 27 January 1756\xa0\u2013 5 December 1791')
+    [((27, 1, 1756), (5, 12, 1791))]
+  #+END_SRC
