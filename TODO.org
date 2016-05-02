@@ -17,7 +17,10 @@
 ** DONE Lisp types
 ** DONE mediawikie Api overview
 ** DONE Dates example
-* WikipediaMirror [0%]
+* WikipediaMirror [25%]
+** TODO Indtoductyion
+** DONE Make subchapters into chapters
+** DONE Reorder chapters
 ** TODO Mediawiki description from wikipedia.
 ** TODO Bitnami
 ** TODO Makefile functions
@@ -39,6 +42,7 @@
     - mwdumper
     - wikipediabase
     - wikpedia mirror
+
 ** TODO Nosetests
 ** TODO Sqlitedict
 ** TODO tmpfs

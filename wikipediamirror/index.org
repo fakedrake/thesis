@@ -8,10 +8,13 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
-
-* The xerces bug
-
-  #+INCLUDE: xerces.org
+Wikipedia mirror is an system aiming to automate the creation of a
+local clone of wikipedia contianing only the articles - that is not
+containing users, discussion and edit history. The automated process
+includes incluses setting up a server, a database and populating
+that database with the wikipedia articles. The purpose for this is
+to provide the option of accessing wikipedia's dataset independently
+of wikipedia.org.
 
 * mediawiki stack overview
 
@@ -134,9 +137,78 @@
 
     Mediawiki is the heart of wikipedia.
 
-** Tools
+* Setting up
 
-   A number of tools were developed in assisting the
+  Following are step by step instructions First, clone the git repo:
+
+  #+BEGIN_SRC sh
+    $ git clone https://github.com/fakedrake/wikipedia-mirror
+    $ cd wikipedia-mirror
+  #+END_SRC
+
+  At this point in theory one can run =make sql-load-dumps= which
+  will take care of stting up everything needed to load the the
+  database dumps into the working SQL database. Of course for that to
+  happen first a couple of steps need to be carried out:
+
+  - Download the wikipedia database dumps in XML format.
+  - Transform them into a format that MySQL understands.
+  - Set up the bitnami stack that includes a local install of MySQL
+  - Load the MySQL dumps into MySQL
+
+  All of these steps are encoded as part of the a dependency
+  hierarchy encoded into makefile targets and are in theory taken
+  care of automatically, effectively yielding a functioning wikipedia
+  mirror. However this process is extremely long fragile so it is
+  advised that each of these steps be run individually by hand.
+
+  First, download and install bitnami. The following command will
+  fetch an executable from the bitnami website and make a local
+  installation of the bitnami stack discussed above:
+
+  #+BEGIN_SRC sh
+    $ make bmw-install
+  #+END_SRC
+
+  Next step is to make sure =maven=, the java is a software project
+  management and comprehension is installed, required to install and
+  setup mwdumper (see below). You can do that by making sure the
+  following succeeds:
+
+  #+BEGIN_SRC text
+    $ mvn --version
+  #+END_SRC
+
+  Note: if running on Ubuntu 14.04, you may need to install Maven
+  (for Java) using =sudo apt-get install maven=.
+
+  Now everything is installed to automatically download Wikipedia's
+  XML dumps and then convert them to SQL using maven. First maven
+  will be downloaded and built. Then the compressed XML dumps will be
+  downloaded from the wikipedia, they will be uncompressed and
+  finally converted to MySQL dumps using =mwdumper=. This is a fairly
+  lengthy process taking 6 to 11 hours on a typical machine:
+
+  #+BEGIN_SRC sh
+    $ make sql-dump-parts
+  #+END_SRC
+
+  After that's done successfully you can load the SQL dumps to the
+  MySQL database.
+
+  #+BEGIN_SRC sh
+    $ make sql-load-parts
+  #+END_SRC
+
+  Finally the
+
+  #+BEGIN_SRC sh
+    $ make mw-extensions
+  #+END_SRC
+
+* Tools
+
+  A number of tools were developed in assisting the
 
 *** page_remover.c
 
@@ -251,75 +323,6 @@
 
 *** xml-parse.sh
 
-** Setting up
-
-   Following are step by step instructions First, clone the git repo:
-
-   #+BEGIN_SRC sh
-     $ git clone https://github.com/fakedrake/wikipedia-mirror
-     $ cd wikipedia-mirror
-   #+END_SRC
-
-   At this point in theory one can run =make sql-load-dumps= which
-   will take care of stting up everything needed to load the the
-   database dumps into the working SQL database. Of course for that to
-   happen first a couple of steps need to be carried out:
-
-   - Download the wikipedia database dumps in XML format.
-   - Transform them into a format that MySQL understands.
-   - Set up the bitnami stack that includes a local install of MySQL
-   - Load the MySQL dumps into MySQL
-
-   All of these steps are encoded as part of the a dependency
-   hierarchy encoded into makefile targets and are in theory taken
-   care of automatically, effectively yielding a functioning wikipedia
-   mirror. However this process is extremely long fragile so it is
-   advised that each of these steps be run individually by hand.
-
-   First, download and install bitnami. The following command will
-   fetch an executable from the bitnami website and make a local
-   installation of the bitnami stack discussed above:
-
-   #+BEGIN_SRC sh
-     $ make bmw-install
-   #+END_SRC
-
-   Next step is to make sure =maven=, the java is a software project
-   management and comprehension is installed, required to install and
-   setup mwdumper (see below). You can do that by making sure the
-   following succeeds:
-
-   #+BEGIN_SRC text
-     $ mvn --version
-   #+END_SRC
-
-   Note: if running on Ubuntu 14.04, you may need to install Maven
-   (for Java) using =sudo apt-get install maven=.
-
-   Now everything is installed to automatically download Wikipedia's
-   XML dumps and then convert them to SQL using maven. First maven
-   will be downloaded and built. Then the compressed XML dumps will be
-   downloaded from the wikipedia, they will be uncompressed and
-   finally converted to MySQL dumps using =mwdumper=. This is a fairly
-   lengthy process taking 6 to 11 hours on a typical machine:
-
-   #+BEGIN_SRC sh
-     $ make sql-dump-parts
-   #+END_SRC
-
-   After that's done successfully you can load the SQL dumps to the
-   MySQL database.
-
-   #+BEGIN_SRC sh
-     $ make sql-load-parts
-   #+END_SRC
-
-   Finally the
-
-   #+BEGIN_SRC sh
-     $ make mw-extensions
-   #+END_SRC
-
 * Mediawiki Extensions
 
   For mediawiki to act like wikipedia a number of extensions are
@@ -378,6 +381,10 @@
 *** Xml sanitizer
 
 *** Article dropper
+
+* The xerces bug
+
+  #+INCLUDE: xerces.org
 * Automation
 
   Creating a wikipedia mirror may seem like a straight forward task
