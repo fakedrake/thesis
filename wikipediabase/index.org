@@ -8,25 +8,24 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
-* Introduction
 
-  WikipediaBase base is a backend to START responsible for providing
-  access to wikipedia related information, that mimics the API
-  interface provided by the Omnibase. Wikipediabase has gone through a
-  couple of rewrites. The initial version was written in Java. It was
-  then rewritten in Ruby copying the original architecture and design
-  and now it is rewritten in python and rearchitectured from
-  scratch. There are two main reasons for this: python is taught as a
-  pre-graduate course in MiT, and therefore a Python codebase will make
-  initiation of new MiT students smoother and, more importantly, while
-  the initial design of the previous WikipediaBase should have been
-  adequate, it grew to a point where the code was ad-hoc and hard to
-  understand, reason about and extend.
+WikipediaBase base is a backend to START responsible for providing
+access to wikipedia related information, that mimics the API
+interface provided by the Omnibase. Wikipediabase has gone through a
+couple of rewrites. The initial version was written in Java. It was
+then rewritten in Ruby copying the original architecture and design
+and now it is rewritten in python and rearchitectured from
+scratch. There are two main reasons for this: python is taught as a
+pre-graduate course in MiT, and therefore a Python codebase will make
+initiation of new MiT students smoother and, more importantly, while
+the initial design of the previous WikipediaBase should have been
+adequate, it grew to a point where the code was ad-hoc and hard to
+understand, reason about and extend.
 
-  The python implementation was initially written by Chris
-  Perivolaropoulos in close association with Dr Sue Felshin and was
-  eventually handed over to Sue Felshin, Alvaro Morales and Michael
-  Silver. Other students have also joined the project shortly after.
+The python implementation was initially written by Chris
+Perivolaropoulos in close association with Dr Sue Felshin and was
+eventually handed over to Sue Felshin, Alvaro Morales and Michael
+Silver. Other students have also joined the project shortly after.
 
 * Functionality
 
@@ -34,61 +33,47 @@
 
 * Getting started
 
-  The WikipediaBase implementation that we refer to is written in
-  python. Previous implementations were written in Java and Ruby but
-  the language of choice for the rewrite was python for multiple
-  reasons:
+  The entire WikipediaBase resides in a git repository in infolab's
+  github orginization page
 
-
-  - Python is in the pre-graduate curriculum of MIT computer science
-    department. This will ease the learning curve of new members of
-    Infolab.
-  - Python is a easy to learn and mature language with a rich and
-    evolving ecosystem. This fact eases the introduction of new
-    maintainers even further.
-
-
-   The entire WikipediaBase resides in a git repository in infolab's
-   github orginization page
-
-   #+BEGIN_SRC sh
+  #+BEGIN_SRC sh
      git clone git@github.com:infolab-csail/WikipediaBase
-   #+END_SRC
+  #+END_SRC
 
 
-   WikipediaBase depends on multiple other python
-   packages. Fortunately, python is shipped not only with a great
-   package manager, but also with a mechanism called virtualenv that
-   isolates installations of a project's dependencies from the rest of
-   the system, thus avoiding problems like version or namespace
-   collisions. The way this effectively works is that the global
-   python installation is half copied half symlinked to a local
-   directory and the dependencies are installed only in the local
-   sandbox. To create and activate a python virtualenv:
+  WikipediaBase depends on multiple other python
+  packages. Fortunately, python is shipped not only with a great
+  package manager, but also with a mechanism called virtualenv that
+  isolates installations of a project's dependencies from the rest of
+  the system, thus avoiding problems like version or namespace
+  collisions. The way this effectively works is that the global
+  python installation is half copied half symlinked to a local
+  directory and the dependencies are installed only in the local
+  sandbox. To create and activate a python virtualenv:
 
-   #+BEGIN_SRC sh
+  #+BEGIN_SRC sh
    $ virtualenv --no-site-packages py
    $ . py/bin/activate
    $ which python
    /the/local/directory/py/bin/python
-   #+END_SRC
+  #+END_SRC
 
-   Now that we can safely install anything we want without breaking
-   any global installation
+  Now that we can safely install anything we want without breaking
+  any global installation
 
-   #+BEGIN_SRC sh
+  #+BEGIN_SRC sh
    pip install -r requirements.txt
-   #+END_SRC
+  #+END_SRC
 
-   We will need some extra stuff for WikipediaBase to work:
+  We will need some extra stuff for WikipediaBase to work:
 
-   - Postresql
-   - Redis
+  - Postresql
+  - Redis
 
-   The installation process of these packages varies across
-   platforms. Both are databases. Their purpose is for caching
-   repeated computations and for storing ahead-of-time computation
-   like infobox markup name to rendered name maps and synonyms.
+    The installation process of these packages varies across
+    platforms. Both are databases. Their purpose is for caching
+    repeated computations and for storing ahead-of-time computation
+    like infobox markup name to rendered name maps and synonyms.
 
 * Architecture
 
@@ -384,8 +369,8 @@
 
    - Generate both versions, with and without paren. Eg given symbol
      "Raven (journal)" generate both:
-       - "Raven (journal)"
-       - "Raven"
+     - "Raven (journal)"
+     - "Raven"
 
    - Generate before and after slash, but not the original symbol, e.g.:
      - Given symbol "Russian language/Russian alphabet" generate both
@@ -417,7 +402,7 @@
    And then from the SQL db to find all (good and bad) synonyms to
    Bill Clinton you can:
 
-  #+BEGIN_SRC sql
+   #+BEGIN_SRC sql
     mysql> select page_title, rd_title from redirect join page on rd_from = page_id and (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
     +-------------------------------------+--------------+
     | page_title                          | rd_title     |
@@ -470,7 +455,7 @@
     | William_Jefferson_Clinton           | Bill_Clinton |
     +-------------------------------------+--------------+
     46 rows in set (11.77 sec)
-#+END_SRC
+   #+END_SRC
 
 * Backend databases
 

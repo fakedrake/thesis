@@ -8,10 +8,13 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
-
-* The xerces bug
-
-  #+INCLUDE: xerces.org
+Wikipedia mirror is an system aiming to automate the creation of a
+local clone of wikipedia contianing only the articles - that is not
+containing users, discussion and edit history. The automated process
+includes incluses setting up a server, a database and populating
+that database with the wikipedia articles. The purpose for this is
+to provide the option of accessing wikipedia's dataset independently
+of wikipedia.org.
 
 * mediawiki stack overview
 
@@ -134,9 +137,78 @@
 
     Mediawiki is the heart of wikipedia.
 
-** Tools
+* Setting up
 
-   A number of tools were developed in assisting the
+  Following are step by step instructions First, clone the git repo:
+
+  #+BEGIN_SRC sh
+    $ git clone https://github.com/fakedrake/wikipedia-mirror
+    $ cd wikipedia-mirror
+  #+END_SRC
+
+  At this point in theory one can run =make sql-load-dumps= which
+  will take care of stting up everything needed to load the the
+  database dumps into the working SQL database. Of course for that to
+  happen first a couple of steps need to be carried out:
+
+  - Download the wikipedia database dumps in XML format.
+  - Transform them into a format that MySQL understands.
+  - Set up the bitnami stack that includes a local install of MySQL
+  - Load the MySQL dumps into MySQL
+
+  All of these steps are encoded as part of the a dependency
+  hierarchy encoded into makefile targets and are in theory taken
+  care of automatically, effectively yielding a functioning wikipedia
+  mirror. However this process is extremely long fragile so it is
+  advised that each of these steps be run individually by hand.
+
+  First, download and install bitnami. The following command will
+  fetch an executable from the bitnami website and make a local
+  installation of the bitnami stack discussed above:
+
+  #+BEGIN_SRC sh
+    $ make bmw-install
+  #+END_SRC
+
+  Next step is to make sure =maven=, the java is a software project
+  management and comprehension is installed, required to install and
+  setup mwdumper (see below). You can do that by making sure the
+  following succeeds:
+
+  #+BEGIN_SRC text
+    $ mvn --version
+  #+END_SRC
+
+  Note: if running on Ubuntu 14.04, you may need to install Maven
+  (for Java) using =sudo apt-get install maven=.
+
+  Now everything is installed to automatically download Wikipedia's
+  XML dumps and then convert them to SQL using maven. First maven
+  will be downloaded and built. Then the compressed XML dumps will be
+  downloaded from the wikipedia, they will be uncompressed and
+  finally converted to MySQL dumps using =mwdumper=. This is a fairly
+  lengthy process taking 6 to 11 hours on a typical machine:
+
+  #+BEGIN_SRC sh
+    $ make sql-dump-parts
+  #+END_SRC
+
+  After that's done successfully you can load the SQL dumps to the
+  MySQL database.
+
+  #+BEGIN_SRC sh
+    $ make sql-load-parts
+  #+END_SRC
+
+  Finally the
+
+  #+BEGIN_SRC sh
+    $ make mw-extensions
+  #+END_SRC
+
+* Tools
+
+  A number of tools were developed in assisting the
 
 *** page_remover.c
 
@@ -251,75 +323,6 @@
 
 *** xml-parse.sh
 
-** Setting up
-
-   Following are step by step instructions First, clone the git repo:
-
-   #+BEGIN_SRC sh
-     $ git clone https://github.com/fakedrake/wikipedia-mirror
-     $ cd wikipedia-mirror
-   #+END_SRC
-
-   At this point in theory one can run =make sql-load-dumps= which
-   will take care of stting up everything needed to load the the
-   database dumps into the working SQL database. Of course for that to
-   happen first a couple of steps need to be carried out:
-
-   - Download the wikipedia database dumps in XML format.
-   - Transform them into a format that MySQL understands.
-   - Set up the bitnami stack that includes a local install of MySQL
-   - Load the MySQL dumps into MySQL
-
-   All of these steps are encoded as part of the a dependency
-   hierarchy encoded into makefile targets and are in theory taken
-   care of automatically, effectively yielding a functioning wikipedia
-   mirror. However this process is extremely long fragile so it is
-   advised that each of these steps be run individually by hand.
-
-   First, download and install bitnami. The following command will
-   fetch an executable from the bitnami website and make a local
-   installation of the bitnami stack discussed above:
-
-   #+BEGIN_SRC sh
-     $ make bmw-install
-   #+END_SRC
-
-   Next step is to make sure =maven=, the java is a software project
-   management and comprehension is installed, required to install and
-   setup mwdumper (see below). You can do that by making sure the
-   following succeeds:
-
-   #+BEGIN_SRC text
-     $ mvn --version
-   #+END_SRC
-
-   Note: if running on Ubuntu 14.04, you may need to install Maven
-   (for Java) using =sudo apt-get install maven=.
-
-   Now everything is installed to automatically download Wikipedia's
-   XML dumps and then convert them to SQL using maven. First maven
-   will be downloaded and built. Then the compressed XML dumps will be
-   downloaded from the wikipedia, they will be uncompressed and
-   finally converted to MySQL dumps using =mwdumper=. This is a fairly
-   lengthy process taking 6 to 11 hours on a typical machine:
-
-   #+BEGIN_SRC sh
-     $ make sql-dump-parts
-   #+END_SRC
-
-   After that's done successfully you can load the SQL dumps to the
-   MySQL database.
-
-   #+BEGIN_SRC sh
-     $ make sql-load-parts
-   #+END_SRC
-
-   Finally the
-
-   #+BEGIN_SRC sh
-     $ make mw-extensions
-   #+END_SRC
-
 * Mediawiki Extensions
 
   For mediawiki to act like wikipedia a number of extensions are
@@ -378,6 +381,10 @@
 *** Xml sanitizer
 
 *** Article dropper
+
+* The xerces bug
+
+  #+INCLUDE: xerces.org
 * Automation
 
   Creating a wikipedia mirror may seem like a straight forward task
@@ -387,275 +394,10 @@
 
 ** Makefiles / laziness
 
-   The most important part of wikipedia-mirror automation is the
-   =make= build system. Make is a build system whereby one can declare
-   required files (targets), dependencies for them, and a set of shell
-   commands that will build those targets. Each target is essentially
-   a finite state machine with two states:
-
-   - A file that exists and is up to date with it's dependencies and
-   - A file that either doesn't exist or it's modification date is
-     older than that of at leas one of it's dependencies.
-
-   And a sequence of shell commands to transition from the latter to
-   the former state.
-
-   For example, save the following as =Makefile= in a project that
-   contains the files =foo.c=, =foo.h=, =bar.c= and =bar.h=:
-
-   #+BEGIN_SRC makefile
-     foo.o: foo.c foo.h
-   	  gcc foo.c -c -o foo.o
-
-     bar.o: bar.c
-         gcc bar.c -c -o bar.o
-
-     foobar: foo.o bar.o
-   	  gcc foo.o bar.o -o foobar
-   #+END_SRC
-
-   this means that to build =foobar= we need =foo.o= and =bar.o=. And
-   to build =foo.o= and =bar.o= we need =foo.c= and =foo.h=, and
-   =bar.c= and =bar.h= respectively. We also provide commands for
-   building =foo.o=, =bar.o= and =foobar=, which are
-
-   - =gcc foo.c -c -o foo.o=
-   - =gcc bar.c -c -o bar.o=
-   - and =gcc foo.o bar.o -o foobar=
-
-   respectively. Notice that there are no rules for the =.c= and =.h=
-   files. That is because =make= should fail if they are not
-   present. So if we run =make foobar=, make will check for =foobar='s
-   existence and modification date. If foobar is missing or it's
-   modification date is earlier than it's deopendecies' (ie =foo.o=
-   and =bar.o=) it will be rebuilt. If any dependecies are missing the
-   same logic is applied to that. This way if we build foobar once,
-   and then edit =bar.c= and rerun =make foobar=, =make= will
-   recursively deduce that
-
-   - =bar.o= is out of date with respect to it's dependency =bar.c=
-   - When =bar.o= is rebuilt it now has a more recent modification
-     date than =foobar= and therefore the latter is out of date with
-     respect to it's dependency =bar.o= so it needs to be rebuilt.
-
-   This way make can infer a near optimal strategy for building each
-   time the minimum amount of required targets.
-
-   Now that we made the basic logic of =make= clear let's dive into
-   some basic features that make our life easier.
-
-*** Phony targets
-
-    Some tasks do not result in a file and thay need to be run every
-    time =make= encounters them in the dependency tree. For this we
-    have the special keywork =.PHONY:=. Here is an example.
-
-    #+BEGIN_SRC makefile
-      .PHONY:
-      clean:
-    	  rm -rf *
-    #+END_SRC
-
-    This tells make that no file named =clean= will emerge from
-    running =rm -rf *=, and also that even if an up-to-date file named
-    =clean= exists, this target is to be run regardless.
-
-    It is worth noting that phony dependencies will always render the
-    dependent target out-of-date. For example:
-
-    #+BEGIN_SRC makefile
-      .PHONY:
-      say-hello:
-    	  echo "hello"
-
-      test.txt: say-hello
-    	  touch test.txt
-    #+END_SRC
-
-    When =touch test.txt= will be run *every* time we run =make
-    test.txt= simply becaus make can not be sure that the phony target
-    =say-hello= did not change anything important for =test.txt=. For
-    this reason phony targets are only meant for user facing tasks.
-
-*** Variables
-
-    =makefiles= can have variables defined in a variety of ways. Some
-    cases that are being made use of in wikiepedia-mirror are
-    presented below.
-
-
-**** COMMENT Recursively expanded variables
-
-     #+BEGIN_SRC makefile
-      OBJCETS = foo.o bar.o
-
-      show:
-          echo $(OBJECTS)
-     #+END_SRC
-
-     Running =make show= wil print =foo.o bar.o= to the console. All
-     variables are substituted for their value by wrapping the
-     variable name in parentheses and prefixing the dolear sign
-     (=$=). Makefile variables have no type, reference of the
-     variables is equivalent to simpe string substitution, much like
-     it is in unix shell scripting.
-
-     Variabales defined using a simple equal =\== sign are recursively
-     expanded. This means that after the variable name is substituted
-     for the variable content a recursive process keeps expanding
-     emergent variables. This can make variable expansion a very
-     powerful tool. For example:
-
-     #+BEGIN_SRC makefile
-       library = foo
-
-       foo-libs = -lfoo
-       foo-includes = -I./include/foo
-
-       bar-libs = -lbar
-       bar-includes = -I./include/bar
-
-       libs = $($(library)-libs)
-       includes = $($(library)-includes)
-
-       waz:
-     	  gcc waz.c $(includes) $(libs)
-     #+END_SRC
-
-     To demonstrate:
-
-     #+BEGIN_SRC sh
-       $ make --just-print
-       gcc waz.c -I./include/foo -lfoo
-     #+END_SRC
-
-     The expansion that took place step by step are
-
-     #+BEGIN_SRC makefile
-       gcc waz.c $(includes) $(libs)
-       gcc waz.c $($(library)-includes) $($(library)-libs)
-       gcc waz.c $(foo-includes) $(foo-libs)
-       gcc waz.c -I./include/foo -lfoo
-     #+END_SRC
-
-     Notice how variable names were themselves constructed.
-
-     Variables can also be defined at the command so in this
-     particular example we could easily switch to the =bar= library:
-
-     #+BEGIN_SRC sh
-       $ make --just-print library=bar
-       gcc waz.c -I./include/bar -lbar
-     #+END_SRC
-
-**** Simple variables
-
-     Sometimes it is not desirable for variables to be expanded
-     indefinitely:
-
-     #+BEGIN_SRC makefile
-       kurma = the world $(support1)
-       animal1 = four elephants
-       animal2 = tortoise
-       support1 = supported by $(animal1) $(support2)
-       support2 = supported by a $(animal2) $(support2)
-
-       all:
-     	  echo $(kurma)
-     #+END_SRC
-
-     So what would makefile have said to Bertrand Russell [refrence] (or
-     whoever)?
-
-     #+BEGIN_SRC sh
-       $ make --just-print
-       Makefile:5: *** Recursive variable `support2' references itself (eventually).  Stop.
-     #+END_SRC
-
-     So in a way the variable system of make is total [reference]. As
-     the hindus "solved" this problem so can we in makefiles:
-
-     #+BEGIN_SRC makefile
-       kurma = the world $(support1)
-       animal1 = four elephants
-       animal2 = tortoise
-       support1 = supported by $(animal1) $(support2)
-       support2 := supported by a $(animal2) $(support2)
-
-       all:
-          echo $(kurma)
-     #+END_SRC
-
-     And when we run make we get:
-
-     #+BEGIN_SRC sh
-       make --just-print
-       echo the world supported by four elephants supported by a tortoise
-     #+END_SRC
-
-     So basically =support2= is removed from scope when the =support2=
-     variable is substituted.
-
-**** Automatic variables
-
-     Makefile also defines some contextual variables that are
-     defined. The automatic variables defined by gnu make are the
-     following
-
-     - =$@=: The file name of the target of the rule. If the target is
-       an archive member, then =$@= is the name of the archive
-       file. In a pattern rule that has multiple targets (see
-       Introduction to Pattern Rules), =$@= is the name of
-       whichever target caused the rule's recipe to be run.
-     - =$%=: The target member name, when the target is an archive
-       member. See Archives. For example, if the target is
-       foo.a(bar.o) then =%%= is bar.o and =$@= is
-       foo.a. =$%= is empty when the target is not an archive member.
-     - =$<=: The name of the first prerequisite. If the target got its
-       recipe from an implicit rule, this will be the first prerequisite
-       added by the implicit rule (see Implicit Rules).
-     - =$?=: The names of all the prerequisites that are newer than
-       the target, with spaces between them. For prerequisites which
-       are archive members, only the named member is used (see
-       Archives).
-     - =$^=: The names of all the prerequisites, with spaces between
-       them. For prerequisites which are archive members, only the
-       named member is used (see Archives). A target has only one
-       prerequisite on each other file it depends on, no matter how
-       many times each file is listed as a prerequisite. So if you
-       list a prerequisite more than once for a target, the value of
-       $^ contains just one copy of the name. This list does not
-       contain any of the order-only prerequisites; for those see the
-       =$|= variable, below.
-     - =$+=: This is like =$^=, but prerequisites listed more
-       than once are duplicated in the order they were listed in the
-       makefile. This is primarily useful for use in linking commands
-       where it is meaningful to repeat library file names in a
-       particular order.
-     - =$|= The names of all the order-only prerequisites, with spaces
-       between them.
-     - =$*=: The stem with which an implicit rule matches (see How
-       Patterns Match). If the target is dir/a.foo.b and the target
-       pattern is a.%.b then the stem is dir/foo. The stem is useful
-       for constructing names of related files. In a static pattern
-       rule, the stem is part of the file name that matched the =%= in
-       the target pattern. In an explicit rule, there is no stem; so
-       =$*= cannot be determined in that way. Instead, if the target
-       name ends with a recognized suffix (see Old-Fashioned Suffix
-       Rules), =$*= is set to the target name minus the suffix. For
-       example, if the target name is =foo.c=, then =$*= is set to
-       =foo=, since =.c= is a suffix. GNU make does this bizarre thing
-       only for compatibility with other implementations of make. You
-       should generally avoid using =$*= except in implicit rules or
-       static pattern rules. If the target name in an explicit rule
-       does not end with a recognized suffix, =$*= is set to the empty
-       string for that rule.
-
-
-*** Functions
-
+   #+INCLUDE: makefiles.org
 
 ** Bitnami
+
 * Performance
 
 ** Compile time
@@ -671,13 +413,21 @@
      - Preprocessing the dumps (~10 mins)
      - Populating the mysql database (~10 days)
 
-       # TODO: insert ashmore specifics
-       Builds were done on Infolab's Ashmore. The system's specs are
-       quite high end but the bottleneck was the disk IO so less than 1%
-       of the rest of the available resources were used during the MySQL
-       database population.
+   Builds were done on Infolab's Ashmore. The system's specs are
+   quite high end but the bottleneck was the disk IO so less than 1%
+   of the rest of the available resources were used during the MySQL
+   database population. The specifics of the ashmore machine are:
 
-*** Attempts to optimizing MySQL
+   - *CPU:* Xeon E5-1607 3GHz 4-Core 64 bit
+   - *Main memory:* 64G
+   - *HDD:* (spinning disk) 500Gb + 2Tb
+
+   Since the main bottleneck was the database population -ie MySQL's
+   performance- great effort and experimentation went into fine tuning
+   MySQL but the speedup achieved was negligible so they were not
+   included in the makefiles.
+
+   The backend database engine used by MySQL is InnoDB.
 
 ** Runtime
 

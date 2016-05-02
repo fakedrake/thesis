@@ -17,13 +17,16 @@
 ** DONE Lisp types
 ** DONE mediawikie Api overview
 ** DONE Dates example
-* WikipediaMirror [0%]
+* WikipediaMirror [62%]
+** DONE Indtoduction
+** DONE Make subchapters into chapters
+** DONE Reorder chapters
+** DONE Makefile functions
+** DONE Ashmore specifics
 ** TODO Mediawiki description from wikipedia.
 ** TODO Bitnami
-** TODO Makefile functions
-** TODO Ashmore specifics
 ** TODO Attempts at optimizing MySQL
-* References [14%]
+* References [7%]
 ** TODO Setup a reference page
 ** DONE DBMs
 ** TODO Links to the elements of the stack
@@ -39,9 +42,14 @@
     - mwdumper
     - wikipediabase
     - wikpedia mirror
+
 ** TODO Nosetests
 ** TODO Sqlitedict
 ** TODO tmpfs
+** TODO Bitnami
+** TODO InnoDB
+*** [[https://dev.mysql.com/doc/refman/5.6/en/optimizing-innodb-diskio.html][Optimizing]]
+*** [[Pool size][innodb_buffer_pool_size]]
 ** TODO Mediawiki api
 *** Restfule apis
 *** Mediawiki api https://www.mediawiki.org/wiki/API:Main_page
