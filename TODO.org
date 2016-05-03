@@ -17,7 +17,7 @@
 ** DONE Lisp types
 ** DONE mediawikie Api overview
 ** DONE Dates example
-* WikipediaMirror [87%]
+* WikipediaMirror [100%]
 ** DONE Indtoduction
 ** DONE Make subchapters into chapters
 ** DONE Reorder chapters
@@ -25,10 +25,11 @@
 ** DONE Ashmore specifics
 ** DONE Bitnami
 ** DONE Attempts at optimizing MySQL
-** TODO Mediawiki description from wikipedia.
-* References [5%]
+** DONE Mediawiki description from wikipedia.
+** DONE XML parse sh
+* References [0%]
 ** TODO Setup a reference page
-** DONE DBMs
+** TODO DBMs
 ** TODO Links to the elements of the stack
 ** TODO Links to the elements of the wikipediabase stack
 ** TODO Links to the makefile tutorial
@@ -40,6 +41,7 @@
 ** TODO Github pages
 
     - mwdumper
+    - mediawiki
     - wikipediabase
     - wikpedia mirror
 
@@ -59,3 +61,5 @@
 ** TODO VM
 ** TODO Prefix path
 ** TODO fsync performacne
+** TODO Scribunto
+** TODO parserfunctionns

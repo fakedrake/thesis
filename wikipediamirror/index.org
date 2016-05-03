@@ -135,7 +135,22 @@ of wikipedia.org.
 
 *** MediaWiki
 
-    Mediawiki is the heart of wikipedia.
+    Mediawiki is the heart of wikipedia. MediaWiki is a free and
+    open-source wiki application. It was originally developed by the
+    Wikimedia Foundation and runs on many websites, including
+    Wikipedia, Wiktionary and Wikimedia Commons. As mentioned
+    previously, it is written in the PHP programming language and uses
+    a backend database.
+
+    The software has more than 800 configuration settings and more
+    than 2,000 extensions available for enabling various features to
+    be added or changed. On Wikipedia alone, more than 1000 automated
+    and semi-automated bots and other tools have been developed to
+    assist in editing. Most of this is not relevant for our
+    purposes. The only extnesions useful for our purposes are
+    =scriunto= and =parserfunctions= and the only useful settings are
+    related to the name of the site, the name of the database etc and
+    are mostly handled by bitnami.
 
 * Setting up
 
@@ -206,23 +221,74 @@ of wikipedia.org.
     $ make mw-extensions
   #+END_SRC
 
+* Mediawiki Extensions
+
+  For mediawiki to act like wikipedia a number of extensions are
+  required. The installation process of such extensions is not
+  automated or streamline. To automatically manage this complexity a
+  mechanism is provided for declaratively installing extensions.  To
+  add support for an extension to wikipediabase one needs to add the
+  following code in =Makefile.mwextnesions= (modifying accordingly):
+
+  #+BEGIN_SRC makefile
+    MW_EXTENSIONS += newextension
+    mw-newextension-url = url/to/new/extnesion/package.tar.gz
+    mw-newextension-php = NewExtensionFile.php
+    mw-newextension-config = '$$phpConfigVariable = "value";'
+  #+END_SRC
+
+  And wikipedia-mirror will take care of checking if the extension
+  is already installed and if not it will put the right files in the
+  right place and edit the appropriate configuration files. The
+  entry points for managing extensions are (provided that the name
+  of the registered extension is newextension):
+
+  #+BEGIN_SRC sh
+    make mw-print-registered-extensions # Output a list of the registed extensions
+    make mw-newextension-enable         # Install and/or enable the extension
+    make mw-newextension-reinstall      # Reinstall an extension
+    make mw-newextension-disable        # Disable the extension
+    make mw-newextension-clean          # Remove the extension
+  #+END_SRC
+
+  All registered extensions will be installed and enabled when
+  wikipedia-mirror is built.
+
+* Dumps
+
+  Wikipedia provides monthly dumps of all it's databases. The bulk of
+  the dumps come in XML format and they need to be encoded into MySQL
+  to be loaded into the wikipedia-mirror database. There are more
+  than one ways to do that.
+
+** Loading the dumps
+
+   Mediawiki ships with a utility for importing the XML
+   dumps. However it's use for importing a full blown wikipedia
+   mirror is discouraged due to performance tradeoffs. Instead other
+   tools like mwdumper are recommended that transform the XML dump
+   into MySQL queries that populate the database.
+
+   However the recomended tool for translating the XML dumps into
+   MySQL code is mwdumper. Mwdumper is written in java and is shipped
+   separately from mediawiki. Mwdumper can transform data between the
+   following formats:
+
+   - XML
+   - MySQL dump
+   - SQLite dump
+   - CSV
+
+   For our purpose we are only interested in the =XML -> MySQL dump=
+   transformation.
+
+* The xerces bug
+
+  #+INCLUDE: xerces.org
+
 * Tools
 
   A number of tools were developed in assisting the
-
-*** page_remover.c
-
-    As previously discussed, the =xerces= library that =mwdumper=
-    depends on fails, seemingly at random, to process certain
-    pages. To address this issue we remove the pages completely and
-    retry. Since this task is fairly straight forward yet performance
-    sensitive we resorted to writing a small low level program in C to
-    address it, =page_remove.c=. Page remover accepts as input the
-    path of the XML wikipedia dump, the offset of the article and the
-    size of the article. It then uses the =mmap= system call to
-    random-access the data within the file and fill the article with
-    withespace characters. =page_remover.c= is not threaded as the
-    bottleneck is the HDD IO speed.
 
 *** sql-clear.sh
 
@@ -314,77 +380,44 @@ of wikipedia.org.
     This will produce, in 1 second intervals, numbers from 1
     to 100. Then it normalizes them using =awk= and feeds them to
     webmonitor. After this command executes we can open the browser
-    and then navigate to =localhost:8888=.
-
-    # XXX: Screenshot
-
-    We utilize this to remotely monitor the total size of data that
-    =mysql= consumes.
+    and then navigate to =localhost:8888=. We utilize this to remotely
+    monitor the total size of data that =mysql= consumes.
 
 *** xml-parse.sh
 
-* Mediawiki Extensions
+    Simply removing specific articles fixes the xerces error with
+    UTF8. If the articles are alone the error goes away aswell.  The
+    =xml-parse.sh= script removes the requested article from the xml
+    file.
 
-  For mediawiki to act like wikipedia a number of extensions are
-  required. The installation process of such extensions is not
-  automated or streamline. To automatically manage this complexity a
-  mechanism is provided for declaratively installing extensions.  To
-  add support for an extension to wikipediabase one needs to add the
-  following code in =Makefile.mwextnesions= (modifying accordingly):
+    #+BEGIN_SRC sh
+      xml-parse.sh <original-xml-file> <title_of_article_to_remove> [inplace]
+    #+END_SRC
 
-  #+BEGIN_SRC makefile
-    MW_EXTENSIONS += newextension
-    mw-newextension-url = url/to/new/extnesion/package.tar.gz
-    mw-newextension-php = NewExtensionFile.php
-    mw-newextension-config = '$$phpConfigVariable = "value";'
-  #+END_SRC
+    if =inplace= is the last argument, the =page_remove.c= will be
+    used to cover the article with spaces. This is much faster.
+    Otherwise the page is just ommited and the result is dumped in
+    stdout. After this script finishes you can run:
 
-  And wikipedia-mirror will take care of checking if the extension
-  is already installed and if not it will put the right files in the
-  right place and edit the appropriate configuration files. The
-  entry points for managing extensions are (provided that the name
-  of the registered extension is newextension):
+    #+BEGIN_SRC sh
+      java -jar tools/mwdumper.jar RESULTING_XML --format=sql:1.5 > SQL_DUMP
+    #+END_SRC
 
-  #+BEGIN_SRC sh
-    make mw-print-registered-extensions # Output a list of the registed extensions
-    make mw-newextension-enable         # Install and/or enable the extension
-    make mw-newextension-reinstall      # Reinstall an extension
-    make mw-newextension-disable        # Disable the extension
-    make mw-newextension-clean          # Remove the extension
-  #+END_SRC
+*** page_remover.c
 
-  All registered extensions will be installed and enabled when
-  wikipedia-mirror is built.
+    As previously discussed, the =xerces= library that =mwdumper=
+    depends on fails, seemingly at random, to process certain
+    pages. To address this issue we remove the pages completely and
+    retry. Since this task is fairly straight forward yet performance
+    sensitive we resorted to writing a small low level program in C to
+    address it, =page_remove.c=. Page remover accepts as input the
+    path of the XML wikipedia dump, the offset of the article and the
+    size of the article. It then uses the =mmap= system call to
+    random-access the data within the file and fill the article with
+    withespace characters. =page_remover.c= is not threaded as the
+    bottleneck is the HDD IO speed.
 
-* Dumps
 
-  Wikipedia provides monthly dumps of all it's databases. The bulk of
-  the dumps come in XML format and they need to be encoded into MySQL
-  to be loaded into the wikipedia-mirror database. There are more
-  than one ways to do that.
-
-** PHP script
-
-   # TODO: provide link
-   Mediawiki ships with a utility for importing the XML
-   dumps. However it's use for importing a full blown wikipedia
-   mirror is discouraged due to performance tradeoffs. Instead other
-   tools like mwdumper are recommended that transform the XML dump
-   into MySQL queries that populate the database.
-
-** mwdumper
-
-   The recomended tool for translating the XML dumps into MySQL code
-   is mwdumper. Mwdumper is written in java and is shipped separately
-   from mediawiki.
-
-*** Xml sanitizer
-
-*** Article dropper
-
-* The xerces bug
-
-  #+INCLUDE: xerces.org
 * Automation
 
   Creating a wikipedia mirror may seem like a straight forward task
