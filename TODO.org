@@ -17,16 +17,16 @@
 ** DONE Lisp types
 ** DONE mediawikie Api overview
 ** DONE Dates example
-* WikipediaMirror [62%]
+* WikipediaMirror [87%]
 ** DONE Indtoduction
 ** DONE Make subchapters into chapters
 ** DONE Reorder chapters
 ** DONE Makefile functions
 ** DONE Ashmore specifics
+** DONE Bitnami
+** DONE Attempts at optimizing MySQL
 ** TODO Mediawiki description from wikipedia.
-** TODO Bitnami
-** TODO Attempts at optimizing MySQL
-* References [7%]
+* References [5%]
 ** TODO Setup a reference page
 ** DONE DBMs
 ** TODO Links to the elements of the stack
@@ -55,3 +55,7 @@
 *** Mediawiki api https://www.mediawiki.org/wiki/API:Main_page
 *** GET/POST http requests
 *** JSON standard lib
+** TODO Container
+** TODO VM
+** TODO Prefix path
+** TODO fsync performacne

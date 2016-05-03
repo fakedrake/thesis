@@ -398,6 +398,27 @@ of wikipedia.org.
 
 ** Bitnami
 
+   Bitnami is a family of programs that sets up and manages servers
+   stacks. It contains the entire stack installation within a
+   directory making it both modular and portable while avoiding the
+   fuss of dealing with VMs or containers. Bitnami is not open source
+   so there is no way to tell for sure but my best guess is that it
+   manages this by patching the prefix path of MySQL, apache etc
+   binaries with the installation directory.
+
+   Bitnami now supports hundrends of stacks, indicatively the most
+   popular are:
+
+   - Osclass
+   - Joomla
+   - Drupal
+   - PrestaShop
+   - MediaWiki
+   - Moodle
+   - ownCloud
+   - Redmine
+   - Wordpress
+
 * Performance
 
 ** Compile time
@@ -427,7 +448,31 @@ of wikipedia.org.
    MySQL but the speedup achieved was negligible so they were not
    included in the makefiles.
 
-   The backend database engine used by MySQL is InnoDB.
+   The backend database engine used by MySQL is InnoDB. Some of the
+   optimization methods attempted are:
+
+   - Callibrate the =innodb_buffer_pool_size=. While the availamble
+     memory in ashmore is fairly large, up to several GB there was
+     no noticable difference in database population.
+   - Change =innodb_flush_method= to =O_DSYNC= to avoid using the
+     =fsync= system call. In short the problem with flushing large
+     mapped files with =fsync= is that =fsync= searches for dirty
+     pages in mapped memory pages linerly making it slower and slower
+     as the file gets larger.
+   - Callibrate the =einnodb_io_capacity=. Unsurprisingly the value of
+     this variable was higher than the bandwidth of the HDD.
+
+  The only optimisation that actually made a difference in database
+  population speed was to set.
+
+  #+BEGIN_SRC sq;
+    SET AUTOCOMMIT = 0; SET FOREIGN_KEY_CHECKS=0;
+  #+END_SRC
+
+  This allowed InnoDB to do more work in the main memory before
+  commiting to the disk and also reduced the overall work by trusting
+  that the keys indicating relation to te database actually point
+  somewhere.
 
 ** Runtime
 
