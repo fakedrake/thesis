@@ -1,40 +1,31 @@
 
 * START
 
-  The START Natural Language System is a software system designed
-  to answer questions that are posed to it in natural
-  language. START parses incoming questions, matches the queries
-  created from the parse trees against its knowledge base and
-  presents the appropriate information segments to the user. In
-  this way, START provides untrained users with speedy access to
-  knowledge that in many cases would take an expert some time to
-  find.
+  START (SynTactic Analysis using Reversible Transformations) is a
+  system designed to answer questions posed in natural language,
+  favoring precision over recall. It was developed by Boris Katz at
+  MiT's Artificial Intelligence Laboratory and surfaced the internet
+  in December 1993. The basic premise of it's functionality is that it
+  normalizes questions into internal representations that it matches
+  against it's knowledge base to present the user with an accurate
+  answer. Currently START is developed and maintained by InfoLab, led
+  by Boris Katz.
 
-  START (SynTactic Analysis using Reversible Transformations) was
-  developed by Boris Katz at MIT's Artificial Intelligence
-  Laboratory. Currently, the system is undergoing further development by
-  the InfoLab Group, led by Boris Katz. START was first connected to the
-  World Wide Web in December, 1993, and in its several forms has to date
-  answered millions of questions from users around the world.
+  The central technique employed by START to draw connections between
+  natural language queries and their answers is called "natural
+  language annotation". According to this method data is annotated
+  with natural language phrases and sentences and then matched with
+  the input question. This allows the START user to access arbitrary
+  media types with natural language including text, diagrams, images,
+  video and audio clips, data sets and Web pages.
 
-  A key technique called "natural language annotation" helps START
-  connect information seekers to information sources. This technique
-  employs natural language sentences and phrases annotations as
-  descriptions of content that are associated with information
-  segments at various granularities. An information segment is
-  retrieved when its annotation matches an input question. This
-  method allows START to handle all variety of media, including
-  text, diagrams, images, video and audio clips, data sets, Web
-  pages, and others.
-
-  The natural language processing component of START consists of two
-  modules that share the same grammar. The understanding module analyzes
-  English text and produces a knowledge base that encodes information
-  found in the text. Given an appropriate segment of the knowledge base,
-  the generating module produces English sentences. Used in conjunction
-  with the technique of natural language annotation, these modules put
-  the power of sentence-level natural language processing to use in the
-  service of multi-media information access.
+  For natural language annotation to be useful two modules come into
+  play, the understanding module and the generating module. The
+  understanding module produces a knowledge base encoding information
+  from a given english text. The generating module can generate
+  natural language from segments of the knowledge base. Finally these
+  two modules are provided with a natural language interface to
+  multi-media information by natural language annotation.
 
 * Omnibase, wikipedia, wikipediabase and wikipedia mirror
 

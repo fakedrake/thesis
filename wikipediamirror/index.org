@@ -44,7 +44,6 @@ of wikipedia.org.
   tend to go wrong during the dumping step.
 
 ** Elements of the stack
-   # copy the shit out of wikipedia
 
    We present each of the elements of the stack in more detail below.
 

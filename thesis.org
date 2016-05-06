@@ -1,6 +1,6 @@
 #+TITLE:       Extracting relational data from Wikipedia
 #+AUTHOR:      Chris Perivolaropoulos
-#+DATE:        Sunday 21 February 2016
+#+DATE:        Tuesday 6 May 2016
 #+EMAIL:       cperivol@csail.mit.edu
 #+DESCRIPTION: Making sense of semi structured data in wikipedia.
 #+KEYWORDS:
@@ -28,6 +28,4 @@
   #+INCLUDE: "./wikipediabase/index.org"
 * WikipediaMirror
   #+INCLUDE: "./wikipediamirror/index.org"
-* Related CSAIL projects
-  # See github
-* Conclusion
+* References

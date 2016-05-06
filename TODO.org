@@ -1,3 +1,6 @@
+* Draft 0.2 [0%]
+** TODO Rewrite the start description
+** TODO Rewrite the functionality bit
 * Overview [100%]
 ** DONE Introduction for each project
 * Wikipediabase [100%]
@@ -28,16 +31,17 @@
 ** DONE Mediawiki description from wikipedia.
 ** DONE XML parse sh
 * References [0%]
+** TODO Infolab
+** TODO Omnibase papers
+
+    - Omnibase :: http://start.csail.mit.edu/publications/Katz-etal-NLDB02.pdf
+    - Wikipedia :: https://en.wikipedia.org/wiki/Wikipedia
+** TODO Start
 ** TODO Setup a reference page
 ** TODO DBMs
 ** TODO Links to the elements of the stack
 ** TODO Links to the elements of the wikipediabase stack
 ** TODO Links to the makefile tutorial
-** TODO Omnibase papers
-
-    - Omnibase :: http://start.csail.mit.edu/publications/Katz-etal-NLDB02.pdf
-    - Wikipedia :: https://en.wikipedia.org/wiki/Wikipedia
-
 ** TODO Github pages
 
     - mwdumper
