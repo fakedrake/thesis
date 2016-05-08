@@ -105,7 +105,7 @@ Silver. Other students have also joined the project shortly after.
     assert that it will not appear again later. Functional and
     regression tests currently reside in =tests/examples.py=
 
-** TODO Examples
+** Examples
 
    Virtually all tests begin witht he following snippet:
 
@@ -622,15 +622,3 @@ Silver. Other students have also joined the project shortly after.
 
 * Date parser
   #+INCLUDE: dateparser.org
-* COMMENT Future
-** Configuration
-*** Persistence
-*** Pass by reference
-*** Lenses
-*** Laziness
-**** Referential (Ref - Items)
-**** Computational
-** START deployment
-** Test suites
-** Bugs
-** Answer hierarchy

@@ -24,7 +24,7 @@
   =Frontend= with the way of accessing resoruces.
 
 
-* TODO Example
+* Example
 
   We demostrate the pattern with an example: we will embed a small
   lisp to python
