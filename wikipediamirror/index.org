@@ -11,11 +11,11 @@
 #+MACRO:       ref
 
 Wikipedia mirror is a system aiming to automate the creation of a
-local clone of wikipedia contianing only the articles - that is not
+local clone of wikipedia containing only the articles - that is not
 containing users, discussion and edit history. The automated process
 includes setting up a server, a database and populating that database
 with the wikipedia articles. The purpose for this is to provide the
-option of accessing wikipedia's dataset independently of
+option of accessing wikipedia's data set independently of
 wikipedia.org.
 
 * mediawiki stack overview
@@ -137,10 +137,10 @@ wikipedia.org.
 
     Mediawiki{{{ref}}} is the heart of wikipedia. MediaWiki is a free
     and open-source wiki application. It was originally developed by
-    the Wikimedia Foundation and runs on many websites, including
-    Wikipedia, Wikitionary and Wikimedia Commons{{{ref}}}. As
-    mentioned previously, it is written in the PHP programming
-    language and uses a backend database.
+    the Wikimedia Foundation{{{ref}}} and runs on many websites,
+    including Wikipedia, Wikitionary and Wikimedia
+    Commons{{{ref}}}. As mentioned previously, it is written in the
+    PHP programming language and uses a backend database.
 
     The software has more than 800 configuration settings and more
     than 2,000 extensions available for enabling various features to
@@ -154,7 +154,8 @@ wikipedia.org.
 
 * Setting up
 
-  Following are step by step instructions. First, clone the git repo:
+  Following are step by step instructions. First, clone the git
+  code repository:
 
   #+BEGIN_SRC sh
     $ git clone https://github.com/fakedrake/wikipedia-mirror
@@ -162,7 +163,7 @@ wikipedia.org.
   #+END_SRC
 
   At this point in theory one can run =make sql-load-dumps= which
-  will take care of stting up everything needed to load the the
+  will take care of setting up everything needed to load the the
   database dumps into the working SQL database. Of course for that to
   happen first a couple of steps need to be carried out:
 
@@ -227,7 +228,7 @@ wikipedia.org.
    required. The installation process of such extensions is not
    automated or streamline. To automatically manage this complexity a
    mechanism is provided for declaratively installing extensions.  To
-   add support for an extension to wikipediabase one needs to add the
+   add support for an extension to WikipediaBase one needs to add the
    following code in =Makefile.mwextnesions= (modifying accordingly):
 
    #+BEGIN_SRC makefile
@@ -241,7 +242,7 @@ wikipedia.org.
    is already installed and if not it will put the right files in the
    right place and edit the appropriate configuration files. The
    entry points for managing extensions are (provided that the name
-   of the registered extension is newextension):
+   of the registered extension is =newextension=):
 
    #+BEGIN_SRC sh
      make mw-print-registered-extensions # Output a list of the registed extensions
@@ -369,7 +370,7 @@ wikipedia.org.
     but rather a python formatted string. That is for two reasons:
     first because the chart configuration is handled by python rather
     than javascript, second because the width of the graph will is
-    calulated at page load time -ie. by python- and the plot needs to
+    calculated at page load time -ie. by python- and the plot needs to
     be shifted to only show the most recent points.
 
     #+BEGIN_SRC sh
@@ -397,8 +398,8 @@ wikipedia.org.
 
     if =inplace= is the last argument, the =page_remover.c= will be
     used to cover the article with spaces. This is much faster.
-    Otherwise the page is just ommited and the result is dumped in
-    stdout. After this script finishes you can run:
+    Otherwise the page is just omitted and the result is dumped in
+    =stdout=. After this script finishes you can run:
 
     #+BEGIN_SRC sh
       java -jar tools/mwdumper.jar RESULTING_XML --format=sql:1.5 > SQL_DUMP
@@ -415,7 +416,7 @@ wikipedia.org.
     path of the XML wikipedia dump, the offset of the article and the
     size of the article. It then uses the =mmap= system call to
     random-access the data within the file and fill the article with
-    withespace characters. =page_remover.c= is not threaded as the
+    white space characters. =page_remover.c= is not threaded as the
     bottleneck is the HDD IO speed.
 
 
@@ -466,16 +467,16 @@ wikipedia.org.
      - Installing and building those components (~1 min)
      - Downloading the wikipedia dumps
      - Pre-processing the dumps (~10 mins)
-     - Populating the mysql database (~10 days)
+     - Populating the MySQL database (~10 days)
 
-   Builds were done on Infolab's Ashmore. The system's specs are
+   Builds were done on InfoLab's ashmore. The system's specs are
    quite high end but the bottleneck was the disk IO so less than 1%
    of the rest of the available resources were used during the MySQL
    database population. The specifics of the ashmore machine are:
 
    - *CPU:* Xeon E5-1607 3GHz 4-Core 64 bit
    - *Main memory:* 64G
-   - *HDD:* (spinning disk) 500Gb + 2Tb
+   - *HDD:* (spinning disk) 500GB + 2Tb
 
    Since the main bottleneck was the database population -ie MySQL's
    performance- great effort and experimentation went into fine tuning
@@ -494,7 +495,7 @@ wikipedia.org.
      mapped files with =fsync= is that =fsync= searches for dirty
      pages in mapped memory pages linearly making it slower and slower
      as the file gets larger.
-   - Callibrate the =einnodb_io_capacity=. Unsurprisingly the value of
+   - Calibrate the =einnodb_io_capacity=. Unsurprisingly the value of
      this variable was higher than the bandwidth of the HDD.
 
   The only optimization that actually made a difference in database

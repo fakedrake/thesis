@@ -15,9 +15,9 @@ to wikipedia related information, that mimics the API interface
 provided by the Omnibase. Wikipediabase has gone through a couple of
 rewrites. The initial version was written in Java. It was then
 rewritten in Ruby copying the original architecture and design and now
-it is rewritten in python and rearchitectured from scratch. There are
+it is rewritten in python and re-architectured from scratch. There are
 two main reasons for this: python is taught as a pre-graduate course
-in MiT, and therefore a Python codebase will make initiation of new
+in MiT, and therefore a Python code base will make initiation of new
 MiT students smoother and, more importantly, while the initial design
 of the previous WikipediaBase should have been adequate, it grew to a
 point where the code was ad-hoc and hard to understand, reason about
@@ -34,8 +34,8 @@ Silver. Other students have also joined the project shortly after.
 
 * Getting started
 
-  The entire WikipediaBase resides in a git repository in infolab's
-  github orginization page
+  The entire WikipediaBase resides in a git repository in InfoLab's
+  github{{{ref}}} organization page
 
   #+BEGIN_SRC sh
      git clone git@github.com:infolab-csail/WikipediaBase
@@ -44,13 +44,13 @@ Silver. Other students have also joined the project shortly after.
 
   WikipediaBase depends on multiple other python
   packages. Fortunately, python is shipped not only with a great
-  package manager, but also with a mechanism called virtualenv that
+  package manager, but also with a mechanism called =virtualenv= that
   isolates installations of a project's dependencies from the rest of
   the system, thus avoiding problems like version or namespace
-  collisions. The way this effectively works is that the global
-  python installation is half copied half symlinked to a local
-  directory and the dependencies are installed only in the local
-  sandbox. To create and activate a python virtualenv:
+  collisions. The way this effectively works is that the global python
+  installation is half copied half symlinked to a local directory and
+  the dependencies are installed only in the local sandbox. To create
+  and activate a =python virtualenv=:
 
   #+BEGIN_SRC sh
    $ virtualenv --no-site-packages py
@@ -73,7 +73,7 @@ Silver. Other students have also joined the project shortly after.
 
   The installation process of these packages varies across
   platforms. Both are databases. Their purpose is for caching repeated
-  computations and for storing ahead-of-time computation like infobox
+  computations and for storing ahead-of-time computation like Infobox
   markup, name to rendered name maps, and synonyms.
 
 * Architecture
@@ -139,7 +139,7 @@ Silver. Other students have also joined the project shortly after.
    #+END_SRC
 
    The =setUp= method runs before each test of the =TestCase=. Tests
-   of the testcase are represented by methods of the class whose name
+   of the test case are represented by methods of the class whose name
    begins with =test_=. In this particular case we are getting the
    wikipedia page for Led Zeppelin and making sure the name of Jimmy
    Page is mentioned at least once. This is obviously not conclusive
@@ -212,7 +212,7 @@ Silver. Other students have also joined the project shortly after.
 * Synonyms
 
   Before we talk about synonyms it is important to concretely define
-  symbols in the context of the omnibase universe:
+  symbols in the context of the Omnibase universe:
 
   #+BEGIN_QUOTE
   Symbols are identifiers of "objects" in a data source. (The term
@@ -265,7 +265,7 @@ Silver. Other students have also joined the project shortly after.
      - "Outline of topic"
 
    - Should not match =\d\d\d\d in location= or =location in \d\d\d\d=
-   - Should not be names of disabiguation pages. To make this
+   - Should not be names of disambiguation pages. To make this
      inclusive for all relevant pages, including typos, that means
      symbols that match =\([Dd]isambig[^)]*\)=
    - Synonyms that both a) could be mistaken for ones that start with
@@ -292,8 +292,8 @@ Silver. Other students have also joined the project shortly after.
      - The&nbsp;
      - etc.
 
-   - Generate both versions, with and without paren. Eg given symbol
-     "Raven (journal)" generate both:
+   - Generate both versions, with and without parentheses. Eg given
+     symbol "Raven (journal)" generate both:
      - "Raven (journal)"
      - "Raven"
 
@@ -500,7 +500,7 @@ Silver. Other students have also joined the project shortly after.
 *** Other backends
 
     Other backends were considered, most notably Redis which was
-    actually implemented shortly after the project handoff by Alvaro
+    actually implemented shortly after the project hand-off by Alvaro
     Morales. The reason we did not initially use it was that it is
     modeled as a server-client which adds complexity to an aspect of
     the system that should be as simple as possible. Another reason for
@@ -666,7 +666,7 @@ Silver. Other students have also joined the project shortly after.
 ** Article categories example
 
    For example Leonardo DiCaprio's page has the following categories.
-   Highlighted is the category that tells wikipediabase that Leonardo
+   Highlighted is the category that tells WikipediaBase that Leonardo
    DiCaprio is a person:
 
    - Leonardo DiCaprio

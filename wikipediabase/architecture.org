@@ -344,7 +344,7 @@
 
    - Error :: the minimum priority resolver, it will always resolve to
         an error.
-   - Infobox :: Resolve attributes found on infoboxes of a symbol.
+   - Infobox :: Resolve attributes found on Infoboxes of a symbol.
    - Person :: resolve the following specific attributes of symbols
         referring to people:
      - =birth-date=

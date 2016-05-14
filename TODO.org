@@ -1,5 +1,6 @@
 * Draft 3.0
 ** Move to appendix
+*** TODO Dictionary pass
 *** DONE Dicaprio category example
 *** DONE Bill clinkton infobox
 *** DONE Synonyms rule

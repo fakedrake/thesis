@@ -71,9 +71,9 @@ basic features that make our life easier.
 
 * Phony targets
 
-  Some tasks do not result in a file and thay need to be run every
+  Some tasks do not result in a file and they need to be run every
   time =make= encounters them in the dependency tree. For this we
-  have the special keywork =.PHONY:=. Here is an example.
+  have the special keyword =.PHONY:=. Here is an example.
 
   #+BEGIN_SRC makefile
     .PHONY:
@@ -98,14 +98,15 @@ basic features that make our life easier.
   #+END_SRC
 
   When =touch test.txt= will be run *every* time we run =make
-  test.txt= simply becaus make can not be sure that the phony target
-  =say-hello= did not change anything important for =test.txt=. For
-  this reason phony targets are only meant for user facing tasks.
+  test.txt= simply because =make= can not be sure that the phony
+  target =say-hello= did not change anything important for
+  =test.txt=. For this reason phony targets are only meant for user
+  facing tasks.
 
 * Variables
 
   =makefiles= can have variables defined in a variety of ways. Some
-  cases that are being made use of in wikiepedia-mirror are
+  cases that are being made use of in wikipedia-mirror are
   presented below.
 
 
@@ -118,13 +119,13 @@ basic features that make our life easier.
         echo $(OBJECTS)
    #+END_SRC
 
-   Running =make show= wil print =foo.o bar.o= to the console. All
+   Running =make show= will print =foo.o bar.o= to the console. All
    variables are substituted for their value by wrapping the variable
-   name in parentheses and prefixing the dolear sign (=$=). Makefile
+   name in parentheses and prefixing the dollar sign (=$=). Makefile
    variables have no type, reference to a variable is equivalent to
-   simpe string substitution, much like it is in unix shell scripting.
+   simple string substitution, much like it is in unix shell scripting.
 
-   Variabales defined using a simple equal =\== sign are recursively
+   Variables defined using a simple equal =\== sign are recursively
    expanded. This means that after the variable name is substituted
    for the variable content a recursive process keeps expanding
    emergent variables. This can make variable expansion a very
@@ -259,8 +260,8 @@ basic features that make our life easier.
    - =$|= The names of all the order-only prerequisites, with spaces
      between them.
    - =$*=: The stem with which an implicit rule matches (see How
-     Patterns Match). If the target is dir/a.foo.b and the target
-     pattern is a.%.b then the stem is dir/foo. The stem is useful
+     Patterns Match). If the target is =dir/a.foo.b= and the target
+     pattern is =a.%.b= then the stem is =dir/foo=. The stem is useful
      for constructing names of related files. In a static pattern
      rule, the stem is part of the file name that matched the =%= in
      the target pattern. In an explicit rule, there is no stem; so

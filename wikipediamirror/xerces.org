@@ -81,7 +81,7 @@ order):
 
 This operation finishes quickly despite =/tmp/just-a-copy.xml= being
 fairly large because =tac= seeks to the end of the file and reads
-backwards until =grep= finds the 2 occurances it is looking for and
+backwards until =grep= finds the 2 occurrences it is looking for and
 quits. On ext3 the seek operation does not traverse the entire
 file. Indeed from the =tac= source code:
 
@@ -259,7 +259,7 @@ avoiding some level of parsing.
    that it isn't). This way we only need to search into 1Kb for
    =<page>=. Effectively instead of copying the bytes in range \([0,
    \beta)\) we are concatenating two ranges \( [0,\alpha - 1000] \cup
-   (\alpha - 1000, \beta) \) by making a subshell that will first
+   (\alpha - 1000, \beta) \) by making a sub-shell that will first
    output the first range and then output \( (\alpha - 1000, \alpha)
    \) stopping when it finds =<page>=. Here is the one liner:
 
@@ -291,7 +291,7 @@ avoiding some level of parsing.
   we find out the range in which the page resides we can =mmap=
   precisely in that part of =$ORIGINAL_XML= and then =memset= covering
   it up with space characters. The actual implementation lives in
-  =data/page_remover.c=, below we present the call to mmap:
+  =data/page_remover.c=, below we present the call to =mmap=:
 
   #+BEGIN_SRC c
     ctx->off = off-pa_off;
@@ -336,7 +336,7 @@ avoiding some level of parsing.
 
   The basic premise is that the /"pattern space"/, or the input stream
   which is a normal unix stream coming from a file, a pipe or just
-  stdin, is passed through a programmable pipeline. Either the
+  =stdin=, is passed through a programmable pipeline. Either the
   modified pattern space itself is printed or, with the use of the
   =-n= flag, selected parts of it. Let's look at the use that we have
   made for sed above
