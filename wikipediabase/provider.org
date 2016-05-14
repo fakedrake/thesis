@@ -9,7 +9,7 @@
 #+STARTUP:     showall
 
 
-  WikipediaBase attempts to be modular and extendible. To accomplish
+  WikipediaBase attempts to be modular and extensible. To accomplish
   this it is often useful to multiplex multiple sources of the same
   type of data resource. This is particularly useful when accessing
   heuristic methods like classifier. To promote modularity and to
@@ -26,9 +26,9 @@
 
 * Example
 
-  We demostrate the pattern with an example: we will embed a small
-  lisp dialect into python that we will call =p-lisp= (for =python
-  lisp=, =provider-lisp= and =poor-lisp=)
+  We demonstrate the pattern with an example: we will embed a small
+  lisp{{{ref}}} dialect into python that we will call =p-lisp= (for
+  =python lisp=, =provider-lisp= and =poor-lisp=)
 
   #+BEGIN_SRC python
     from wikipediabase.provider import Provider, Acquirer, provide
@@ -143,9 +143,9 @@
 
   - The local closure
   - The arguments of the lambda
-  - Builtin functions
+  - Built-in functions
 
-  All the above are abstracted using the provider-aquirer model. At
+  All the above are abstracted using the provider-acquirer model. At
   each point a different =EvaluationContext= is responsible for
   evaluating and each =EvaluationContext= has access to its known
   symbols via an array of providers that are abstracted using the

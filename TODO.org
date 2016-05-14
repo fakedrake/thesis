@@ -1,10 +1,18 @@
+* Draft 4.0
+** DONE Xetex setup
+
+   Use the Georgia font
+
+** TODO Translation
 * Draft 3.0
-** Move to appendix
-*** TODO Dictionary pass
-*** DONE Dicaprio category example
-*** DONE Bill clinkton infobox
-*** DONE Synonyms rule
-*** DONE Led Zeppelin fetcher test to appendix
+** TODO Mark References in text
+** TODO Setup bibtex
+** TODO Lookup refrerences
+** DONE Dictionary pass
+** DONE Dicaprio category example
+** DONE Bill clinkton infobox
+** DONE Synonyms rule
+** DONE Led Zeppelin fetcher test to appendix
 * Draft 0.2 [100%]
 ** DONE Rewrite the start description
 ** DONE Rewrite the functionality bit

@@ -15,13 +15,13 @@ to wikipedia related information, that mimics the API interface
 provided by the Omnibase. Wikipediabase has gone through a couple of
 rewrites. The initial version was written in Java. It was then
 rewritten in Ruby copying the original architecture and design and now
-it is rewritten in python and re-architectured from scratch. There are
-two main reasons for this: python is taught as a pre-graduate course
-in MiT, and therefore a Python code base will make initiation of new
-MiT students smoother and, more importantly, while the initial design
-of the previous WikipediaBase should have been adequate, it grew to a
-point where the code was ad-hoc and hard to understand, reason about
-and extend.
+it is rewritten in python{{{ref}}} and re-architectured from
+scratch. There are two main reasons for this: python is taught as a
+pre-graduate course in MiT, and therefore a Python code base will make
+initiation of new MiT students smoother and, more importantly, while
+the initial design of the previous WikipediaBase should have been
+adequate, it grew to a point where the code was ad-hoc and hard to
+understand, reason about and extend.
 
 The python implementation was initially written by Chris
 Perivolaropoulos in close association with Dr Sue Felshin and was
@@ -68,8 +68,8 @@ Silver. Other students have also joined the project shortly after.
 
   We will need some extra stuff for WikipediaBase to work:
 
-  - Postresql
-  - Redis
+  - Postresql{{{ref}}}
+  - Redis{{{ref}}}
 
   The installation process of these packages varies across
   platforms. Both are databases. Their purpose is for caching repeated
@@ -93,10 +93,10 @@ Silver. Other students have also joined the project shortly after.
 
 *** Unit tests
 
-    Unit tests test small blocks of functionality, that are composed
-    to create the system at large. For unit testing we use python's
-    default testing library. Each test is a class that implements the
-    =TestCase= interface.
+    Unit tests{{{ref}}} test small blocks of functionality, that are
+    composed to create the system at large. For unit testing we use
+    python's default testing library. Each test is a class that
+    implements the =TestCase= interface.
 
 *** Functional and regression tests
 
@@ -150,9 +150,9 @@ Silver. Other students have also joined the project shortly after.
 
 ** Running tests
 
-   We employ the =nosetests= tool to find and run our tests. To do so
-   we add a test requirement in =setup.py= and assign =nose.collector=
-   to manage our test suite:
+   We employ the =nosetests={{{ref}}} tool to find and run our
+   tests. To do so we add a test requirement in =setup.py= and assign
+   =nose.collector= to manage our test suite:
 
    #+BEGIN_SRC python
      from setuptools import setup
@@ -360,13 +360,13 @@ Silver. Other students have also joined the project shortly after.
     wikipedia.org site for performance reasons (See wikipedia-mirror
     runtime performance section).
 
-    Mediawiki provides a RESTful API for all the required
-    functionality. The basic premise is that one can send requests with
-    =POST= or =GET= methods and get a response formulated in XML or
-    JSON. The preferred response type for WikipediaBase was sending
-    =GET= HTTP requests to receive =JSON= data. =GET= was selected
-    because it is explicitly suggested in the mediawiki API page
-    because caching happens at the HTTP level.
+    Mediawiki{{{ref}}} provides a RESTful API{{{ref}}} for all the
+    required functionality. The basic premise is that one can send
+    requests with =POST= or =GET= methods and get a response
+    formulated in XML or JSON. The preferred response type for
+    WikipediaBase was sending =GET= HTTP requests to receive =JSON=
+    data. =GET= was selected because it is explicitly suggested in the
+    mediawiki API page because caching happens at the HTTP level.
 
     #+BEGIN_QUOTE
     Per the HTTP specification, POST requests cannot be
@@ -410,9 +410,9 @@ Silver. Other students have also joined the project shortly after.
 
 *** DBM
 
-    As mentioned before for caching several dbm implementations are
-    provided by the python standard library. None of the
-    implementations shipped with python are part of the python
+    As mentioned before for caching several dbm{{{ref}}}
+    implementations are provided by the python standard library. None
+    of the implementations shipped with python are part of the python
     standard library itself however. Some of the DBM implementations
     that are available via the standard python library are:
 
@@ -439,7 +439,7 @@ Silver. Other students have also joined the project shortly after.
 
 *** SQLite
 
-    SQLite was also considered as caching backend
+    SQLite{{{ref}}} was also considered as caching backend
     database. Unfortunately its performance for our particular purpose
     was disappointing.
 
@@ -448,19 +448,19 @@ Silver. Other students have also joined the project shortly after.
     WikipediaBase code is very short:
 
     #+BEGIN_SRC python
-    from sqlitedict import SqliteDict
+      from sqlitedict import SqliteDict
 
-      class SqlitePersistentDict(EncodedDict):
-          def __init__(self, filename, configuration=configuration):
-              if not filename.endswith('.sqlite'):
-                  filename += '.sqlite'
+        class SqlitePersistentDict(EncodedDict):
+            def __init__(self, filename, configuration=configuration):
+                if not filename.endswith('.sqlite'):
+                    filename += '.sqlite'
 
-              db = SqliteDict(filename)
-              super(SqlitePersistentDict, self).__init__(db)
+                db = SqliteDict(filename)
+                super(SqlitePersistentDict, self).__init__(db)
 
-          def sync(self):
-    self.db.close()
-    super(SqlitePersistentDict, self).sync()
+            def sync(self):
+      self.db.close()
+      super(SqlitePersistentDict, self).sync()
     #+END_SRC
 
     Below are two benchmark functions that will read/write 100000 times
@@ -503,10 +503,10 @@ Silver. Other students have also joined the project shortly after.
     actually implemented shortly after the project hand-off by Alvaro
     Morales. The reason we did not initially use it was that it is
     modeled as a server-client which adds complexity to an aspect of
-    the system that should be as simple as possible. Another reason for
-    our initial skepticism towards third party -- ie. not shipped with
-    python -- databases was to avoid extra dependencies, especially
-    when they are the cool database du jour.
+    the system that should be as simple as possible. Another reason
+    for our initial skepticism towards third party --- ie. not shipped
+    with python --- databases was to avoid extra dependencies,
+    especially when they are the cool database du jour.
 
 * Date parser
   #+INCLUDE: dateparser.org
