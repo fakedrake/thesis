@@ -92,16 +92,46 @@
 
 * MetaInfobox
 
-  The =MetaInfobox= is a subclass of the =Infobox= that provodes
-  information about the infobox, most importantly a map between markup
-  attributes. Say we have an infobox of type \(I\) which has
-  attributes \({a_1, ... , a_n}\). Each instance of that infobox \(I\) defines
+  The =MetaInfobox= is implemented as a subclass of the =Infobox= that
+  provides information about the infobox, most importantly a map
+  between markup attributes and the rendered counterparts. Say we have
+  an infobox of type \(I\) which has attributes \({a_1, ... ,
+  a_n}\). Each attribute has two representations:
 
-  It is an infobox with all the valid
-  attributes and each value is all the names of all attributes that
-  are equivalent to them. Eg An infobox of type Foo that has valid
-  attributes A, B, C and D and A, B and C are equivalent has a meta
-  infobox that looks something like:
+  - a markup representation that is the key used in the infobox
+    template.
+  - The HTML rendered representation, that is the left-column text of
+    the rendered infobox table.
+
+  For example in the =officeholder= infobox there is an attribute that
+  has markup representation =predecessor= and rendered representation
+  =Preceded by=.
+
+  To do this the =MetaInfobox= uses the template documentation page to
+  find the markup representation of all valid attributes of an infobox
+  type. It then creates an infobox where each attribute has value its
+  markup attribute name wrapped int =!!!=. (for example =predecessor =
+  !!!predecessor!!!=). It then renders the created infobox and looks
+  for =!!!predecessor!!!= in the rendered values. The corresponding
+  rendered attribute names also correspond to the markup attribute
+  names. Note that the correspondence of rendered - markup attributes
+  is not bijective, that is to say each markup attribute may
+  correspond to zero or more rendered attributes and vice versa.
+
+  For example, an infobox of type =Foo= has valid attributes /A/, /B/,
+  /C/ and /D/. The generated infobox markup would be:
+
+  #+BEGIN_SRC
+  {{Infobox Foo
+  | A = !!!A!!!
+  | B = !!!B!!!
+  | C = !!!C!!!
+  | D = !!!D!!!
+  }}
+  #+END_SRC
+
+  And the rendered version could be, depending on the implementation
+  of the =Foo= infobox.
 
   | Attribute | Value                   |
   |-----------+-------------------------|
@@ -109,6 +139,9 @@
   | B         | !!!A!!! !!!B!!! !!!C!!! |
   | C         | !!!A!!! !!!B!!! !!!C!!! |
   | D         | !!!D!!!                 |
+
+  Which makes the mapping fairly obvious.
+
 
 * Article
 
@@ -118,9 +151,9 @@
 
 * Fetcher
 
-  The fetcher is an abstraction over the communicatioln of
-  WikipediaBase with the outside world. It is a singleton object
-  that implements a specific interface.
+  The fetcher is an abstraction over the communication of
+  WikipediaBase with the outside world. It is a singleton object that
+  implements a specific interface.
 
   Fetchers are organized in an inheriting hierarchiy
 
@@ -130,7 +163,7 @@
        fetch articles from /wikipedia.org/. It is possible to direct
        it to a mirror but wikipedia-mirror's runtime performance
        turned out to be prohibitive.
-  - CachingFetcher :: inherits fetcher and retains it's functionality,
+  - CachingFetcher :: inherits fetcher and retains its functionality,
        only it uses Redis to cache the fetched symbols. It is the
        default fetcher for wikipediabase.
   - StaticFetcher :: is a class that implements the =BaseFetcher=
@@ -155,7 +188,7 @@
   this and wikipedia.org would consider it an abuse of the service and
   block our IP. For that reason we eventually switched to the API with
   Redis caching, which works out pretty well because =Renderer=
-  objects end up being used only my =MetaInfobox= which has quite a
+  objects end up being used only by =MetaInfobox= which has quite a
   limited scope, making thus cache misses rarely.
 
   An interesting anecdote about the =Renderer= class was that it was
@@ -177,20 +210,20 @@
 
    # Find the port
 
-   WikipediaBase can be used as a library but it's primary function
-   is as a backend to START. The communication between START and
+   WikipediaBase can be used as a library but its primary function is
+   as a backend to START. The communication between START and
    WikipediaBase is carried out over a plaintext telnet connection on
-   port {port} using EDN-like sexpressions. The frontend handles the
-   network connection with START, translates the received queries
-   into calls to knowledgebase and then translate the knowledgebase
-   response into properly formulated sexpressions that it sends back
-   over the telnet connection.
+   port 8023 using s-expressions. The frontend handles the network
+   connection with START, translates the received queries into calls
+   to knowledgebase and then translates the knowledgebase response into
+   properly formulated s-expressions that it sends back over the
+   telnet connection.
 
 ** Knowledgebase
 
    The knowledgebase is the entry point to the rest of
    wikipediabase. It uses the Provider/Acquirer pattern to
-   transaprently provide the frontend with arbitrary methods. Those
+   transparently provide the frontend with arbitrary methods. Those
    methods are responsible for chosing whether we are to resort to
    classifiers or resolvers (or any other mechanism) for answering
    the query. Available classifiers and resolvers become accessible
@@ -217,48 +250,11 @@
     infobox. For example Bill Clinton's page contains the infobox:
 
     #+BEGIN_EXAMPLE
-    {{Infobox president
-|name          = Bill Clinton
-|image         = 44 Bill Clinton 3x4.jpg{{!}}border
-|office        = [[List of Presidents of the United States|42nd]] [[President of the United States]]
-|vicepresident = [[Al Gore]]
-|term_start    = January 20, 1993
-|term_end      = January 20, 2001
-|predecessor   = [[George H. W. Bush]]
-|successor     = [[George W. Bush]]
-|order1        = 40th and 42nd [[List of Governors of Arkansas|Governor of Arkansas]]
-|lieutenant1   = [[Winston Bryant]]<br>[[Jim Guy Tucker]]
-|term_start1   = January 11, 1983
-|term_end1     = December 12, 1992
-|predecessor1  = [[Frank D. White]]
-|successor1    = [[Jim Guy Tucker]]
-|lieutenant2   = [[Joe Purcell]]
-|term_start2   = January 9, 1979
-|term_end2     = January 19, 1981
-|predecessor2  = [[Joe Purcell]] {{small|(Acting)}}
-|successor2    = [[Frank D. White]]
-|office3       = 50th [[Arkansas Attorney General|Attorney General of Arkansas]]
-|governor3     = [[David Pryor]]<br>[[Joe Purcell]] {{small|(Acting)}}
-|term_start3   = January 3, 1977
-|term_end3     = January 9, 1979
-|predecessor3  = [[Jim Guy Tucker]]
-|successor3    = Steve Clark
-|birth_name    = William Jefferson Blythe III
-|birth_date    = {{birth date and age |1946|8|19}}
-|birth_place   = [[Hope, Arkansas|Hope]], [[Arkansas]], [[United States|U.S.]]
-|death_date    =
-|death_place   =
-|party         = [[Democratic Party (United States)|Democratic]]
-|spouse        = {{marriage|[[Hillary Clinton|Hillary Rodham]]|October 11, 1975}}
-|relations     = ''See [[Clinton family]]''
-|children      = [[Chelsea Clinton|Chelsea]]
-|parents       = [[William Jefferson Blythe, Jr.]]<br>[[Virginia Clinton Kelley]]
-|alma_mater    = [[Edmund A. Walsh School of Foreign Service|Georgetown University]]<br>[[University College, Oxford]]<br>[[Yale Law School|Yale University]]
-|religion      = [[Baptists|Baptist]] {{small|(formerly [[Southern Baptist Convention|Southern Baptist]])}}<ref>He was [http://www.beliefnet.com/News/Politics/2004/09/All-Of-Us-See-Through-The-Glass-Darkly.aspx raised a Southern Baptist]. (= a member of the [[Southern Baptist Convention]] SBC). Clinton left the SBC due to disagreement with its conservative positions (details [[List of Southern Baptist Convention affiliated people#Ex-members|here]]). See also [[New Baptist Covenant]]</ref>
-|signature     = Signature of Bill Clinton.svg
-|signature_alt = Cursive signature of Bill Clinton in ink
-|website       = {{url|clintonlibrary.gov|Library website}}
-}}
+      {{Infobox president
+      |name          = Bill Clinton
+      |image         = 44 Bill Clinton 3x4.jpg{{!}}border
+      [...]
+      }}
     #+END_EXAMPLE
 
     And therefore gets the class =wikipedia-president=.
@@ -266,7 +262,7 @@
 *** Person
 
     =PersonClassifier= assigns the class =wikibase-person= using a few
-    heretics in the order they are described:
+    heuristics in the order they are described:
 
 **** Category regexes
 
@@ -284,9 +280,9 @@
      - =.* players=
      - =.* singers=
 
-**** Category regex excludes
+**** Category exclude regexes
 
-     Exclude the following regexes.
+     Exclude categories matching the following regexes.
 
      - =\sbased on\s=
      - =\sabout\s=
@@ -297,7 +293,7 @@
 **** Category matches
 
      We know an article refers to a person if the page is in one or
-     more of the following mediawiki categories:
+     more of the following mediawiki categories :
 
      - =american actors=
      - =american television actor stubs=
@@ -322,39 +318,11 @@
      - =year of death missing=
 
 
-     For example Leonardo DiCaprio's page has the following categories:
+     For an example of how this works see the appendix.
 
-     - Leonardo DiCaprio
-     - 1974 births
-     - *Living people*
-     - 20th-century American male actors
-     - 21st-century American male actors
-     - American environmentalists
-     - American film producers
-     - American male child actors
-     - American male film actors
-     - American male soap opera actors
-     - American male television actors
-     - American people of German descent
-     - American people of Italian descent
-     - American people of Russian descent
-     - American philanthropists
-     - Best Actor AACTA Award winners
-     - Best Actor Academy Award winners
-     - Best Drama Actor Golden Globe (film) winners
-     - Best Musical or Comedy Actor Golden Globe (film) winners
-     - California Democrats
-     - Film producers from California
-     - Formula E team owners
-     - Male actors from Hollywood, California
-     - Male actors from Palm Springs, California
-     - Male actors of Italian descent
-     - People from Echo Park, Los Angeles
-     - Silver Bear for Best Actor winners
-
-     As it is obvious the list of categories is arbitrary and very far
-     from complete. Multiple methods have been considered for fixing
-     this. Some of them are:
+     As it is obvious the list of categories is arbitrary and very
+     far from complete. Multiple methods have been considered for
+     fixing this. Some of them are:
 
      - Supervised machine learning methods like SVM using other
        methods of determining person-ness to create training sets.

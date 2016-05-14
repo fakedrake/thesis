@@ -1,16 +1,27 @@
-The most important part of wikipedia-mirror automation is the =make=
-build system. Below is an outline of the most basic features of make
-that constitute it an excellent candidate for automating processes
-like this.
+#+TITLE:       Makefiles
+#+AUTHOR:      Chris Perivolaropoulos
+#+EMAIL:       cperivol@csail.mit.edu
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:    en
+#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+STARTUP:     showall
+#+MACRO:       ref
 
- Make is a build system whereby one can declare required files
+
+The most important part of wikipedia-mirror automation is the =make=
+build system{{{ref}}}. Below is an outline of the most basic features
+of make that constitute it an excellent candidate for automating
+processes like this.
+
+Make is a build system whereby one can declare required files
 (targets), dependencies for them, and a set of shell commands that
 will build those targets. Each target is essentially a finite state
 machine with two states:
 
-- A file that exists and is up to date with it's dependencies and
-- A file that either doesn't exist or it's modification date is
-  older than that of at leas one of it's dependencies.
+- A file that exists and is up to date with its dependencies and
+- A file that either doesn't exist or its modification date is older
+  than that of at leas one of its dependencies.
 
 And a sequence of shell commands to transition from the latter to the
 former state.
@@ -41,16 +52,16 @@ building =foo.o=, =bar.o= and =foobar=, which are
 respectively. Notice that there are no rules for the =.c= and =.h=
 files. That is because =make= should fail if they are not present. So
 if we run =make foobar=, make will check for =foobar='s existence and
-modification date. If foobar is missing or it's modification date is
-earlier than it's deopendecies' (ie =foo.o= and =bar.o=) it will be
-rebuilt. If any dependecies are missing the same logic is applied to
+modification date. If foobar is missing or its modification date is
+earlier than its dependencies' (ie =foo.o= and =bar.o=) it will be
+rebuilt. If any dependencies are missing the same logic is applied to
 that. This way if we build foobar once, and then edit =bar.c= and
 rerun =make foobar=, =make= will recursively deduce that
 
-- =bar.o= is out of date with respect to it's dependency =bar.c=
+- =bar.o= is out of date with respect to its dependency =bar.c=
 - When =bar.o= is rebuilt it now has a more recent modification date
   than =foobar= and therefore the latter is out of date with respect
-  to it's dependency =bar.o= so it needs to be rebuilt.
+  to its dependency =bar.o= so it needs to be rebuilt.
 
 This way make can infer a near optimal strategy for building each time
 the minimum amount of required targets.
@@ -108,11 +119,10 @@ basic features that make our life easier.
    #+END_SRC
 
    Running =make show= wil print =foo.o bar.o= to the console. All
-   variables are substituted for their value by wrapping the
-   variable name in parentheses and prefixing the dolear sign
-   (=$=). Makefile variables have no type, reference of the
-   variables is equivalent to simpe string substitution, much like
-   it is in unix shell scripting.
+   variables are substituted for their value by wrapping the variable
+   name in parentheses and prefixing the dolear sign (=$=). Makefile
+   variables have no type, reference to a variable is equivalent to
+   simpe string substitution, much like it is in unix shell scripting.
 
    Variabales defined using a simple equal =\== sign are recursively
    expanded. This means that after the variable name is substituted
@@ -178,16 +188,16 @@ basic features that make our life easier.
      	echo $(kurma)
    #+END_SRC
 
-   So what would makefile have said to Bertrand Russell [refrence] (or
-   whoever)?
+   Here we try to recursively print an infinite message.
 
    #+BEGIN_SRC sh
      $ make --just-print
      Makefile:5: *** Recursive variable `support2' references itself (eventually).  Stop.
    #+END_SRC
 
-   So in a way the variable system of make is total [reference]. As
-   the hindus "solved" this problem so can we in makefiles:
+   the variable system of make is total{{{ref}}}, that is to say
+   variable evaluation can be recursive but it needs to terminate. We
+   can circumvent this by using the ~:\=~ assignment operator.
 
    #+BEGIN_SRC makefile
      kurma = the world $(support1)
@@ -207,8 +217,8 @@ basic features that make our life easier.
      echo the world supported by four elephants supported by a tortoise
    #+END_SRC
 
-   So basically =support2= is removed from scope when the =support2=
-   variable is substituted.
+   basically =support2= is removed from scope when the =support2=
+   itself is substituted.
 
 ** Automatic variables
 

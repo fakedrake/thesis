@@ -1,6 +1,12 @@
-* Draft 0.2 [0%]
-** TODO Rewrite the start description
-** TODO Rewrite the functionality bit
+* Draft 3.0
+** Move to appendix
+*** TODO Dicaprio category example
+*** DONE Bill clinkton infobox
+*** DONE Synonyms rule
+*** DONE Led Zeppelin fetcher test to appendix
+* Draft 0.2 [100%]
+** DONE Rewrite the start description
+** DONE Rewrite the functionality bit
 * Overview [100%]
 ** DONE Introduction for each project
 * Wikipediabase [100%]

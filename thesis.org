@@ -1,6 +1,6 @@
 #+TITLE:       Extracting relational data from Wikipedia
 #+AUTHOR:      Chris Perivolaropoulos
-#+DATE:        Tuesday 63 May 2016
+#+DATE:        Tuesday 9q May 2016
 #+EMAIL:       cperivol@csail.mit.edu
 #+DESCRIPTION: Making sense of semi structured data in wikipedia.
 #+KEYWORDS:
@@ -12,15 +12,16 @@
 * Abstract
 
   MiT InfoLab's START (SynTactic Analysis using Reversible
-  Transformations) is the worlds first question answering system. For
-  accessing most data sources it takes advantage of Omnibase, the
-  /"virtual database"/ providing uniform access to multiple sources on
-  the web. We developed WikipediaBase to provide an Omnibase-like way
-  for START to access unstructured and semi-structured information in
-  Wikipedia. As part of this goal we also created wikipedia-mirror, a
-  program to create Wikipedia clones that can be run locally, to
-  provide control and unrestricted access to the wikpedia dataset
-  without depending on or abusing wikipedia.org.
+  Transformations) is the world's first web-based question answering
+  system. For accessing most data sources it takes advantage of
+  Omnibase, the /"virtual database"/ providing uniform access to
+  multiple sources on the web. We developed WikipediaBase to provide
+  an Omnibase-like way for START to access unstructured and
+  semi-structured information in Wikipedia. As part of this goal we
+  also created wikipedia-mirror, a program to create Wikipedia clones
+  that can be run locally, to provide control and unrestricted access
+  to the wikpedia dataset without depending on or abusing
+  wikipedia.org.
 
 * Introduction
   #+INCLUDE: "./introduction.org"

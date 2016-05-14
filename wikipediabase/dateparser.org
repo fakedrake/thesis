@@ -64,9 +64,9 @@ Dateparser resides in a separate package called overlay-parse
   in the tag set.
 
   Once we have a set of overlays we can define overlay sequences as
-  overlays whose ranges are consecutive, that is their and their tag
-  sets match particular patterns. For example we can search for
-  sequences of overlays that match the pattern
+  overlays whose ranges are consecutive, that is their tag sets match
+  particular patterns. For example we can search for sequences of
+  overlays that match the pattern
 
   \[
   p = \mathrm{DayOfMonth}, \mathrm{Separator(/)}, (\mathrm{Month} \wedge \mathrm{Number}), \mathrm{Separator(/)}, \mathrm{Year}
@@ -79,8 +79,7 @@ Dateparser resides in a separate package called overlay-parse
 * The dates example
 
   The working example and motivation of the package is date
-  parsing. The =dates= submodule is itself about 200 lines of code
-  exposes two main entry points:
+  parsing. The =dates= submodule exposes two main entry points:
 
   - =just_dates= that looks for dates in a text.
   - =just_ranges= that looks for data ranges in a corpus.

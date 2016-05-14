@@ -6,32 +6,32 @@
 #+KEYWORDS:
 #+LANGUAGE:    en
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+macro:       ref
 #+STARTUP:     showall
 
-Wikipedia mirror is an system aiming to automate the creation of a
+Wikipedia mirror is a system aiming to automate the creation of a
 local clone of wikipedia contianing only the articles - that is not
 containing users, discussion and edit history. The automated process
-includes incluses setting up a server, a database and populating
-that database with the wikipedia articles. The purpose for this is
-to provide the option of accessing wikipedia's dataset independently
-of wikipedia.org.
+includes setting up a server, a database and populating that database
+with the wikipedia articles. The purpose for this is to provide the
+option of accessing wikipedia's dataset independently of
+wikipedia.org.
 
 * mediawiki stack overview
 
   Wikipedia-mirror builds upon the mediawiki stack provided by
-  bitnami. A service that builds the entire server within the
-  confines of a directory. This is useful because we avoided the
-  overhead of dealing with container or VM technologies and we had
-  direct access to the filesystem of the stack while still having
-  bitnami's build system do the tedious job of orchestrating the
-  various components and separating our sever from the rest of the
-  system.
+  bitnami. A service that builds the entire server within the confines
+  of a directory. This is useful because we avoided the overhead of
+  dealing with container or VM technologies and we had direct access
+  to the filesystem of the stack while still having bitnami's build
+  system do the tedious job of orchestrating the various components
+  and separating our server from the rest of the system.
 
   The stack is comprised of
 
   - An http server, in our case apache
   - The web application runtime, in our case PHP
-  - A database, in our cas MySQL
+  - A database, in our case MySQL
   - The web application itself, in our case mediawiki
 
   All of the above are provided by the the bitnami mediawiki stack.
@@ -39,8 +39,8 @@ of wikipedia.org.
   to go with bitnami which works pretty well.
 
   Once the stack is set up properly the wikipedia dump xml is
-  downloaded and then turned into an sql dump with mwdumper. Could be
-  piped directly to MySQL? but extracting can take time and things
+  downloaded and then turned into an sql dump with mwdumper. It could
+  be piped directly to MySQL but extracting can take time and things
   tend to go wrong during the dumping step.
 
 ** Elements of the stack
@@ -49,7 +49,7 @@ of wikipedia.org.
 
 *** Apache
 
-    As per wikipedia:
+    As per wikipedia{{{ref}}}:
 
     #+BEGIN_EXAMPLE
       The Apache HTTP Server, colloquially called Apache, is the world's
@@ -70,11 +70,11 @@ of wikipedia.org.
       software.
     #+END_EXAMPLE
 
-    it is fair to say that apache is at least one of the most popular
-    web servers on the internet. wikipedia.org itself seems to be
-    using a more complex stack involving [[https://en.wikipedia.org/wiki/Varnish_(software)][varnish]], an HTTP accelerator,
-    and [[https://en.wikipedia.org/wiki/Nginx][nginx]], an alternative, also quite popular HTTP server. We
-    arrive at this conclusion by inspecting the headers returned by
+    It is fair to say that apache is at least one of the most popular web
+    servers on the internet. wikipedia.org itself seems to be using a
+    more complex stack involving [[https://en.wikipedia.org/wiki/Varnish_(software)][varnish{{{ref}}}]], an HTTP accelerator, and
+    [[https://en.wikipedia.org/wiki/Nginx][nginx]], an alternative, also quite popular HTTP server. We arrive
+    at this conclusion by inspecting the headers returned by
     wikipedia.org. In the http://www.wikipedia.org case we are
     redirected to the secure domain (pay attention to the =Server:=
     line):
@@ -99,61 +99,61 @@ of wikipedia.org.
     However it is beyond the scope of the project to precisely
     replicate wikipedia's infrastructure. We focus on the
     functionality. Therefore due to the popularity, familiarity and by
-    virtue of apace being part of the automatically installable
+    virtue of apache being part of the automatically installable
     bitnami mediawiki stack, we use it as our server.
 
 *** PHP
 
-    Mediawiki, which is discussed later, is written entirely in PHP, a
-    popular server side, dynamically typed, object oriented scripting
-    language. PHP is essential and is installed along the bitnami
-    mediawiki stack. PHP is popular among web developers partly due to
-    it's support for multiple relational database libraries (including
-    PostgreSQL, MySQL, Microsoft SQL Server and SQLite) and it
-    essentially being structred as a template language generating
-    HTML.
+    Mediawiki, which is discussed later, is written entirely in
+    PHP{{{ref}}}, a popular server side, dynamically typed, object
+    oriented scripting language. PHP is essential and is installed
+    along the bitnami mediawiki stack. PHP is popular among web
+    developers partly due to its support for multiple relational
+    database libraries (including PostgreSQL, MySQL, Microsoft SQL
+    Server and SQLite) and it essentially being structured as a
+    template language generating HTML.
 
 *** MySQL
 
     Mediawiki can use a number of different SQL database backends:
 
-    - *MSSQL:* An SQL database by Microsoft
-    - *MySQL:* Using the standard PHP library for MySQL.
-    - *MySQLi:* An extension to the MySQL backend
-    - *Oracle:* A propertiary SQL database by Oracle.
+    - *MSSQL:* An SQL database by Microsoft{{{ref}}}
+    - *MySQL:* Using the standard PHP library for MySQL{{{ref}}}.
+    - *MySQLi:* An extension to the MySQL backend{{{ref}}}.
+    - *Oracle:* A propitiatory SQL database by Oracle{{{ref}}}.
     - *SQLite:* An SQL database that is typically accessed as a
       library rather than over a client-server scheme as is the case
-      with the other options on the list.
+      with the other options on the list.{{{ref}}}
 
     Wikipedia provides multiple dump files for SQL tables of secondary
     importance in MySQL format (eg. page redirects, categories etc)
-    and suggests =mwdumper= which parses the XML dumpls of the
+    and suggests =mwdumper= which parses the XML dumps of the
     wikipedia articles into MySQL. That and bitnami providing it as
-    part of it's automatically built stack, make MySQL the obvious
+    part of its automatically built stack, make MySQL the obvious
     choice for the wikipedia-mirror stack.
 
 *** MediaWiki
 
-    Mediawiki is the heart of wikipedia. MediaWiki is a free and
-    open-source wiki application. It was originally developed by the
-    Wikimedia Foundation and runs on many websites, including
-    Wikipedia, Wiktionary and Wikimedia Commons. As mentioned
-    previously, it is written in the PHP programming language and uses
-    a backend database.
+    Mediawiki{{{ref}}} is the heart of wikipedia. MediaWiki is a free
+    and open-source wiki application. It was originally developed by
+    the Wikimedia Foundation and runs on many websites, including
+    Wikipedia, Wikitionary and Wikimedia Commons{{{ref}}}. As
+    mentioned previously, it is written in the PHP programming
+    language and uses a backend database.
 
     The software has more than 800 configuration settings and more
     than 2,000 extensions available for enabling various features to
     be added or changed. On Wikipedia alone, more than 1000 automated
     and semi-automated bots and other tools have been developed to
     assist in editing. Most of this is not relevant for our
-    purposes. The only extnesions useful for our purposes are
+    purposes. The only extensions useful for our purposes are
     =scriunto= and =parserfunctions= and the only useful settings are
     related to the name of the site, the name of the database etc and
     are mostly handled by bitnami.
 
 * Setting up
 
-  Following are step by step instructions First, clone the git repo:
+  Following are step by step instructions. First, clone the git repo:
 
   #+BEGIN_SRC sh
     $ git clone https://github.com/fakedrake/wikipedia-mirror
@@ -170,10 +170,10 @@ of wikipedia.org.
   - Set up the bitnami stack that includes a local install of MySQL
   - Load the MySQL dumps into MySQL
 
-  All of these steps are encoded as part of the a dependency
-  hierarchy encoded into makefile targets and are in theory taken
-  care of automatically, effectively yielding a functioning wikipedia
-  mirror. However this process is extremely long fragile so it is
+  All of these steps are encoded as part of the dependency hierarchy
+  encoded into makefile targets and are in theory taken care of
+  automatically, effectively yielding a functioning wikipedia
+  mirror. However this process is extremely long and fragile so it is
   advised that each of these steps be run individually by hand.
 
   First, download and install bitnami. The following command will
@@ -184,10 +184,10 @@ of wikipedia.org.
     $ make bmw-install
   #+END_SRC
 
-  Next step is to make sure =maven=, the java is a software project
-  management and comprehension is installed, required to install and
-  setup mwdumper (see below). You can do that by making sure the
-  following succeeds:
+  Next step is to make sure =maven=,{{{ref}}} the java is a software
+  project management and comprehension is installed, required to
+  install and setup mwdumper (see below). You can do that by making
+  sure the following succeeds:
 
   #+BEGIN_SRC text
     $ mvn --version
@@ -197,9 +197,9 @@ of wikipedia.org.
   (for Java) using =sudo apt-get install maven=.
 
   Now everything is installed to automatically download Wikipedia's
-  XML dumps and then convert them to SQL using maven. First maven
-  will be downloaded and built. Then the compressed XML dumps will be
-  downloaded from the wikipedia, they will be uncompressed and
+  XML dumps{{{ref}}} and then convert them to SQL using maven. First
+  maven will be downloaded and built. Then the compressed XML dumps
+  will be downloaded from the wikipedia, they will be uncompressed and
   finally converted to MySQL dumps using =mwdumper=. This is a fairly
   lengthy process taking 6 to 11 hours on a typical machine:
 
@@ -220,55 +220,53 @@ of wikipedia.org.
     $ make mw-extensions
   #+END_SRC
 
-* Mediawiki Extensions
+** Installing mediawiki extensions
 
-  For mediawiki to act like wikipedia a number of extensions are
-  required. The installation process of such extensions is not
-  automated or streamline. To automatically manage this complexity a
-  mechanism is provided for declaratively installing extensions.  To
-  add support for an extension to wikipediabase one needs to add the
-  following code in =Makefile.mwextnesions= (modifying accordingly):
+   For mediawiki to act like wikipedia a number of extensions are
+   required. The installation process of such extensions is not
+   automated or streamline. To automatically manage this complexity a
+   mechanism is provided for declaratively installing extensions.  To
+   add support for an extension to wikipediabase one needs to add the
+   following code in =Makefile.mwextnesions= (modifying accordingly):
 
-  #+BEGIN_SRC makefile
-    MW_EXTENSIONS += newextension
-    mw-newextension-url = url/to/new/extnesion/package.tar.gz
-    mw-newextension-php = NewExtensionFile.php
-    mw-newextension-config = '$$phpConfigVariable = "value";'
-  #+END_SRC
+   #+BEGIN_SRC makefile
+     MW_EXTENSIONS += newextension
+     mw-newextension-url = url/to/new/extnesion/package.tar.gz
+     mw-newextension-php = NewExtensionFile.php
+     mw-newextension-config = '$$phpConfigVariable = "value";'
+   #+END_SRC
 
-  And wikipedia-mirror will take care of checking if the extension
-  is already installed and if not it will put the right files in the
-  right place and edit the appropriate configuration files. The
-  entry points for managing extensions are (provided that the name
-  of the registered extension is newextension):
+   And wikipedia-mirror will take care of checking if the extension
+   is already installed and if not it will put the right files in the
+   right place and edit the appropriate configuration files. The
+   entry points for managing extensions are (provided that the name
+   of the registered extension is newextension):
 
-  #+BEGIN_SRC sh
-    make mw-print-registered-extensions # Output a list of the registed extensions
-    make mw-newextension-enable         # Install and/or enable the extension
-    make mw-newextension-reinstall      # Reinstall an extension
-    make mw-newextension-disable        # Disable the extension
-    make mw-newextension-clean          # Remove the extension
-  #+END_SRC
+   #+BEGIN_SRC sh
+     make mw-print-registered-extensions # Output a list of the registed extensions
+     make mw-newextension-enable         # Install and/or enable the extension
+     make mw-newextension-reinstall      # Reinstall an extension
+     make mw-newextension-disable        # Disable the extension
+     make mw-newextension-clean          # Remove the extension
+   #+END_SRC
 
-  All registered extensions will be installed and enabled when
-  wikipedia-mirror is built.
+   All registered extensions will be installed and enabled when
+   wikipedia-mirror is built.
 
-* Dumps
+** Loading mediawiki dumps
 
-  Wikipedia provides monthly dumps of all it's databases. The bulk of
-  the dumps come in XML format and they need to be encoded into MySQL
-  to be loaded into the wikipedia-mirror database. There are more
-  than one ways to do that.
-
-** Loading the dumps
+   Wikipedia provides monthly dumps of all its databases. The bulk of
+   the dumps come in XML format and they need to be encoded into MySQL
+   to be loaded into the wikipedia-mirror database. There are more
+   than one ways to do that.
 
    Mediawiki ships with a utility for importing the XML
-   dumps. However it's use for importing a full blown wikipedia
-   mirror is discouraged due to performance tradeoffs. Instead other
+   dumps. However its use for importing a full blown wikipedia
+   mirror is discouraged due to performance trade-offs. Instead other
    tools like mwdumper are recommended that transform the XML dump
    into MySQL queries that populate the database.
 
-   However the recomended tool for translating the XML dumps into
+   However the recommended tool for translating the XML dumps into
    MySQL code is mwdumper. Mwdumper is written in java and is shipped
    separately from mediawiki. Mwdumper can transform data between the
    following formats:
@@ -287,12 +285,15 @@ of wikipedia.org.
 
 * Tools
 
-  A number of tools were developed in assisting the
+  A number of tools were developed in assisting the process of
+  manipulating and monitoring the process of loading the dumps into
+  the database. They are presented in details below. Since their
+  source code is fairly concise it is presented in the Appendix.
 
 *** sql-clear.sh
 
     =sql-clear.sh= is a small bash script that truncates all tables
-    from a database. Truncating means leaving the table scheamata
+    from a database. Truncating means leaving the MySQL table schemata
     unaffected and delete all internal data.
 
 *** utf8thread.c
@@ -308,15 +309,15 @@ of wikipedia.org.
     the database population. =webmonitor.py= serves a static html page
     and then deeds it the data over websocket. Webmonitor can show any
     stream of =<epoc date> <float value>= pairs that it receives in
-    it's input. As a sample:
+    its input. As a sample:
 
     #+BEGIN_SRC sh
     $ pip install tornado
     #+END_SRC
 
     First install the dependencies of the script. That would be
-    tornado, an asynchronous web framework supporting websockets. We
-    will instruct =tornado= tornado will serve the following page:
+    =tornado=, an asynchronous web framework supporting websockets.
+    Also use =tornado= to serve the following page:
 
     #+BEGIN_SRC html
       <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -364,11 +365,11 @@ of wikipedia.org.
     =highcharts.js=.
 
     The attentive reader may notice that the above is not quite HTML
-    but rather a python formatted string. That is for two
-    reasones. First because the script handles the configuration (see
-    =chart = new Highcharts.Chart(JSON.parse('%s'));=). Second because
-    the width of the graph will is calulated at page load time and the
-    plot needs to be shifted to only show the most recent points.
+    but rather a python formatted string. That is for two reasons:
+    first because the chart configuration is handled by python rather
+    than javascript, second because the width of the graph will is
+    calulated at page load time -ie. by python- and the plot needs to
+    be shifted to only show the most recent points.
 
     #+BEGIN_SRC sh
       $ for i in {1..100}; do echo $i;  sleep  1; done | \
@@ -385,7 +386,7 @@ of wikipedia.org.
 *** xml-parse.sh
 
     Simply removing specific articles fixes the xerces error with
-    UTF8. If the articles are alone the error goes away aswell.  The
+    UTF8. If the articles are alone the error goes away as well.  The
     =xml-parse.sh= script removes the requested article from the xml
     file.
 
@@ -393,7 +394,7 @@ of wikipedia.org.
       xml-parse.sh <original-xml-file> <title_of_article_to_remove> [inplace]
     #+END_SRC
 
-    if =inplace= is the last argument, the =page_remove.c= will be
+    if =inplace= is the last argument, the =page_remover.c= will be
     used to cover the article with spaces. This is much faster.
     Otherwise the page is just ommited and the result is dumped in
     stdout. After this script finishes you can run:
@@ -402,7 +403,7 @@ of wikipedia.org.
       java -jar tools/mwdumper.jar RESULTING_XML --format=sql:1.5 > SQL_DUMP
     #+END_SRC
 
-*** page_remover.c
+*** page\_remover.c
 
     As previously discussed, the =xerces= library that =mwdumper=
     depends on fails, seemingly at random, to process certain
@@ -421,7 +422,7 @@ of wikipedia.org.
 
   Creating a wikipedia mirror may seem like a straight forward task
   but it involves many caveats, nuances and repetitive tasks. Multiple
-  methods of autmoation were employed to carry out the wide variety of
+  methods of automation were employed to carry out the wide variety of
   tasks involved into the process.
 
 ** Makefiles / laziness
@@ -430,7 +431,7 @@ of wikipedia.org.
 
 ** Bitnami
 
-   Bitnami is a family of programs that sets up and manages servers
+   Bitnami{{{ref}}} is a family of programs that sets up and manages servers
    stacks. It contains the entire stack installation within a
    directory making it both modular and portable while avoiding the
    fuss of dealing with VMs or containers. Bitnami is not open source
@@ -438,7 +439,7 @@ of wikipedia.org.
    manages this by patching the prefix path of MySQL, apache etc
    binaries with the installation directory.
 
-   Bitnami now supports hundrends of stacks, indicatively the most
+   Bitnami now supports hundreds of stacks, indicatively the most
    popular are:
 
    - Osclass
@@ -463,7 +464,7 @@ of wikipedia.org.
      - mediawiki-extensions
      - Installing and building those components (~1 min)
      - Downloading the wikipedia dumps
-     - Preprocessing the dumps (~10 mins)
+     - Pre-processing the dumps (~10 mins)
      - Populating the mysql database (~10 days)
 
    Builds were done on Infolab's Ashmore. The system's specs are
@@ -483,27 +484,28 @@ of wikipedia.org.
    The backend database engine used by MySQL is InnoDB. Some of the
    optimization methods attempted are:
 
-   - Callibrate the =innodb_buffer_pool_size=. While the availamble
-     memory in ashmore is fairly large, up to several GB there was
-     no noticable difference in database population.
+   - Calibrate the =innodb_buffer_pool_size=. While the available
+     memory in ashmore is fairly large, increasing the buffer pool
+     size up to several GB there was no noticeable difference in
+     database population.
    - Change =innodb_flush_method= to =O_DSYNC= to avoid using the
      =fsync= system call. In short the problem with flushing large
      mapped files with =fsync= is that =fsync= searches for dirty
-     pages in mapped memory pages linerly making it slower and slower
+     pages in mapped memory pages linearly making it slower and slower
      as the file gets larger.
    - Callibrate the =einnodb_io_capacity=. Unsurprisingly the value of
      this variable was higher than the bandwidth of the HDD.
 
-  The only optimisation that actually made a difference in database
-  population speed was to set.
+  The only optimization that actually made a difference in database
+  population speed was to edit the MySQL dump to set:
 
   #+BEGIN_SRC sq;
     SET AUTOCOMMIT = 0; SET FOREIGN_KEY_CHECKS=0;
   #+END_SRC
 
   This allowed InnoDB to do more work in the main memory before
-  commiting to the disk and also reduced the overall work by trusting
-  that the keys indicating relation to te database actually point
+  committing to the disk and also reduced the overall work by trusting
+  that the keys indicating relation to the database actually point
   somewhere.
 
 ** Runtime
@@ -513,6 +515,8 @@ of wikipedia.org.
    full wikipedia dump of July 2014 the load time for the Barack
    Obama, not taking advantage of caching was at the order of ~30s.
 
-* Appendix (script sources)
+* Appendix
 
-  #+INCLUDE: sources.org
+** script sources
+
+   #+INCLUDE: sources.org

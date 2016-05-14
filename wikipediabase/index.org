@@ -9,18 +9,18 @@
 #+STARTUP:     showall
 
 
-WikipediaBase base is a backend to START responsible for providing
-access to wikipedia related information, that mimics the API
-interface provided by the Omnibase. Wikipediabase has gone through a
-couple of rewrites. The initial version was written in Java. It was
-then rewritten in Ruby copying the original architecture and design
-and now it is rewritten in python and rearchitectured from
-scratch. There are two main reasons for this: python is taught as a
-pre-graduate course in MiT, and therefore a Python codebase will make
-initiation of new MiT students smoother and, more importantly, while
-the initial design of the previous WikipediaBase should have been
-adequate, it grew to a point where the code was ad-hoc and hard to
-understand, reason about and extend.
+WikipediaBase is a backend to START responsible for providing access
+to wikipedia related information, that mimics the API interface
+provided by the Omnibase. Wikipediabase has gone through a couple of
+rewrites. The initial version was written in Java. It was then
+rewritten in Ruby copying the original architecture and design and now
+it is rewritten in python and rearchitectured from scratch. There are
+two main reasons for this: python is taught as a pre-graduate course
+in MiT, and therefore a Python codebase will make initiation of new
+MiT students smoother and, more importantly, while the initial design
+of the previous WikipediaBase should have been adequate, it grew to a
+point where the code was ad-hoc and hard to understand, reason about
+and extend.
 
 The python implementation was initially written by Chris
 Perivolaropoulos in close association with Dr Sue Felshin and was
@@ -70,10 +70,10 @@ Silver. Other students have also joined the project shortly after.
   - Postresql
   - Redis
 
-    The installation process of these packages varies across
-    platforms. Both are databases. Their purpose is for caching
-    repeated computations and for storing ahead-of-time computation
-    like infobox markup name to rendered name maps and synonyms.
+  The installation process of these packages varies across
+  platforms. Both are databases. Their purpose is for caching repeated
+  computations and for storing ahead-of-time computation like infobox
+  markup, name to rendered name maps, and synonyms.
 
 * Architecture
 
@@ -94,7 +94,8 @@ Silver. Other students have also joined the project shortly after.
 
     Unit tests test small blocks of functionality, that are composed
     to create the system at large. For unit testing we use python's
-    default testing library. Each test is a class the subclasses
+    default testing library. Each test is a class that implements the
+    =TestCase= interface.
 
 *** Functional and regression tests
 
@@ -107,7 +108,7 @@ Silver. Other students have also joined the project shortly after.
 
 ** Examples
 
-   Virtually all tests begin witht he following snippet:
+   Virtually all tests begin with the following snippet:
 
    #+BEGIN_SRC python
      from __future__ import unicode_literals
@@ -141,40 +142,10 @@ Silver. Other students have also joined the project shortly after.
    begins with =test_=. In this particular case we are getting the
    wikipedia page for Led Zeppelin and making sure the name of Jimmy
    Page is mentioned at least once. This is obviously not conclusive
-   that fetcher did not for example bring up the page for The
-   Yardbirds, Page's first band. For this reason we write a couple of
-   these sort of tests. In the case of the fetcher, to stick with the
-   example, the entire test is:
-
-   #+BEGIN_SRC python
-     class TestFetcher(unittest.TestCase):
-         def setUp(self):
-             self.fetcher = fetcher.get_fetcher()
-
-         def test_html(self):
-             html = self.fetcher.html_source("Led Zeppelin")
-             self.assertIn("Jimmy Page", html)
-
-         def test_markup_source(self):
-             src = self.fetcher.markup_source("Led Zeppelin")
-             self.assertIn("{{Infobox musical artist", src)
-
-
-         def test_unicode_html(self):
-             html = self.fetcher.html_source(u"Rhône")
-             self.assertIn("France", html)
-
-         def test_unicode_source(self):
-             src = self.fetcher.markup_source("Rhône")
-             self.assertIn("Geobox|River", src)
-
-         def test_silent_redirect(self):
-             # redirects are only supported when force_live is set to True
-             src = self.fetcher.markup_source("Obama", force_live=True)
-             self.assertFalse(re.match(fetcher.REDIRECT_REGEX, src))
-   #+END_SRC
-
-   We wrote multiple such tests to test every part of WikipediaBase.
+   that fetcher did not for example bring up the page for /The
+   Yardbirds/, Page's first band. For this reason we write a couple of
+   these sort of tests. For the entire test see the Python test
+   example in the appendix.
 
 ** Running tests
 
@@ -235,54 +206,7 @@ Silver. Other students have also joined the project shortly after.
         or: setup.py cmd --help
    #+END_SRC
 
-   For example:
-
-   #+BEGIN_SRC sh
-     $ python setup.py test -s tests.test_lispify
-     running test
-     running egg_info
-     writing requirements to wikipediabase.egg-info/requires.txt
-     writing wikipediabase.egg-info/PKG-INFO
-     writing top-level names to wikipediabase.egg-info/top_level.txt
-     writing dependency_links to wikipediabase.egg-info/dependency_links.txt
-     writing entry points to wikipediabase.egg-info/entry_points.txt
-     reading manifest file 'wikipediabase.egg-info/SOURCES.txt'
-     reading manifest template 'MANIFEST.in'
-     writing manifest file 'wikipediabase.egg-info/SOURCES.txt'
-     running build_ext
-     test_bool (tests.test_lispify.TestLispify) ... ok
-     test_bool_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_date_multiple_voting (tests.test_lispify.TestLispify) ... ok
-     test_date_simple (tests.test_lispify.TestLispify) ... ok
-     test_date_with_range (tests.test_lispify.TestLispify) ... ok
-     test_dict (tests.test_lispify.TestLispify) ... ok
-     test_dict_with_escaped_string (tests.test_lispify.TestLispify) ... ok
-     test_dict_with_list (tests.test_lispify.TestLispify) ... ok
-     test_double_nested_list (tests.test_lispify.TestLispify) ... ok
-     test_error (tests.test_lispify.TestLispify) ... ok
-     test_error_from_exception (tests.test_lispify.TestLispify) ... ok
-     test_keyword (tests.test_lispify.TestLispify) ... ok
-     test_keyword_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_list (tests.test_lispify.TestLispify) ... ok
-     test_list_of_dict (tests.test_lispify.TestLispify) ... ok
-     test_list_of_dict_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_list_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_nested_list (tests.test_lispify.TestLispify) ... ok
-     test_none (tests.test_lispify.TestLispify) ... ok
-     test_none_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_number (tests.test_lispify.TestLispify) ... ok
-     test_number_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_string (tests.test_lispify.TestLispify) ... ok
-     test_string_escaped (tests.test_lispify.TestLispify) ... ok
-     test_string_not_keyword (tests.test_lispify.TestLispify) ... ok
-     test_string_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_unicode_string (tests.test_lispify.TestLispify) ... ok
-
-     ----------------------------------------------------------------------
-     Ran 27 tests in 0.047s
-
-     OK
-   #+END_SRC
+   See the appendix for the full output of a successful test run.
 
 * Synonyms
 
@@ -302,7 +226,7 @@ Silver. Other students have also joined the project shortly after.
   Synonyms are names which users can use to refer to symbols. (The
   term "synonym" is unfortunate, because this is really a one-way
   mapping -"gloss" would be a better term but we're stuck with
-  "synonym" for hysterical raisins.)
+  "synonym" for historical reasons.)
   #+END_QUOTE
 
   The definition of synonyms is the job of the backend
@@ -353,9 +277,9 @@ Silver. Other students have also joined the project shortly after.
 
 ** Synonym generation
 
-   To accommodate these restrictions two methods are
-   employed. Disqualification and modification of synonym
-   candidates. First modification is attempted and if that fails we
+   To accommodate these restrictions two approaches are employed:
+   disqualification of synonym candidates and modification of synonym
+   candidates. Modification is attempted first, and if that fails we
    disqualify. The rules for modification are as follows:
 
    - Strip determiners (articles) that are at the beginning of a
@@ -400,67 +324,18 @@ Silver. Other students have also joined the project shortly after.
    #+END_SRC
 
    And then from the SQL db to find all (good and bad) synonyms to
-   Bill Clinton you can:
+   Bill Clinton you can run
 
    #+BEGIN_SRC sql
-    mysql> select page_title, rd_title from redirect join page on rd_from = page_id and (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
-    +-------------------------------------+--------------+
-    | page_title                          | rd_title     |
-    +-------------------------------------+--------------+
-    | BillClinton                         | Bill_Clinton |
-    | William_Jefferson_Clinton           | Bill_Clinton |
-    | President_Clinton                   | Bill_Clinton |
-    | William_Jefferson_Blythe_IV         | Bill_Clinton |
-    | Bill_Blythe_IV                      | Bill_Clinton |
-    | Clinton_Gore_Administration         | Bill_Clinton |
-    | Buddy_(Clinton's_dog)               | Bill_Clinton |
-    | Bill_clinton                        | Bill_Clinton |
-    | William_Jefferson_Blythe_III        | Bill_Clinton |
-    | President_Bill_Clinton              | Bill_Clinton |
-    | Bull_Clinton                        | Bill_Clinton |
-    | Clinton,_Bill                       | Bill_Clinton |
-    | William_clinton                     | Bill_Clinton |
-    | 42nd_President_of_the_United_States | Bill_Clinton |
-    | Bill_Jefferson_Clinton              | Bill_Clinton |
-    | William_J._Clinton                  | Bill_Clinton |
-    | Billl_Clinton                       | Bill_Clinton |
-    | Bill_Clinton\                       | Bill_Clinton |
-    | Bill_Clinton's_Post_Presidency      | Bill_Clinton |
-    | Bill_Clinton's_Post-Presidency      | Bill_Clinton |
-    | Klin-ton                            | Bill_Clinton |
-    | Bill_J._Clinton                     | Bill_Clinton |
-    | William_Jefferson_"Bill"_Clinton    | Bill_Clinton |
-    | William_Blythe_III                  | Bill_Clinton |
-    | William_J._Blythe                   | Bill_Clinton |
-    | William_J._Blythe_III               | Bill_Clinton |
-    | Bil_Clinton                         | Bill_Clinton |
-    | WilliamJeffersonClinton             | Bill_Clinton |
-    | William_J_Clinton                   | Bill_Clinton |
-    | Bill_Clinton's_sex_scandals         | Bill_Clinton |
-    | Billy_Clinton                       | Bill_Clinton |
-    | Willam_Jefferson_Blythe_III         | Bill_Clinton |
-    | William_"Bill"_Clinton              | Bill_Clinton |
-    | Billll_Clinton                      | Bill_Clinton |
-    | Bill_Klinton                        | Bill_Clinton |
-    | William_Clinton                     | Bill_Clinton |
-    | Willy_Clinton                       | Bill_Clinton |
-    | William_Jefferson_(Bill)_Clinton    | Bill_Clinton |
-    | Bubba_Clinton                       | Bill_Clinton |
-    | MTV_president                       | Bill_Clinton |
-    | MTV_President                       | Bill_Clinton |
-    | The_MTV_President                   | Bill_Clinton |
-    | Howard_G._Paster                    | Bill_Clinton |
-    | Clintonesque                        | Bill_Clinton |
-    | William_Clinton                     | Bill_Clinton |
-    | William_Jefferson_Clinton           | Bill_Clinton |
-    +-------------------------------------+--------------+
-    46 rows in set (11.77 sec)
+     select page_title, rd_title from redirect join page on rd_from = page_id and (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
    #+END_SRC
 
-* Backend databases
+   For the full output see the appendix.
+
+* Databases and data sources
 
   Wikipediabase uses primarily a remote data store that implements the
-  mediawiki interface and attempts to deal with the arising
+  mediawiki HTTP interface and attempts to deal with the arising
   performance issues by aggressively caching pages to a backend
   key-value based database. The interface with the database is
   abstracted by using a python-style dictionary interface, which is
@@ -468,157 +343,361 @@ Silver. Other students have also joined the project shortly after.
   below, but it is trivial to provide any backend one can come up
   with.
 
-  Another feature that the interface to the database should be able to
-  handle is the encoding of the saved objects. Because virtually all
-  of the stored data is text, the underlying database should be able
-  to reliably retrieve exactly the text that was saved, taking into
-  account the encoding. Because of DBM's limitation that keys should
-  only be ASCII encoded the base class for interfacing with the
-  database, =EncodedDict=, implements the =_encode_key= and
-  =_decode_key= methods (that default to identity functions) to
-  provide an easy hook for implementations to deal with this possible
-  issue.
+** Data access
 
-** DBM
+   Data access is abstraced by the ad-hoc =Fetcher=
+   interface. Currently the only useful fetcher implemented is the
+   =CachingSiteFetcher= that supports retrieval of both mediawiki
+   markup and rendered HTML for each page while caching all retrieved
+   data.
 
-   Several dbm implementations are provided by the python standard
-   library. None of the implementations shipped with python are part
-   of the python standard library itself however. Some of the DBM
-   implementations that are available via the standard python library
-   are:
+*** HTML and MediaWiki API
+
+    The initial approach to getting the data is to retrieve the normal
+    HTML versions of wikipedia articles and using edit pages to
+    retrieve the mediawiki markup. We invariably use the original
+    wikipedia.org site for performance reasons (See wikipedia-mirror
+    runtime performance section).
+
+    Mediawiki provides a RESTful API for all the required
+    functionality. The basic premise is that one can send requests with
+    =POST= or =GET= methods and get a response formulated in XML or
+    JSON. The preferred response type for WikipediaBase was sending
+    =GET= HTTP requests to receive =JSON= data. =GET= was selected
+    because it is explicitly suggested in the mediawiki API page
+    because caching happens at the HTTP level.
+
+    #+BEGIN_QUOTE
+    Per the HTTP specification, POST requests cannot be
+    cached. Therefore, whenever you're reading data from the web
+    service API, you should use GET requests, not POST.
+
+    Also note that a request cannot be served from cache unless the URL is
+    exactly the same. If you make a request for
+    api.php?....titles=Foo|Bar|Hello, and cache the result, then a request
+    for api.php?....titles=Hello|Bar|Hello|Foo will not go through the
+    cache  even though MediaWiki returns the same data!
+    #+END_QUOTE
+
+    =JSON= was selected simply because the python =json= package in the
+    standard library is much easier to use than =lxml=, the library we
+    use for XML/HTML parsing.
+
+*** Dumps / Database
+
+    Direct interface with a local database, besides caching using mdb
+    and/or sqlite was not implemented as part of the thesis. However
+    shortly after caching and compile time data pools in redis and
+    postrgres were implemented.
+
+** Caching
+
+   As mentioned WikipediaBase abstracts the caching mechanism
+   functionally to a key-value storage object that behaves like a
+   python dictionary plus an extra =sync= method for explicit
+   flushing. However that is not all, another feature that the
+   interface to the database should be able to handle is the encoding
+   of the saved objects. Because virtually all of the stored data is
+   text, the underlying database should be able to reliably retrieve
+   exactly the text that was saved, taking into account the
+   encoding. Because of DBM's limitation that keys of the DBM database
+   should only be ASCII encoded, the base class for interfacing with
+   the database, =EncodedDict=, implements the =_encode_key= and
+   =_decode_key= methods (that default to identity functions) to
+   provide an easy hook for implementations to deal with this possible
+   issue.
+
+   *** DBM
+
+   As mentioned before for caching several dbm implementations are
+   provided by the python standard library. None of the
+   implementations shipped with python are part of the python
+   standard library itself however. Some of the DBM implementations
+   that are available via the standard python library are:
 
    - AnyDBM
-   - GNU DBM
-   - Berkeley DBM
+     - GNU DBM
+     - Berkeley DBM
 
-   It is worth noting that the performance and smooth functioning of
-   these libraries is highly dependent on the underlying platform.
+     It is worth noting that the performance and smooth functioning of
+     these libraries is highly dependent on the underlying platform.
 
-   As mentioned above, the interface classes to DBM transcode keys to
-   ASCII. The precise way that is done is:
+     As mentioned above, the interface classes to DBM transcode keys to
+     ASCII. The precise way that is done is:
 
-   #+BEGIN_SRC python
-         def _encode_key(self, key):
-             if isinstance(key, unicode):
-                 return key.encode('unicode_escape')
+     #+BEGIN_SRC python
+          def _encode_key(self, key):
+              if isinstance(key, unicode):
+                  return key.encode('unicode_escape')
 
-             return str(key)
+              return str(key)
 
-         def _decode_key(self, key):
-             return key.decode('unicode_escape')
+    def _decode_key(self, key):
+    return key.decode('unicode_escape')
 
-   #+END_SRC
+     #+END_SRC
 
-** SQLite
+*** SQLite
 
-   SQLite was also considered as caching backend
-   database. Unfortunately it's perfomance for our particular purpose
-   was disappointing.
+    SQLite was also considered as caching backend
+    database. Unfortunately its performance for our particular purpose
+    was disappointing.
 
-   We used a very thin wrapper, =sqlitedict=, to get a key-value
-   interface to SQLite -- a relational database. The related
-   WikipediaBase code is very short:
+    We used a very thin wrapper, =sqlitedict=, to get a key-value
+    interface to SQLite -- a relational database. The related
+    WikipediaBase code is very short:
 
-   #+BEGIN_SRC python
-     from sqlitedict import SqliteDict
+    #+BEGIN_SRC python
+    from sqlitedict import SqliteDict
 
-     class SqlitePersistentDict(EncodedDict):
-         def __init__(self, filename, configuration=configuration):
-             if not filename.endswith('.sqlite'):
-                 filename += '.sqlite'
+      class SqlitePersistentDict(EncodedDict):
+          def __init__(self, filename, configuration=configuration):
+              if not filename.endswith('.sqlite'):
+                  filename += '.sqlite'
 
-             db = SqliteDict(filename)
-             super(SqlitePersistentDict, self).__init__(db)
+              db = SqliteDict(filename)
+              super(SqlitePersistentDict, self).__init__(db)
 
-         def sync(self):
-             self.db.close()
-             super(SqlitePersistentDict, self).sync()
-   #+END_SRC
+          def sync(self):
+    self.db.close()
+    super(SqlitePersistentDict, self).sync()
+    #+END_SRC
 
-   Below are two benchmark functions that will read/write 100000 times
-   to a key-value database.
+    Below are two benchmark functions that will read/write 100000 times
+    to a key-value database.
 
-   #+BEGIN_SRC python
-     def benchmark_write(dic, times=100000):
-         for i in xrange(times):
-             dic['o' + str(i)] = str(i) * 1000
+    #+BEGIN_SRC python
+    def benchmark_write(dic, times=100000):
+          for i in xrange(times):
+              dic['o' + str(i)] = str(i) * 1000
 
-     def benchmark_read(dic, times=100000):
-         for i in xrange(times):
-             dic['o' + str(i)]
-   #+END_SRC
+      def benchmark_read(dic, times=100000):
+          for i in xrange(times):
+    dic['o' + str(i)]
+    #+END_SRC
 
-   And here they are run over memory based =tmpfs= on deban.
+    And here they are run over memory based =tmpfs= on debian.
 
-   #+BEGIN_SRC python
-     >>> import timeit
-     >>> sqlkv = SqlitePersistentDict('/tmp/bench1.sqlite')
-     >>> timeit.timeit(lambda : benchmark_write(sqlkv), number=100)
-     10.847157955169678
-     >>> timeit.timeit(lambda : benchmark_read(sqlkv), number=100)
-     18.88098978996277
-     >>> dbmkv = DbmPersistentDict('/tmp/bench.dbm')
-     >>> timeit.timeit(lambda : benchmark_write(dbmkv), number=100)
-     0.18030309677124023
-     >>> timeit.timeit(lambda : benchmark_read(dbmkv), number=100)
-     0.14914202690124512
-   #+END_SRC
+    #+BEGIN_SRC python
+      >>> import timeit
+      >>> sqlkv = SqlitePersistentDict('/tmp/bench1.sqlite')
+      >>> timeit.timeit(lambda : benchmark_write(sqlkv), number=100)
+      10.847157955169678
+      >>> timeit.timeit(lambda : benchmark_read(sqlkv), number=100)
+      18.88098978996277
+      >>> dbmkv = DbmPersistentDict('/tmp/bench.dbm')
+      >>> timeit.timeit(lambda : benchmark_write(dbmkv), number=100)
+      0.18030309677124023
+      >>> timeit.timeit(lambda : benchmark_read(dbmkv), number=100)
+      0.14914202690124512
+    #+END_SRC
 
-   The DBM database is nearly 10 times faster than sqlite. The
-   difference in perfomance is due to the different committing
-   policies of the two. It might be possible to callbrate SQLite to be
-   as fast as DBM but not in any trivial way.
+    The DBM database is nearly 10 times faster than sqlite. The
+    difference in performance is due to the different committing
+    policies of the two. It might be possible to calibrate SQLite to be
+    as fast as DBM but not in any trivial way.
 
-** Other backends
+*** Other backends
 
-   Other backends were considered, most notably Redis which was
-   actually implemented shortly after the project handoff by Alvaro
-   Morales. The reason we did not initially use it was that it is
-   modeled as a server-client which adds complexity to an aspect of
-   the system that should be as simple as possible. Another reason for
-   our initial skepticism towards third party -- ie. not shipped with
-   python -- databases was to avoid extra dependencies, especially
-   when they are the cool database du jour.
-
-* Data sources
-** HTML and MediaWiki API
-
-   The initial approach to getting the data is to retrieve the normal
-   HTML versions of wikipedia articles and using edit pages to
-   retrieve the mediawiki markup. We invariably use the original
-   wikipedia.org site for performance reasons (See wikipedia-mirror
-   runtime performance section).
-
-   Mediawiki provides a RESTful API for all the required
-   functionality. The basic premise is that one can send requests with
-   =POST= or =GET= methods and get a response formulated in XML or
-   JSON. The prefered response type for WikipediaBase was sending
-   =GET= HTTP requests to receive =JSON= data. =GET= was selected
-   because it is explicitly suggested in the mediawiki API page
-   because caching happens at the HTTP level.
-
-   #+BEGIN_QUOTE
-   Per the HTTP specification, POST requests cannot be
-   cached. Therefore, whenever you're reading data from the web
-   service API, you should use GET requests, not POST.
-
-   Also note that a request cannot be served from cache unless the URL is
-   exactly the same. If you make a request for
-   api.php?....titles=Foo|Bar|Hello, and cache the result, then a request
-   for api.php?....titles=Hello|Bar|Hello|Foo will not go through the
-   cache  even though MediaWiki returns the same data!
-   #+END_QUOTE
-
-   =JSON= was selected simply because the python =json= package in the
-   standard library is much easier to use than =lxml=, the library we
-   use for XML/HTML parsing.
-
-** Dumps / Database
-
-   Direct interface with a local database, besides caching using mdb
-   and/or sqlite was not implemented as part of the thesis. However
-   shotrly after caching and compile time data pools in redis and
-   postrgres were implemented.
+    Other backends were considered, most notably Redis which was
+    actually implemented shortly after the project handoff by Alvaro
+    Morales. The reason we did not initially use it was that it is
+    modeled as a server-client which adds complexity to an aspect of
+    the system that should be as simple as possible. Another reason for
+    our initial skepticism towards third party -- ie. not shipped with
+    python -- databases was to avoid extra dependencies, especially
+    when they are the cool database du jour.
 
 * Date parser
   #+INCLUDE: dateparser.org
+
+* Appendix
+
+** Python unit test example
+
+   #+BEGIN_SRC python
+     class TestFetcher(unittest.TestCase):
+         def setUp(self):
+             self.fetcher = fetcher.get_fetcher()
+
+         def test_html(self):
+             html = self.fetcher.html_source("Led Zeppelin")
+             self.assertIn("Jimmy Page", html)
+
+         def test_markup_source(self):
+             src = self.fetcher.markup_source("Led Zeppelin")
+             self.assertIn("{{Infobox musical artist", src)
+
+
+         def test_unicode_html(self):
+             html = self.fetcher.html_source(u"Rhône")
+             self.assertIn("France", html)
+
+         def test_unicode_source(self):
+             src = self.fetcher.markup_source("Rhône")
+             self.assertIn("Geobox|River", src)
+
+         def test_silent_redirect(self):
+             # redirects are only supported when force_live is set to True
+             src = self.fetcher.markup_source("Obama", force_live=True)
+             self.assertFalse(re.match(fetcher.REDIRECT_REGEX, src))
+   #+END_SRC
+
+** Python test runs
+
+
+   #+BEGIN_SRC sh
+     $ python setup.py test -s tests.test_lispify
+     running test
+     running egg_info
+     writing requirements to wikipediabase.egg-info/requires.txt
+     writing wikipediabase.egg-info/PKG-INFO
+     writing top-level names to wikipediabase.egg-info/top_level.txt
+     writing dependency_links to wikipediabase.egg-info/dependency_links.txt
+     writing entry points to wikipediabase.egg-info/entry_points.txt
+     reading manifest file 'wikipediabase.egg-info/SOURCES.txt'
+     reading manifest template 'MANIFEST.in'
+     writing manifest file 'wikipediabase.egg-info/SOURCES.txt'
+     running build_ext
+     test_bool (tests.test_lispify.TestLispify) ... ok
+     test_bool_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_date_multiple_voting (tests.test_lispify.TestLispify) ... ok
+     test_date_simple (tests.test_lispify.TestLispify) ... ok
+     test_date_with_range (tests.test_lispify.TestLispify) ... ok
+     test_dict (tests.test_lispify.TestLispify) ... ok
+     test_dict_with_escaped_string (tests.test_lispify.TestLispify) ... ok
+     test_dict_with_list (tests.test_lispify.TestLispify) ... ok
+     test_double_nested_list (tests.test_lispify.TestLispify) ... ok
+     test_error (tests.test_lispify.TestLispify) ... ok
+     test_error_from_exception (tests.test_lispify.TestLispify) ... ok
+     test_keyword (tests.test_lispify.TestLispify) ... ok
+     test_keyword_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_list (tests.test_lispify.TestLispify) ... ok
+     test_list_of_dict (tests.test_lispify.TestLispify) ... ok
+     test_list_of_dict_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_list_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_nested_list (tests.test_lispify.TestLispify) ... ok
+     test_none (tests.test_lispify.TestLispify) ... ok
+     test_none_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_number (tests.test_lispify.TestLispify) ... ok
+     test_number_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_string (tests.test_lispify.TestLispify) ... ok
+     test_string_escaped (tests.test_lispify.TestLispify) ... ok
+     test_string_not_keyword (tests.test_lispify.TestLispify) ... ok
+     test_string_with_typecode (tests.test_lispify.TestLispify) ... ok
+     test_unicode_string (tests.test_lispify.TestLispify) ... ok
+
+     ----------------------------------------------------------------------
+     Ran 27 tests in 0.047s
+
+     OK
+   #+END_SRC
+
+** Quickly finding synonyms with MySQL example
+
+
+   #+BEGIN_SRC sql
+     mysql> select page_title, rd_title from \
+     redirect join page on
+     rd_from = page_id and
+     (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
+     +-------------------------------------+--------------+
+     | page_title                          | rd_title     |
+     +-------------------------------------+--------------+
+     | BillClinton                         | Bill_Clinton |
+     | William_Jefferson_Clinton           | Bill_Clinton |
+     [.. see below for a formated verison of the data ...]
+     | William_Jefferson_Clinton           | Bill_Clinton |
+     +-------------------------------------+--------------+
+   46 rows in set (11.77 sec)
+   #+END_SRC
+
+   | page_title                          | rd_title     |
+   |-------------------------------------+--------------|
+   | BillClinton                         | Bill_Clinton |
+   | William_Jefferson_Clinton           | Bill_Clinton |
+   | President_Clinton                   | Bill_Clinton |
+   | William_Jefferson_Blythe_IV         | Bill_Clinton |
+   | Bill_Blythe_IV                      | Bill_Clinton |
+   | Clinton_Gore_Administration         | Bill_Clinton |
+   | Buddy_(Clinton's_dog)               | Bill_Clinton |
+   | Bill_clinton                        | Bill_Clinton |
+   | William_Jefferson_Blythe_III        | Bill_Clinton |
+   | President_Bill_Clinton              | Bill_Clinton |
+   | Bull_Clinton                        | Bill_Clinton |
+   | Clinton,_Bill                       | Bill_Clinton |
+   | William_clinton                     | Bill_Clinton |
+   | 42nd_President_of_the_United_States | Bill_Clinton |
+   | Bill_Jefferson_Clinton              | Bill_Clinton |
+   | William_J._Clinton                  | Bill_Clinton |
+   | Billl_Clinton                       | Bill_Clinton |
+   | Bill_Clinton\                       | Bill_Clinton |
+   | Bill_Clinton's_Post_Presidency      | Bill_Clinton |
+   | Bill_Clinton's_Post-Presidency      | Bill_Clinton |
+   | Klin-ton                            | Bill_Clinton |
+   | Bill_J._Clinton                     | Bill_Clinton |
+   | William_Jefferson_"Bill"_Clinton    | Bill_Clinton |
+   | William_Blythe_III                  | Bill_Clinton |
+   | William_J._Blythe                   | Bill_Clinton |
+   | William_J._Blythe_III               | Bill_Clinton |
+   | Bil_Clinton                         | Bill_Clinton |
+   | WilliamJeffersonClinton             | Bill_Clinton |
+   | William_J_Clinton                   | Bill_Clinton |
+   | Bill_Clinton's_sex_scandals         | Bill_Clinton |
+   | Billy_Clinton                       | Bill_Clinton |
+   | Willam_Jefferson_Blythe_III         | Bill_Clinton |
+   | William_"Bill"_Clinton              | Bill_Clinton |
+   | Billll_Clinton                      | Bill_Clinton |
+   | Bill_Klinton                        | Bill_Clinton |
+   | William_Clinton                     | Bill_Clinton |
+   | Willy_Clinton                       | Bill_Clinton |
+   | William_Jefferson_(Bill)_Clinton    | Bill_Clinton |
+   | Bubba_Clinton                       | Bill_Clinton |
+   | MTV_president                       | Bill_Clinton |
+   | MTV_President                       | Bill_Clinton |
+   | The_MTV_President                   | Bill_Clinton |
+   | Howard_G._Paster                    | Bill_Clinton |
+   | Clintonesque                        | Bill_Clinton |
+   | William_Clinton                     | Bill_Clinton |
+   | William_Jefferson_Clinton           | Bill_Clinton |
+
+** Article categories example
+
+   For example Leonardo DiCaprio's page has the following categories.
+   Highlighted is the category that tells wikipediabase that Leonardo
+   DiCaprio is a person:
+
+   - Leonardo DiCaprio
+   - 1974 births
+   - *Living people*
+   - 20th-century American male actors
+   - 21st-century American male actors
+   - American environmentalists
+   - American film producers
+   - American male child actors
+   - American male film actors
+   - American male soap opera actors
+   - American male television actors
+   - American people of German descent
+   - American people of Italian descent
+   - American people of Russian descent
+   - American philanthropists
+   - Best Actor AACTA Award winners
+   - Best Actor Academy Award winners
+   - Best Drama Actor Golden Globe (film) winners
+   - Best Musical or Comedy Actor Golden Globe (film) winners
+   - California Democrats
+   - Film producers from California
+   - Formula E team owners
+   - Male actors from Hollywood, California
+   - Male actors from Palm Springs, California
+   - Male actors of Italian descent
+   - People from Echo Park, Los Angeles
+   - Silver Bear for Best Actor winners
+
+   This looks like this on the wikipedia page.
+
+   #+CAPTION: The rendered list of categores for Leonardo DiCaprio
+   #+NAME:   fig:dicaprio-categories
+   #+attr_latex: :placement [H] :width \textwidth
+   [[./dicaprio_categories.png]]

@@ -11,9 +11,9 @@
 
 As far as the ontology that START assumes for WikipediaBase, each
 infobox type corresponds to a START class and each valid infobox
-attribute is a START class attribute. Furthermore commands all the
-mentioned classes inherit from the =wikipediabase-term= START class
-which supports the following attributes:
+attribute is a START class attribute. Furthermore all such classes
+inherit from the =wikipediabase-term= START class which supports the
+following attributes:
 
 - =IMAGE-DATA= : The infobox image
 - =SHORT-ARTICLE= : A short version of the article, typically the
@@ -24,7 +24,7 @@ which supports the following attributes:
 - =PROPER= : Whether the article refers to a proper noun (eg The
   Beatles, United States etc)
 - =NUMBER= : =#t= if the concept of the article refers to many things,
-  =#f= if it refres to one.
+  =#f= if it refers to one.
 
 All commands and return values are encoded into s-expressions.
 
@@ -42,8 +42,8 @@ All commands and return values are encoded into s-expressions.
 
 ** Types
 
-   All retrun values are typed. Below is a comprehensive list of all
-   the supported types.
+   All return values of =get= are typed. Below is a comprehensive list
+   of all the supported types.
 
 *** =:HTML=
 
@@ -206,7 +206,8 @@ All commands and return values are encoded into s-expressions.
   #+END_SRC
 
 * =sort-symbols=
-  =sort-symbols= takes any number of symbols and sorts them into
+
+  Given any number of symbols =sort-symbols= will sort them into
   subsets by the length of the associated article. E.g.,
 
   #+BEGIN_SRC lisp

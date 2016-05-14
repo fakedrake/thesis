@@ -15,19 +15,20 @@
   heuristic methods like classifier. To promote modularity and to
   avoid hard dependencies the provider/acquirer model was created:
 
-  A =Provider= is an object though which we can access resources that
+  A =Provider= is an object through which we can access resources that
   are stored in a key-value fashion. The =Provider= class offers
   facilities like decorators to make this provision easy. An
   =Acquirer= has transparent access to the resources of multiple
-  =Provider= s as if they were a single key value store. This pattern
+  =Providers= as if they were a single key value store. This pattern
   is most notably used for the =KnowledgeBase= to provide the
-  =Frontend= with the way of accessing resoruces.
+  =Frontend= with the way of accessing resources.
 
 
 * Example
 
   We demostrate the pattern with an example: we will embed a small
-  lisp to python
+  lisp dialect into python that we will call =p-lisp= (for =python
+  lisp=, =provider-lisp= and =poor-lisp=)
 
   #+BEGIN_SRC python
     from wikipediabase.provider import Provider, Acquirer, provide
@@ -92,7 +93,7 @@
     GLOBAL_EVAL = EvalContext([Builtins(), Symbols()])
   #+END_SRC
 
-  This little lisp supports:
+  =p-lisp= supports:
 
   - lambdas
   - A global symbol table
@@ -137,8 +138,8 @@
   arguments. The reason is that we do not want the list to be
   evaluated.
 
-  Back on our main subject. At each point in the code of our embedded
-  lisp symbols derive meaning from multiple sources:
+  Back on our main subject, in =p-lisp= symbols get values from 3
+  different sources:
 
   - The local closure
   - The arguments of the lambda
@@ -146,6 +147,6 @@
 
   All the above are abstracted using the provider-aquirer model. At
   each point a different =EvaluationContext= is responsible for
-  evaluating and each =EvaluationContext= has access to it's known
+  evaluating and each =EvaluationContext= has access to its known
   symbols via an array of providers that are abstracted using the
   discussed model.
