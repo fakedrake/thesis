@@ -8,6 +8,7 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+macro:       ref
 #+STARTUP:     showall
+#+MACRO:       ref
 
 Wikipedia mirror is a system aiming to automate the creation of a
 local clone of wikipedia contianing only the articles - that is not
@@ -72,7 +73,7 @@ wikipedia.org.
 
     It is fair to say that apache is at least one of the most popular web
     servers on the internet. wikipedia.org itself seems to be using a
-    more complex stack involving [[https://en.wikipedia.org/wiki/Varnish_(software)][varnish{{{ref}}}]], an HTTP accelerator, and
+    more complex stack involving [[https://en.wikipedia.org/wiki/Varnish_(software)][varnish]],{{{ref}}} an HTTP accelerator, and
     [[https://en.wikipedia.org/wiki/Nginx][nginx]], an alternative, also quite popular HTTP server. We arrive
     at this conclusion by inspecting the headers returned by
     wikipedia.org. In the http://www.wikipedia.org case we are

@@ -1,6 +1,6 @@
 * Draft 3.0
 ** Move to appendix
-*** TODO Dicaprio category example
+*** DONE Dicaprio category example
 *** DONE Bill clinkton infobox
 *** DONE Synonyms rule
 *** DONE Led Zeppelin fetcher test to appendix

@@ -7,6 +7,7 @@
 #+LANGUAGE:    en
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
+#+MACRO:       refg
 
 
 WikipediaBase is a backend to START responsible for providing access
@@ -407,35 +408,34 @@ Silver. Other students have also joined the project shortly after.
    provide an easy hook for implementations to deal with this possible
    issue.
 
-   *** DBM
+*** DBM
 
-   As mentioned before for caching several dbm implementations are
-   provided by the python standard library. None of the
-   implementations shipped with python are part of the python
-   standard library itself however. Some of the DBM implementations
-   that are available via the standard python library are:
+    As mentioned before for caching several dbm implementations are
+    provided by the python standard library. None of the
+    implementations shipped with python are part of the python
+    standard library itself however. Some of the DBM implementations
+    that are available via the standard python library are:
 
-   - AnyDBM
-     - GNU DBM
-     - Berkeley DBM
+    - AnyDBM
+    - GNU DBM
+    - Berkeley DBM
 
-     It is worth noting that the performance and smooth functioning of
-     these libraries is highly dependent on the underlying platform.
+    It is worth noting that the performance and smooth functioning of
+    these libraries is highly dependent on the underlying platform.
 
-     As mentioned above, the interface classes to DBM transcode keys to
-     ASCII. The precise way that is done is:
+    As mentioned above, the interface classes to DBM transcode keys to
+    ASCII. The precise way that is done is:
 
-     #+BEGIN_SRC python
-          def _encode_key(self, key):
-              if isinstance(key, unicode):
-                  return key.encode('unicode_escape')
+    #+BEGIN_SRC python
+     def _encode_key(self, key):
+         if isinstance(key, unicode):
+             return key.encode('unicode_escape')
 
-              return str(key)
+         return str(key)
 
-    def _decode_key(self, key):
-    return key.decode('unicode_escape')
-
-     #+END_SRC
+     def _decode_key(self, key):
+         return key.decode('unicode_escape')
+    #+END_SRC
 
 *** SQLite
 
@@ -609,57 +609,59 @@ Silver. Other students have also joined the project shortly after.
      [.. see below for a formated verison of the data ...]
      | William_Jefferson_Clinton           | Bill_Clinton |
      +-------------------------------------+--------------+
-   46 rows in set (11.77 sec)
+     46 rows in set (11.77 sec)
    #+END_SRC
 
-   | page_title                          | rd_title     |
-   |-------------------------------------+--------------|
-   | BillClinton                         | Bill_Clinton |
-   | William_Jefferson_Clinton           | Bill_Clinton |
-   | President_Clinton                   | Bill_Clinton |
-   | William_Jefferson_Blythe_IV         | Bill_Clinton |
-   | Bill_Blythe_IV                      | Bill_Clinton |
-   | Clinton_Gore_Administration         | Bill_Clinton |
-   | Buddy_(Clinton's_dog)               | Bill_Clinton |
-   | Bill_clinton                        | Bill_Clinton |
-   | William_Jefferson_Blythe_III        | Bill_Clinton |
-   | President_Bill_Clinton              | Bill_Clinton |
-   | Bull_Clinton                        | Bill_Clinton |
-   | Clinton,_Bill                       | Bill_Clinton |
-   | William_clinton                     | Bill_Clinton |
-   | 42nd_President_of_the_United_States | Bill_Clinton |
-   | Bill_Jefferson_Clinton              | Bill_Clinton |
-   | William_J._Clinton                  | Bill_Clinton |
-   | Billl_Clinton                       | Bill_Clinton |
-   | Bill_Clinton\                       | Bill_Clinton |
-   | Bill_Clinton's_Post_Presidency      | Bill_Clinton |
-   | Bill_Clinton's_Post-Presidency      | Bill_Clinton |
-   | Klin-ton                            | Bill_Clinton |
-   | Bill_J._Clinton                     | Bill_Clinton |
-   | William_Jefferson_"Bill"_Clinton    | Bill_Clinton |
-   | William_Blythe_III                  | Bill_Clinton |
-   | William_J._Blythe                   | Bill_Clinton |
-   | William_J._Blythe_III               | Bill_Clinton |
-   | Bil_Clinton                         | Bill_Clinton |
-   | WilliamJeffersonClinton             | Bill_Clinton |
-   | William_J_Clinton                   | Bill_Clinton |
-   | Bill_Clinton's_sex_scandals         | Bill_Clinton |
-   | Billy_Clinton                       | Bill_Clinton |
-   | Willam_Jefferson_Blythe_III         | Bill_Clinton |
-   | William_"Bill"_Clinton              | Bill_Clinton |
-   | Billll_Clinton                      | Bill_Clinton |
-   | Bill_Klinton                        | Bill_Clinton |
-   | William_Clinton                     | Bill_Clinton |
-   | Willy_Clinton                       | Bill_Clinton |
-   | William_Jefferson_(Bill)_Clinton    | Bill_Clinton |
-   | Bubba_Clinton                       | Bill_Clinton |
-   | MTV_president                       | Bill_Clinton |
-   | MTV_President                       | Bill_Clinton |
-   | The_MTV_President                   | Bill_Clinton |
-   | Howard_G._Paster                    | Bill_Clinton |
-   | Clintonesque                        | Bill_Clinton |
-   | William_Clinton                     | Bill_Clinton |
-   | William_Jefferson_Clinton           | Bill_Clinton |
+
+   #+ATTR_LATEX: :environment longtable
+   | =page_title=                          | =rd_title=     |
+   |---------------------------------------+----------------|
+   | =BillClinton=                         | =Bill_Clinton= |
+   | =William_Jefferson_Clinton=           | =Bill_Clinton= |
+   | =President_Clinton=                   | =Bill_Clinton= |
+   | =William_Jefferson_Blythe_IV=         | =Bill_Clinton= |
+   | =Bill_Blythe_IV=                      | =Bill_Clinton= |
+   | =Clinton_Gore_Administration=         | =Bill_Clinton= |
+   | =Buddy_(Clinton's_dog)=               | =Bill_Clinton= |
+   | =Bill_clinton=                        | =Bill_Clinton= |
+   | =William_Jefferson_Blythe_III=        | =Bill_Clinton= |
+   | =President_Bill_Clinton=              | =Bill_Clinton= |
+   | =Bull_Clinton=                        | =Bill_Clinton= |
+   | =Clinton,_Bill=                       | =Bill_Clinton= |
+   | =William_clinton=                     | =Bill_Clinton= |
+   | =42nd_President_of_the_United_States= | =Bill_Clinton= |
+   | =Bill_Jefferson_Clinton=              | =Bill_Clinton= |
+   | =William_J._Clinton=                  | =Bill_Clinton= |
+   | =Billl_Clinton=                       | =Bill_Clinton= |
+   | =Bill_Clinton\=                       | =Bill_Clinton= |
+   | =Bill_Clinton's_Post_Presidency=      | =Bill_Clinton= |
+   | =Bill_Clinton's_Post-Presidency=      | =Bill_Clinton= |
+   | =Klin-ton=                            | =Bill_Clinton= |
+   | =Bill_J._Clinton=                     | =Bill_Clinton= |
+   | =William_Jefferson_"Bill"_Clinton=    | =Bill_Clinton= |
+   | =William_Blythe_III=                  | =Bill_Clinton= |
+   | =William_J._Blythe=                   | =Bill_Clinton= |
+   | =William_J._Blythe_III=               | =Bill_Clinton= |
+   | =Bil_Clinton=                         | =Bill_Clinton= |
+   | =WilliamJeffersonClinton=             | =Bill_Clinton= |
+   | =William_J_Clinton=                   | =Bill_Clinton= |
+   | =Bill_Clinton's_sex_scandals=         | =Bill_Clinton= |
+   | =Billy_Clinton=                       | =Bill_Clinton= |
+   | =Willam_Jefferson_Blythe_III=         | =Bill_Clinton= |
+   | =William_"Bill"_Clinton=              | =Bill_Clinton= |
+   | =Billll_Clinton=                      | =Bill_Clinton= |
+   | =Bill_Klinton=                        | =Bill_Clinton= |
+   | =William_Clinton=                     | =Bill_Clinton= |
+   | =Willy_Clinton=                       | =Bill_Clinton= |
+   | =William_Jefferson_(Bill)_Clinton=    | =Bill_Clinton= |
+   | =Bubba_Clinton=                       | =Bill_Clinton= |
+   | =MTV_president=                       | =Bill_Clinton= |
+   | =MTV_President=                       | =Bill_Clinton= |
+   | =The_MTV_President=                   | =Bill_Clinton= |
+   | =Howard_G._Paster=                    | =Bill_Clinton= |
+   | =Clintonesque=                        | =Bill_Clinton= |
+   | =William_Clinton=                     | =Bill_Clinton= |
+   | =William_Jefferson_Clinton=           | =Bill_Clinton= |
 
 ** Article categories example
 
