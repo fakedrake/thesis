@@ -121,14 +121,14 @@
   For example, an infobox of type =Foo= has valid attributes /A/, /B/,
   /C/ and /D/. The generated infobox markup would be:
 
-  #+BEGIN_SRC
+  #+BEGIN_EXAMPLE
   {{Infobox Foo
   | A = !!!A!!!
   | B = !!!B!!!
   | C = !!!C!!!
   | D = !!!D!!!
   }}
-  #+END_SRC
+  #+END_EXAMPLE
 
   And the rendered version could be, depending on the implementation
   of the =Foo= infobox.
