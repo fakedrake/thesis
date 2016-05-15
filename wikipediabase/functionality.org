@@ -52,16 +52,6 @@ All commands and return values are encoded into s-expressions.
     double quotes and backslashes escaped with backslashes. For
     example:
 
-    #+BEGIN_SRC lisp
-      (get "wikipedia-sea" "Black Sea" (:code "AREA"))
-      => ((:html "436,402 km2 (168,500 sq mi)"))
-
-      (get "wikipedia-president" "Bill Clinton" (:code "SUCCESSOR"))
-      => ((:html "George W. Bush"))
-
-      (get "wikipedia-president" "Bill Clinton" (:rendered "Succeeded by"))
-      => ((:html "George W. Bush"))
-    #+END_SRC
 
 *** =:YYYYMMDD=
 
@@ -128,8 +118,8 @@ All commands and return values are encoded into s-expressions.
 
     Computed from latitude and longitude attributes given in the
     article header or, if none can be found, the infobox. The value is
-    a list of the latitude and longitude, e.g., ((=:coordinates=
-    latitude longitude))
+    a list of the latitude and longitude, e.g., =((:coordinates
+    latitude longitude))=
 
     #+CAPTION: An example of coordinates in the header
     #+NAME:   fig:coordinate-example

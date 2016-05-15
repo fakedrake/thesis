@@ -7,6 +7,7 @@
 #+LANGUAGE:    en
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
+#+MACRO:       ref
 
 * Infobox
 
@@ -52,13 +53,14 @@
   #+attr_latex: :placement [H] :height 12cm
   [[./gentzen-infobox.png]]
 
-  Infobox types are organized into a fairly wide hierarchy. For
-  example [[https://en.wikipedia.org/wiki/Template:Infobox_Austrian_district][Template:Infobox Austrian district]] is a special case of a
-  [[https://en.wikipedia.org/wiki/Template:Infobox_settlement][Template:Infobox settlement]] and each is rendered differently. For
-  our purposes, and to mirror the markup definition of infoboxes, an
-  infobox \(I\) with attributes \(a_i\) and values \(v_i\) is a set of
-  pairs \({(a_i, v_i)}\) together with a infobox type \(t\). Each
-  attribute \(a_i\) and value \(v_i\) have two forms:
+  Infobox types are organized into a fairly wide
+  hierarchy{{{ref(infobox_hierarchy)}}}. For example [[https://en.wikipedia.org/wiki/Template:Infobox_Austrian_district][Template:Infobox
+  Austrian district]] is a special case of a [[https://en.wikipedia.org/wiki/Template:Infobox_settlement][Template:Infobox settlement]]
+  and each is rendered differently. For our purposes, and to mirror
+  the markup definition of infoboxes, an infobox \(I\) with attributes
+  \(a_i\) and values \(v_i\) is a set of pairs \({(a_i, v_i)}\)
+  together with a infobox type \(t\). Each attribute \(a_i\) and value
+  \(v_i\) have two forms:
 
   - a rendered form, \(a^r_i\) and \(v^r_i\) respectively, which is
     the rendered HTML representation and
@@ -155,7 +157,7 @@
   WikipediaBase with the outside world. It is a singleton object that
   implements a specific interface.
 
-  Fetchers are organized in an inheriting hierarchiy
+  Fetchers are organized in an inheriting hierarchy
 
   - BaseFetcher :: The baseclass for fetchers, it will return the
        symbol instead of trying to resolve it in any way
@@ -172,12 +174,12 @@
        most notably by =MetaInfobox= to use the =Infobox=
        functionality to convey arbitrary information.
 
-  By default, markup is fetched from the backend. If force_live is set
-  to True, the markup will be fetched from live wikipedia.org
+  By default, markup is fetched from the backend. If =force_live= is
+  set to =True=, the markup will be fetched from live wikipedia.org
 
-  When tests are ran on TravisCI, we always want to use live data. We
-  check if Travis is running tests by looking at the
-  WIKIPEDIABASE_FORCE_LIVE env variable.
+  When tests are ran on TravisCI{{{ref(travis)}}}, we always want to
+  use live data. We check if Travis is running tests by looking at the
+  =WIKIPEDIABASE_FORCE_LIVE= environment variable.
 
 * Renderer
 
@@ -196,10 +198,11 @@
   editing wikipedia. While wikipedia.org has a very lenient policy
   when it comes to banning people who are spamming their servers,
   repeated testing of the =Renderer= class targeting wikipedia's
-  [[https://en.wikipedia.org/wiki/Wikipedia:Sandbox][sandbox]] caused the testing machine's ip to be temporarily banned on
-  the grounds that "its activity does not promote the imporovement of
-  wikipedia". We reimplemented the =Renderer= to use the wikipedia API
-  and we never had a problem with wikipedia moderation again.
+  sandbox{{{ref(wikipedia_sandbox)}}} caused the testing machine's ip
+  to be temporarily banned on the grounds that "its activity does not
+  promote the imporovement of wikipedia". We reimplemented the
+  =Renderer= to use the wikipedia API and we never had a problem with
+  wikipedia moderation again.
 
 * Pipeline
 
@@ -224,7 +227,7 @@
    The knowledgebase is the entry point to the rest of
    wikipediabase. It uses the Provider/Acquirer pattern to
    transparently provide the frontend with arbitrary methods. Those
-   methods are responsible for chosing whether we are to resort to
+   methods are responsible for choosing whether we are to resort to
    classifiers or resolvers (or any other mechanism) for answering
    the query. Available classifiers and resolvers become accessible
    to the knowledgebase automatically using their base class.

@@ -1,13 +1,13 @@
 * Draft 4.0
+** TODO Translation
+** TODO Setup bibtex
+** TODO Lookup refrerences
+** TODO Ask if we should add the entire codebase
 ** DONE Xetex setup
 
    Use the Georgia font
-
-** TODO Translation
 * Draft 3.0
-** TODO Mark References in text
-** TODO Setup bibtex
-** TODO Lookup refrerences
+** DONE Mark References in text
 ** DONE Dictionary pass
 ** DONE Dicaprio category example
 ** DONE Bill clinkton infobox
@@ -82,3 +82,30 @@
 ** TODO fsync performacne
 ** TODO Scribunto
 ** TODO parserfunctionns
+
+* Article
+
+** Google translate in emacs
+
+   - Default languages in dir-locals
+   - Key bindings
+
+** Org mode
+
+   - Images
+   - Include files to render in parts
+   - Include images absolute paths
+   - [other patch]
+   - Reference macros
+   - Export
+   - longtable
+
+** Greek
+
+   - Xelatex + proper fonts +for encoding
+   - Aspell dictionary automatically enabled with restart
+
+** Emacs in general
+
+   - Horizontal split for translation
+   - Karabiner to pass the keybinding of input mode to emacs
