@@ -640,6 +640,326 @@
    κοιτάζοντας τη μεταβλητή =WIKIPEDIABASE_FORCE_LIVE= μεταβλητή
    περιβάλλοντος.
 
+** Renderer
+
+   =Renderers= είναι μονήρεις classes, χρήσιμες για την απόδοση
+   MediaWiki markup σε HTML . Αρχικά το wikiepedia sandbox
+   χρησιμοποιήθηκε από τη wikipediabase για την απόδοση σελίδων,
+   επειδή είναι ελαφρώς ταχύτερο από την API, αλλά το wikipedia-mirror
+   ήταν πολύ αργό και το wikipedia.org το θεωρούσε κατάχρηση της
+   υπηρεσίας και μπλόκαρε το IP μας μετά από μερικά τεστ. Γι' αυτό το
+   λόγο τελικά μεταπηδήσαμε στο API με Redis caching, το οποίο
+   λειτουργούν αρκετά καλά, μιας που τα =Renderer= αντικείμενα
+   καταλήγουν να χρησιμοποιούνται μόνο απο το MetaInfobox, το οποίο
+   έχει ένα αρκετά περιορισμένο πεδίο εφαρμογής , και έτσι το cache να
+   χάνει σπάνια.
+
+   Μια ενδιαφέρουσα πληροφορία για την κατηγορία =Renderer= ήταν ότι
+   αυτός ήταν ο λόγος που ένα ζευγάρι CSAIL IPs να αποκλειστεί
+   προσωρινά από την επεξεργασία της wikipedia. Ενώ η wikipedia.org
+   έχει μια πολύ επιεική πολιτική όταν πρόκειται για την αποκλεισμό
+   των ανθρώπων που έχουν κανει spamming τους servers,
+   επαναλαμβανόμενες δοκιμές της κατηγορίας Renderer με στόχευση
+   wikipedia sandbox προκάλεσε το ip του δοκιμαστικού μηχανήμτος να
+   αποκλεισθεί προσωρινά με το σκεπτικό ότι "η δραστηριότητα του δεν
+   προάγει την βελτίωση της wikipedia". Εμείς επανατοποθετήσαμε το
+   =Renderer= να χρησιμοποιηεί το wikipedia API και ποτέ δεν είχαμε
+   ξανά πρόβλημα με την ρύθμιση της wikipedia.
+
+** Pipeline
+
+   Κατά την επίλυση ενός ερωτήματος η WikipediaBase ενεργοποιεί ένα
+   pipeline ενοτήτων για να διαπιστωθεί ποιος είναι ο καλύτερος τρόπος
+   απάντησης.
+
+*** Frontend
+
+    Η WikipediaBase μπορεί να χρησιμοποιηθεί ως βιβλιοθήκη αλλά ο
+    πρωταρχικός της λειτουργία είναι ως backend στο START. Η
+    επικοινωνία μεταξύ START και WikipediaBase γίνεται πάνω από ένα
+    plaintext telnet σύνδεσής στην πόρτα 8023 χρησιμοποιώντας
+    sexpressions. Το frontend χειρίζεται το δίκτυο σύνδεσης με το
+    START, μεταφράζει τις προσλαμβανόμενες ερωτήσεις σε κλήσεις της
+    Knowledgebase και στη συνέχεια μεταφράζει την αντίδραση της
+    Knowledgebase σε κατάλληλα διαμορφωμένες εκφράσεις και τις
+    επιστρέφει πίσω στο telnet connection.
+
+*** Knowledgebase
+
+    Η knowledgebase είναι το σημείο εισαγωγής στο rest της wikipediabase.
+
+    Χρησιμοποιεί μοτίβο Provider/Acquirer να παρέχει διαφανή διεπαφή
+    της frontend με αυθαίρετες μεθόδους. Οι μέθοδοι αυτοί είναι
+    υπεύθυνοι για την επιλογή του αν θέλουμε να καταλήξουμε σε
+    classifiers, resolvers οποιοδήποτε άλλο μηχανισμό για να δοθεί
+    απάντηση στο ερώτημα. Διαθέσιμοι classifiers και resolvers
+    γίνονται προσβάσιμοι αυτόματα στη knowledgebase χρησιμοποιώντας τη
+    βασική τους κλάση.
+
+    # MARK
+*** Classifiers
+
+    Κάθε Classifier είναι μονήρης κλάση και υλοποιεί μια ευρετική για
+    για να συνάξει μια λίστα από κατηγορίες ενός αντικειμένου. Ένα
+    αντικείμενο μπορεί να επιστρέφει μηδέν ή περισσότερες
+    κατηγορίες.
+
+    Συνήθως, ένας Classifier θα συμπεράνει μόνο αν ένα αντικείμενο
+    πράγματι αναστέλλει μια συγκεκριμένη κατηγορία ή όχι, αλλά αυτό
+    δεν είναι απαραίτητο.
+
+**** Term
+
+     Ο TermClassifier απλά αναθέτει την κατηγορία wikipedia-term. Η
+     Wikipediabase διαπραγματεύεται μόνο μόνο με πληροφορίες σχετικές
+     με τη wikipedia.
+
+**** Infobox
+
+     Το =InfoboxClassifier= αναθέτει σε ένα όρο την κατηγορία
+     infobox. Για παράδειγμα η σελίδα Bill Clinton περιέχει το
+     infobox:
+
+
+     #+BEGIN_EXAMPLE
+       {{Infobox president
+       |name          = Bill Clinton
+       |image         = 44 Bill Clinton 3x4.jpg{{!}}border
+       [...]
+       }}
+     #+END_EXAMPLE
+
+     Και γι αυτό λαμβάνει την κατηγορία =wikipedia-president=.
+
+**** Person
+
+     Το =PersonClassifier= αναθέτει την κατηγορία =wikibase-person=
+     χρησιμοποιώντας κάποια χαρκτηριστικά με την σειρά που
+     περιγράφονται:
+
+***** Category regexes
+
+      Χρησιμοποιεί τις ακόλουθες συνηθισμένες εκφράσεις για να
+      ταυτίσει τις κατηγορίες ενός άρθρου.
+
+      # MARK
+
+      - .* person
+
+      - \^\d+ deaths.*
+
+      - \^\d+ births.*
+
+      - .* actors
+
+      - .* deities
+
+      - .* gods
+
+      - .* goddesses
+
+      - .* musicians
+
+      - .* players
+
+      - .* singers
+
+***** Category regex excludes
+
+      Αποκλείει τις ακόλουθες regexes.
+
+      - \sbased on\s
+
+      - \sabout\s
+
+      - lists of\s
+
+      - animal\
+
+***** Category matches
+
+      Γνωρίζουμε ότι ένα άρθρο αναφέρεται σε ένα πρόσωπο εάν η σελίδα ανήκει
+      σε μια από τις ακόλουθες
+
+      mediawikiκατηγορίες:
+
+      - american actors
+
+      - american television actor stubs
+
+      - american television actors
+
+      - architects
+
+      - british mps
+
+      - character actors
+
+      - computer scientist
+
+      - dead people rumoured to be living
+
+      - deities
+
+      - disappeared people
+
+      - fictional characters
+
+      - film actors
+
+      - living people
+
+      - musician stubs
+
+      - singer stubs
+
+      - star stubs
+
+      - united kingdom writer stubs
+
+      - united states singer stubs
+
+      - writer stubs
+
+      - year of birth missing
+
+      - year of death missing
+
+      Για παράδειγμα η σελίδα του Leonardo DiCaprio έχει τις ακόλουθες
+      κατηγορίες:
+
+      - Leonardo DiCaprio
+
+      - 1974 births
+
+      - Living people
+
+      - 20th-century American male actors
+
+      - 21st-century American male actors
+
+      - American environmentalists
+
+      - American film producers
+
+      - American male child actors
+
+      - American male film actors
+
+      - American male soap opera actors
+
+      - American male television actors
+
+      - American people of German descent
+
+      - American people of Italian descent
+
+      - American people of Russian descent
+
+      - American philanthropists
+
+      - Best Actor AACTA Award winners
+
+      - Best Actor Academy Award winners
+
+      - Best Drama Actor Golden Globe (film) winners
+
+      - Best Musical or Comedy Actor Golden Globe (film)
+
+      winners
+
+      - California Democrats
+
+      - Film producers from California
+
+      - Formula E team owners
+
+      - Male actors from Hollywood, California
+
+      - Male actors from Palm Springs, California
+
+      - Male actors of Italian descent
+
+      - People from Echo Park, Los Angeles
+
+      - Silver Bear for Best Actor winners
+
+      Όπως είναι φανερό η λίστα με τις κατηγορίες είναι αθυαίρετη και όχι
+      πλήρης. Πολλαπλές μέθοδοι έχουν χρησιμοποιηθεί για να διορθωθεί αυτό.
+
+      Μερικές από αυτές είναι:
+
+      - Μέθοδοι με Supervised machine learning όπως SVM χρησιμοποιώντας άλλες
+      μεθόδους να ορίσουν ένα πρόσωπο και να δημιουργήσουν εκπαιδευτικές
+      ομάδες
+
+      - Hand-pick κοινές κατηγορίες για άρθρα προσώπων ορισμένα ξανά με
+      διαφορετικά κριτήρια
+
+*** Resolvers
+
+    Οι Resolvers είναι επίσης μονήρεις (singletons) αλλά ο σκοπός τους είναι
+    να βρούνε την αξία από την αναζητούμενη ιδιοκτησία (property)
+
+    . Όλοι οι resolvers προέρχονται από το BaseResolver
+
+    και πρέπει να εφαρμόζουν τις ακόλουθες μεθόδους:
+
+    - resolve(class, symbol, attribute): get the value of the
+
+    attribute of symbol symbol as class
+
+    - attributes(class, symbol): get a list of the attributes this
+
+    resolver can resolve.
+
+    Οι implemented resolvers είναι οι ακόλουθοι:
+
+    Error the minimum priority resolver, it will always resolve to an
+
+    error.
+
+    Infobox Resolve attributes found on infoboxes of a symbol.
+
+    Ένα πρόσωπο resolve τα ακόλουθα ειδικά χαρακτηριστικά των συμβόλων
+    αναφερόμενα σε ανθρώπους :
+
+    - birth-date
+
+    - death-date
+
+    - gender
+
+    Κεφάλαια resolve το περιεχόμενοτων κεφαλαίων σε ένα άρθρο.
+
+    Term Can resolve a fixed set of ad-hoc attributes:
+
+    - coordinates /The coordinates of a geographical location/
+
+    - image /The image in the infobox/
+
+    - number /True if the symbol is plural (eg The Beatles)/
+
+    - proper /True if it refers to a unique entity./
+
+    - short-article /A summary of the article. Typically the/
+
+    /first paragraph/
+
+    - url /The article url/
+
+    - word-cout /The size of the article/
+
+*** Lisp types
+
+    Ο τύπος Lisp είναι περιτυλίγματα (wrappers ) για python αντικείμενα ή
+    τιμές που παρουσιάζονται σε μορφή s-expression που το START μπορεί να
+    κατανοήσει . Έχουν δημιουργηθεί είτε από το ανεπεξέργαστο ερώτημα και
+    έχουν ξετυλιχθεί (unwrapped) ώστε να είναι χρήσιμα στον αγωγό (pipeline
+    ) , ή από την απάντηση που δίνει η WikipediaBase και στη συνέχεια
+    κωδικοποιούνται σε ένα string και αποστέλλονται μέσω telnet στο START.
+
+
 
 * WikipediaMirror
 * References

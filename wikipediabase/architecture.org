@@ -187,8 +187,8 @@
   mediawiki markup into HTML. Originally the wikiepedia sandbox was
   used by wikipediabase for rendering pages because it is slightly
   faster than the API, but the wikipedia-mirror was really slow at
-  this and wikipedia.org would consider it an abuse of the service and
-  block our IP. For that reason we eventually switched to the API with
+  this and wikipedia.org would consider it an abuse of the
+  service. For that reason we eventually switched to the API with
   Redis caching, which works out pretty well because =Renderer=
   objects end up being used only by =MetaInfobox= which has quite a
   limited scope, making thus cache misses rarely.
