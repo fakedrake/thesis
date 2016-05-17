@@ -432,13 +432,13 @@ wikipedia.org.
 
 ** Bitnami
 
-   Bitnami{{{ref}}} is a family of programs that sets up and manages servers
-   stacks. It contains the entire stack installation within a
-   directory making it both modular and portable while avoiding the
-   fuss of dealing with VMs or containers. Bitnami is not open source
-   so there is no way to tell for sure but my best guess is that it
-   manages this by patching the prefix path of MySQL, apache etc
-   binaries with the installation directory.
+   Bitnami{{{ref(bitnami)}}} is a family of programs that sets up and
+   manages servers stacks. It contains the entire stack installation
+   within a directory making it both modular and portable while
+   avoiding the fuss of dealing with VMs or containers. Bitnami is not
+   open source so there is no way to tell for sure but my best guess
+   is that it manages this by patching the prefix path of MySQL,
+   apache etc binaries with the installation directory.
 
    Bitnami now supports hundreds of stacks, indicatively the most
    popular are:
@@ -477,30 +477,33 @@ wikipedia.org.
    - *Main memory:* 64G
    - *HDD:* (spinning disk) 500GB + 2Tb
 
-   Since the main bottleneck was the database population -ie MySQL's
-   performance- great effort and experimentation went into fine tuning
-   MySQL but the speedup achieved was negligible so they were not
-   included in the makefiles.
+   Since the main bottleneck was the database population --- ie
+   MySQL's performance --- great effort and experimentation went into
+   fine tuning MySQL but the speedup achieved was negligible so they
+   were not included in the makefiles.
 
    The backend database engine used by MySQL is InnoDB. Some of the
    optimization methods attempted are:
 
-   - Calibrate the =innodb_buffer_pool_size=. While the available
-     memory in ashmore is fairly large, increasing the buffer pool
-     size up to several GB there was no noticeable difference in
-     database population.
-   - Change =innodb_flush_method= to =O_DSYNC= to avoid using the
-     =fsync= system call. In short the problem with flushing large
-     mapped files with =fsync= is that =fsync= searches for dirty
-     pages in mapped memory pages linearly making it slower and slower
-     as the file gets larger.
-   - Calibrate the =einnodb_io_capacity=. Unsurprisingly the value of
-     this variable was higher than the bandwidth of the HDD.
+   - Calibrate the
+     =innodb_buffer_pool_size={{{ref(innodb_buffer_pool_size)}}}. While
+     the available memory in ashmore is fairly large, increasing the
+     buffer pool size up to several GB there was no noticeable
+     difference in database population.
+   - Change =innodb_flush_method={{{ref(innodb_flush_method)}}} to
+     =O_DSYNC= to avoid using the =fsync= system call. In short the
+     problem with flushing large mapped files with =fsync= is that
+     =fsync= searches for dirty pages in mapped memory pages linearly
+     making it slower and slower as the file gets larger.
+     - Calibrate the
+       =innodb_io_capacity={{{ref(innodb_io_capacity)}}}. Unsurprisingly
+       the value of this variable was higher than the bandwidth of the
+       HDD.
 
   The only optimization that actually made a difference in database
   population speed was to edit the MySQL dump to set:
 
-  #+BEGIN_SRC sq;
+  #+BEGIN_SRC sql
     SET AUTOCOMMIT = 0; SET FOREIGN_KEY_CHECKS=0;
   #+END_SRC
 

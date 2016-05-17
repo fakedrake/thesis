@@ -10,7 +10,7 @@
 
 
 The most important part of wikipedia-mirror automation is the =make=
-build system{{{ref}}}. Below is an outline of the most basic features
+build system{{{ref(make)}}}. Below is an outline of the most basic features
 of make that constitute it an excellent candidate for automating
 processes like this.
 
@@ -165,8 +165,8 @@ basic features that make our life easier.
 
    Notice how variable names were themselves constructed.
 
-   Variables can also be defined at the command so in this
-   particular example we could easily switch to the =bar= library:
+   Variables can also be defined at the command so in this particular
+   example we could easily switch to the =bar= library:
 
    #+BEGIN_SRC sh
      $ make --just-print library=bar
@@ -196,22 +196,10 @@ basic features that make our life easier.
      Makefile:5: *** Recursive variable `support2' references itself (eventually).  Stop.
    #+END_SRC
 
-   the variable system of make is total{{{ref}}}, that is to say
-   variable evaluation can be recursive but it needs to terminate. We
-   can circumvent this by using the ~:\=~ assignment operator.
-
-   #+BEGIN_SRC makefile
-     kurma = the world $(support1)
-     animal1 = four elephants
-     animal2 = tortoise
-     support1 = supported by $(animal1) $(support2)
-     support2 := supported by a $(animal2) $(support2)
-
-     all:
-        echo $(kurma)
-   #+END_SRC
-
-   And when we run make we get:
+   the variable system of make is total{{{ref(total_function)}}}, that
+   is to say variable evaluation can be recursive but it needs to
+   terminate. We can circumvent this by using the ~:\=~ assignment
+   operator.  And when we run make we get:
 
    #+BEGIN_SRC sh
      make --just-print
@@ -228,9 +216,8 @@ basic features that make our life easier.
    following
 
    - =$@=: The file name of the target of the rule. If the target is
-     an archive member, then =$@= is the name of the archive
-     file. In a pattern rule that has multiple targets (see
-     Introduction to Pattern Rules), =$@= is the name of
+     an archive member, then =$@= is the name of the archive file. In
+     a pattern rule that has multiple targets, =$@= is the name of
      whichever target caused the rule's recipe to be run.
    - =$%=: The target member name, when the target is an archive
      member. See Archives. For example, if the target is
@@ -238,14 +225,13 @@ basic features that make our life easier.
      foo.a. =$%= is empty when the target is not an archive member.
    - =$<=: The name of the first prerequisite. If the target got its
      recipe from an implicit rule, this will be the first prerequisite
-     added by the implicit rule (see Implicit Rules).
-   - =$?=: The names of all the prerequisites that are newer than
-     the target, with spaces between them. For prerequisites which
-     are archive members, only the named member is used (see
-     Archives).
+     added by the implicit rule.
+   - =$?=: The names of all the prerequisites that are newer than the
+     target, with spaces between them. For prerequisites which are
+     archive members, only the named member is used.
    - =$^=: The names of all the prerequisites, with spaces between
      them. For prerequisites which are archive members, only the
-     named member is used (see Archives). A target has only one
+     named member is used. A target has only one
      prerequisite on each other file it depends on, no matter how
      many times each file is listed as a prerequisite. So if you
      list a prerequisite more than once for a target, the value of
@@ -259,22 +245,21 @@ basic features that make our life easier.
      particular order.
    - =$|= The names of all the order-only prerequisites, with spaces
      between them.
-   - =$*=: The stem with which an implicit rule matches (see How
-     Patterns Match). If the target is =dir/a.foo.b= and the target
-     pattern is =a.%.b= then the stem is =dir/foo=. The stem is useful
-     for constructing names of related files. In a static pattern
-     rule, the stem is part of the file name that matched the =%= in
-     the target pattern. In an explicit rule, there is no stem; so
-     =$*= cannot be determined in that way. Instead, if the target
-     name ends with a recognized suffix (see Old-Fashioned Suffix
-     Rules), =$*= is set to the target name minus the suffix. For
+   - =$*=: The stem with which an implicit rule matches. If the target
+     is =dir/a.foo.b= and the target pattern is =a.%.b= then the stem
+     is =dir/foo=. The stem is useful for constructing names of
+     related files. In a static pattern rule, the stem is part of the
+     file name that matched the =%= in the target pattern. In an
+     explicit rule, there is no stem; so =$*= cannot be determined in
+     that way. Instead, if the target name ends with a recognized
+     suffix, =$*= is set to the target name minus the suffix. For
      example, if the target name is =foo.c=, then =$*= is set to
      =foo=, since =.c= is a suffix. GNU make does this bizarre thing
      only for compatibility with other implementations of make. You
      should generally avoid using =$*= except in implicit rules or
-     static pattern rules. If the target name in an explicit rule
-     does not end with a recognized suffix, =$*= is set to the empty
-     string for that rule.
+     static pattern rules. If the target name in an explicit rule does
+     not end with a recognized suffix, =$*= is set to the empty string
+     for that rule.
 
 
 * Functions
