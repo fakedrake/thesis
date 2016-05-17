@@ -1,6 +1,6 @@
 #+TITLE:       Wikipediabase Date Parser
 #+AUTHOR:      Chris Perivolaropoulos
-#+DATE:        Sunday 21 February 2016
+#+DATE:        Wednesday 28 May 2016
 #+EMAIL:       cperivol@csail.mit.edu
 #+DESCRIPTION: The date parsing package for wikipediabase
 #+KEYWORDS:

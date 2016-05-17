@@ -1,0 +1,241 @@
+#    -*- mode: org -*-
+
+
+Archived entries from file /Users/drninjabatman/Projects/thesis/greek/thesis.org
+
+
+* To bug στη βιβλιοθήκη xerces
+  :PROPERTIES:
+  :ARCHIVE_TIME: 2016-05-17 Tue 23:00
+  :ARCHIVE_FILE: ~/Projects/thesis/greek/thesis.org
+  :ARCHIVE_OLPATH: WikipediaMirror
+  :ARCHIVE_CATEGORY: thesis
+  :END:
+
+  Όταν γράφαμε το mwdumper ένα περίεργο, ημιτυχαίο bug εμφανίστηκε.
+
+  Ευτυχώς αυτό δεν τρέχει για μεγάλο διάστημα έτσι ασφαλώς
+  πειραματιζόμαστε.  Εδώ είναι το output της time:
+
+  #+BEGIN_SRC text
+    ...
+
+    376,000 pages (14,460.426/sec), 376,000 revs (14,460.426/sec)
+    377,000 pages (14,458.848/sec), 377,000 revs (14,458.848/sec)
+    Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 2048
+            at org.apache.xerces.impl.io.UTF8Reader.read(Unknown Source)
+            at org.apache.xerces.impl.XMLEntityScanner.load(Unknown Source)
+            at org.apache.xerces.impl.XMLEntityScanner.scanContent(Unknown Source)
+            at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanContent(Unknown Source)
+            at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch(Unknown Source)
+            at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
+            at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+            at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+            at org.apache.xerces.parsers.XMLParser.parse(Unknown Source)
+            at org.apache.xerces.parsers.AbstractSAXParser.parse(Unknown Source)
+            at org.apache.xerces.jaxp.SAXParserImpl$JAXPSAXParser.parse(Unknown Source)
+            at javax.xml.parsers.SAXParser.parse(SAXParser.java:392)
+            at javax.xml.parsers.SAXParser.parse(SAXParser.java:195)
+            at org.mediawiki.importer.XmlDumpReader.readDump(XmlDumpReader.java:88)
+            at org.mediawiki.dumper.Dumper.main(Dumper.java:142)
+    make: *** [/scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql] Error 1
+  #+END_SRC
+
+  Το λάθος φαίνεται να είναι κατά την διάρκεια του διαβάσματος του
+  XML dump έτσι δεν είναι ειδικό για το SQL output. Αυτό θα μπορούσε
+  να είναι χρήσιμο για να διαπιστώσουμε ποιο άρθρο προκαλεί το λάθος,
+  αποσύροντας το και ελπίζοντας να λυθεί το πρόβλημα. Για να το
+  εντοπίσουμε κατ αρχάς προσπαθήσαμε να export σε XML:
+
+  #+BEGIN_SRC sh
+    $ java -jar /scratch/cperivol/wikipedia-mirror/tools/mwdumper.jar   --format=sql:1.5 /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml > /root/path/wikipedia-parts//enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql
+  #+END_SRC
+
+  Όπως ήταν αναμενόμενο, το ίδιο λάθος εμφανίστηκε. Στη συνέχεια
+  κοιτάξαμε τα τελευταία δύο άρθρα που έγιναν export τυπώνοντας με
+  αντίστροφη σειρά το xml αρχείο που δημιουργήθηκε, βρίσκοντας τις
+  τελευταίες δύο εμφανίσεις του =<title>= με =grep= και αναστρέφοντας
+  ξανά για να τα τυπώσουμε με την αρχική σειρά (σημείωση ότι =tac=
+  είναι όπως cat, μόνο πoυ εμφανίζει lines με αντίστροφη σειρά):
+
+  #+BEGIN_SRC sh
+    26.65s user 1.73s system 78% cpu 35.949 total
+  #+END_SRC
+
+
+  Αυτή η λειτουργία τελειώνει γρήγορα παρά το ότι το
+  /tmp/just-a-copy.xml είναι αρκετά μεγάλο γιατί tac ψάχνει το τέλος
+  του αρχείου και διαβάζει προς τα πίσω μέχρι το grep να βρει τα 2
+  περιστατικά που ψάχνει για και κλείνει. Στο ext3 η αναζητούμενη
+  εργασία δεν διασχίζουν ολόκληρο το αρχείο . Πράγματι, από τον
+  κώδικα tac:
+
+  # code
+
+  Ασ σώσουμε την διαδρομή από το αρχικό xml αρχείο σε μια μεταβλητή
+  γιατί το χρησιμοποιούμε πολύ.  Έτσι από δω και πέρα το
+  $ORIGINAL_XML θα έχει διαδρομή από το αρχικό xml.
+
+  # code
+
+  Πρώτα ασ δούμε αν κάτι περίεργο συμβαίνει με το xml αρχείο
+
+  # code
+
+  Τίποτα περίεργο δεν βρέθηκε, έτσι δεν μπορούμε πραγματικά να
+  διορθώσουμε το πρόβλημα in-place. Θα προσπαθήσουμε να αποσύρουμε
+  βίαια ολόκληρο το άρθρο και ελπίζουμε ότι θα δουλέψει (spoiler
+  alert: it does).
+
+  Θα προσπαθήσουμε να επιθεωρήσουμε τους parents του τίτλου από το
+  σπασμένο άρθρο..  Ευτυχώς το xml που δημιουργήθηκε είναιindented
+  έτσι μπορούμε να βρούμε τους parents που βασίζονται σ
+  αυτό. Αριθμήσαμε 6 spaces από indentation έστι θα ψάξουμε προς τα
+  πίσω από εκεί σε κάθε επίπεδο του indentation. Η πρώτη γραμμή που
+  βρήκαμε σε κάθε περίπτωση θα αποτελεί έναν άμεσο parentτου άρθρου.
+
+  # code
+
+  Φαίνεται ότι το xml είναι σελίδα σε ένα grand domain που ονομάζεται
+  mediawiki. Θα μπορούσαμε να δούμε αυτό επίσης και από την java
+  source too αλλά αν και πιο ακριβό είναι πιο γρήγορο να
+  χρησιμοποιούμε το source του mwdumper.  Ο πιο εύκολος τρόπος να
+  κόψουμε αυτό το άρθρο θα ήταν το awk αλλά θα πάρει πολύ χρόνο και
+  εμείς θέλουμε να βελτιστοποιήσουμε και να αυτοματοποιήσουμε την όλη
+  διαδικασία. Πρώτα ας προσπαθήσουμε απλώς να συγκρίνουμε τα άρθρα:
+
+  # code
+
+  Αυτό ήταν γρήγορο... Ας δούμε πιο ήταν το λάθος:
+
+  # code
+
+  Η συνυσφορά των xml tags είναι αρκετά διαφορετική. Το καλύτερό μας
+  αποτέλεσμα είναι άν τα line numbers συμπίπτουν. Μετρήσαμε τον
+  αριθμό των γραμμών στο /tmp/just-a-copy.xml και ελπίζουμε ότι ο
+  αντίστοιχος αριθμός των γραμμών στο $ORIGINAL_XML θα είναι ίδιος.
+  Εάν αυτό συμβεί μπορούμε να αγνοήσουμε τις contextual xml
+  πληροφορίες και να σβήσουμε το προβληματικό άρθρο. Θα
+  χρησιμοποιήσουμε wc το οποίο είναι αρκετά γρήγορο.
+
+  # code
+
+  Ποδόσφαιρο (football)... καμιά σχέση με τα βατράχια
+  (frogs). Φαίνεται ότι δεν μπορούμε να αποφύγουμε κάποιο επίπεδο του
+  parsing.
+
+  # code
+
+** Parsing
+
+   Θα κάνουμε τις ακόλουθες θεωρήσεις για να αποφύγουμε το κατάλληλο
+   parsingτου εγγράφου:
+
+   - Το XML στο αρχικό αρχείο είναι valid.
+   - Κάθε XML μέσα στο άρθρο είναι HTML escaped
+
+   Κατ αρχάς δουλεύοντας με γραμμές είναι αργή διαδικασία γιατί το
+   user space code χρειάζεται να ψάχνει newlines. Δουλεύοντας με
+   bytes αναθέτουμε εργασία στο kernel, επιταχύνοντας την εργασία
+   σημαντικά. Έτσι το =dd= είναι το σωστό εργαλείο για την συγκεκριμένη
+   δουλειά.  Έτσι πρώτα θα βρούμε σε πιο byte είναι το άρθρο που μας
+   ενδιαφέρει
+
+   # code
+
+   Αυτό ίσως πρει καποιο χρόνο αλλά δυστυχώς είναι η μόνη μας
+   επιλογή.  Η στρατιγική μας είναι να φτιάξουμε 2 αρχεία: το
+   /tmp/original_tail.xml το οποίο να περιέχει όλα τα δεδομένα που
+   υπάρχουν μετά τη σελίδα που θέλουμε να βγάλουμε και το
+   /tmp/original_head.xml το οποίο περιέχει όλα τα δεδομένα πριν τη
+   σελίδα που θέλουμε να βγάλουμε.  Τώρα θα χρησιμοποιήσουμε sed να
+   ψάξει για </page> after byte 1197420547 το οποίο will be point x
+   we will and dump the contents of $ORIGINAL_XML after point x:
+
+   # code
+
+   Θαυμάσια, αυτό δούλεψε! το dd δεν αντιγράφει αντίστροφα έτσι θα
+   χρειασθούμε να κάνουμε κάτι πιο περίπλοκο για να κατασκευάσουμε
+   /tmo/original_head.xml.  Ασ υποθέσουμε ότι η θέση που βρήκαμε τον
+   τίτλο της σελίδας που θέλουμε να αφαιρέσουμε είναι _ = 1197420547
+   και το σημείο που η σελίδα αρχίζει είναι Είναι ασφαλές να
+   υποθέσουμε ότιI_ > _􀀀1000 (calibrate το constant 1000 εάν αυτή η
+   υπόθεση είναι λάθος, αλλά τελικά δεν ήταν). Με αυτό τον τρόπο
+   χρειάζεται μόνο να ψάξουμε στο 1Kb για <page>.  Αποτελεσματικά
+   αντί να κάνουμε copy τα bytes στο εύρος [0; _) εμείς concatenating
+   δύο διακυμάνσεις [0; _􀀀1000][(_􀀀1000; _) δημιουργώντας ένα
+   subshell το οποίο θα έχει πρώτο output το πρώτο εύρος και στη
+   συνέχεια output (_ 􀀀 1000; _) stopping όταν βρεί <page>. Παρακάτω
+   είναι ένα liner:
+
+   # code
+
+** Η τελική λύση
+
+   Όλα τα παραπάνω χρησιμοποιήθηκαν για να συντεθεί ένα script το
+   οποίο lives στο data/xml-parse.sh το οποίο χρησιμοποιήθηκε από το
+   makefiles να απομακρύνει όλα τα προβληματικά άρθρα. Εάν το
+   mwdumper αποτύχει, ταυτοποιούμε το άρθρο που προκάλεσε το πρόβλημα
+   και το απομακρύνουμε χρησιμοποιώντας xml-parse.sh. Στη συνέχεια
+   rerun το mwdumper.  Το επαναλαμβάνουμε αυτό We μέχρι το mwdumper
+   πετύχει. Συνολικά τα προβληματικά άρθρα είναι περίπου10-15, και
+   είναι διαφορετικά ανάλογα με το dump που χρησιμοποιείται.
+
+** Καλύπτοντας με κενά
+
+   Από την παραπάνω έκθεση των τρόπωνε που αντιμετωπίσουμε το θέμα
+   του breaking article παραλείψαμε κάτι προφανές. Μια θεματικά
+   διαφορετική προσέγγιση: covering up το breaking article με
+   κενά. Μόλις εντοπίσουμε το εύρος στο οποίο η σελίδα βρίσκεται
+   μπορούμε να κάνουμε mmap επακριβώς στο τμήμα του $ORIGINAL_XML και
+   στη συνέχεια να κάνουμε memset covering it up με χαρακτήρες κεών.
+   Η εφαρμογή lives στο data/page_remover.c, Παρακάτω παρουσιάζουμε
+   το call στο mmap:
+
+   # code
+
+   Περιέργως αυτό δεν έλυσε το πρόβλημα του mwdumper issue το οποίο
+   δείχνει ότι μάλλον προκειται για πιθανό memory leak στο τμήμα του
+   xerces αλλά αυτό ξεπερνά τους στόχους της παρούσας εργασίας να
+   κάνει διόρθωση debug εάν έχουμε την επιλογή.
+
+** Η εντολή sed
+
+   Παραπάνω αναφέραμε την χρήση της εντολής sed και ίσως ελιναι
+   χρήσιμο να το αναπτύξουμε περεταίρω. =sed= είναι ένα unix
+   εργαλείοπου βρίσκεται στο coreutils το οποίο σύμφωνα με το man
+   page είναι ένας stream editor που φιλτραρει και μεταμορφώνει text.
+   η βασική λειτουργία είναι ότι το "pattern space", ή τοinput stream
+   το οποίο είναι ένα unix stream που έρχεται από το αρχείο, ένα pipe
+   ή μόνο stdin, περνά μέσα από μια programmable
+   pipeline. Εκτυπώνεται ή αυτούσιο το modified pattern space ή, με
+   τη χρήση του -n flag, επιλεγμένα τμήματα αυτού.  Ας δούμε τη χρήση
+   που κάναμε παραπάνω για το sed Αρχικά χρησιμοποιήσαμε sed για να
+   εκτυπώσουμε μια μεμονωμένη line σε ένα αρχείο:
+
+   # code
+
+   Αυτό τοsed προγραμμα διαχωρίζεται από semicolon. Sed iterates τις
+   lines του input stream και τρέχει καθένα από τις; διαχωρισμένες
+   εντολές σε σειρά μέχρι μια να επιτύχει.  Οι εντολές εδώ είναι
+   17564960q και d. 17564960q θα σταματήσει το sed όταν φτάσει στη
+   line 17564960. d θα απορρίπτει την παρούσα. Έστι το sed απορρίπτει
+   lines μέχρι να συναντήσει την line 17564960 την οποία εκτυπώνει
+   και τελειώνει.  Χρησιμοποιούμε μια εντολή sed ως μέρος μιας σειράς
+   εντολών shell piped όλες μαζί με στόχο να εκτυπωθούν όλες ο lines
+   ενός stream μετά από ένα συγκεκριμένο μοτίβο (στην περίπτωσή μας
+   </page>).
+
+   # code
+
+   αυτή τη φορά είχαμε μόνο μια εντολή sed, d. Sed iterates στις
+   lines στο stream, απορρίπτοντας lines στο εύρος των lines 0
+   στηline που ταυτίζεται με το <\/page>, αποτελεσματικά τυπώνει μόνο
+   lines μετά το </page>.  Η τελική μας χρήση του sed iείναι η the
+   inverse of the aforementioned one,
+
+   # code
+
+   Εδώ το sed απαριθμεί ξανά σε όλες τις lines τουstream. Αυτή τη φορά
+   απορρίπτοντας lines ανάμεσα στην πρώτη line that matches
+   <page>μέχρι την τελικήline, σημειωμένη με $.

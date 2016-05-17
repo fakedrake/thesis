@@ -1,6 +1,6 @@
 #+TITLE:       Provider acquirer model
 #+AUTHOR:      Chris Perivolaropoulos
-#+DATE:        Sunday 21 February 2016
+#+DATE:        Wednesday 18 May 2016
 #+EMAIL:       cperivol@csail.mit.edu
 #+DESCRIPTION: The provider/acquirer model and an example
 #+KEYWORDS:

@@ -83,8 +83,6 @@
    της παραγωγής φυσικής γλώσσας σε επίπεδο προτάσεων με χρήση σε
    υπηρεσίες πρόσβασης πληροφοριών διαφόρων πολυμέσων.
 
-** Omnibase, wikipedia, WikipediaBase και Wikipedia-Mirror
-
    Omnibase είναι μια "εικονική" βάση δεδομένων που παρέχει μια ενιαία
    διεπαφή για πολλαπλές πηγές γνώσης στο Web , ικανή να εκτελεί τα
    δομημένα ερωτήματα που παράγονται από το START. Το Omnibase
@@ -285,8 +283,6 @@
       αντιπροσωπεύονται ως αριθμούς , χρησιμοποιώντας τη μορφή YYYYMMDD
       χρησιμοποιώντας αρνητικούς αριθμούς για τις ημερομηνίες Π.Χ.
 
-      Unparsed dates are strings.
-
 ***** =DEATH-DATE=, =wikibase-person=
 
       Λαμβάνονται με παρόμοιο τρόπο όμως το BIRTH-DATE. Επιστρέφει την ίδια
@@ -295,7 +291,7 @@
       BIRTH-DATE,εκτός αν το πρόσωπο ζει, τότε βγάζει λάθος τιμή με
       διευκρίνηση
 
-      "Currently alive".
+      /"Currently alive"/.
 
 ***** =GENDER=, =wikibase-person=
 
@@ -540,270 +536,270 @@
     infoboxes και χρησιμοποιείται για να συνταχθεί η οντολογία των
     όρων wikipedia.
 
-** MetaInfobox
+*** MetaInfobox
 
-   Το =MetaInfobox= υπλοποιείται ως μια υποκλάσση του =Infobox= που
-   προσδίδει πληροφορία σχετικά με το infobox, εστιάζοντας στη
-   αντιστοιχία της rendered μορφής των χαρακτηριστικών με την markup
-   μορφή. Έτσι δεδομένου ενός infobox τύπου \(I\) έχει δυνατά
-   χαρακτηριστικά \({a_1, ... , a_n}\). Κάθε χαρακτηριστικό έχει δύο
-   αναπαραστάσεις:
+    Το =MetaInfobox= υπλοποιείται ως μια υποκλάσση του =Infobox= που
+    προσδίδει πληροφορία σχετικά με το infobox, εστιάζοντας στη
+    αντιστοιχία της rendered μορφής των χαρακτηριστικών με την markup
+    μορφή. Έτσι δεδομένου ενός infobox τύπου \(I\) έχει δυνατά
+    χαρακτηριστικά \({a_1, ... , a_n}\). Κάθε χαρακτηριστικό έχει δύο
+    αναπαραστάσεις:
 
-   - τη markup αναπαράσταση που χρησιμοποιείται στο infobox template.
-   - την HTML rendered αναπαράσταση, που είναι το κείμενο που φαίνεται
-     στην αριστερή μεριά του πίνακα του infobox στη σελίδα.
+    - τη markup αναπαράσταση που χρησιμοποιείται στο infobox template.
+    - την HTML rendered αναπαράσταση, που είναι το κείμενο που φαίνεται
+      στην αριστερή μεριά του πίνακα του infobox στη σελίδα.
 
-   Παραδείγματος χάριν στο =officeholder= infobox υπάρχει ένα
-   χαρακτηριστικό με markup αναπαράσταση =predecessor= και μία
-   rendered αναπαράσταση =Preceded by=.
+    Παραδείγματος χάριν στο =officeholder= infobox υπάρχει ένα
+    χαρακτηριστικό με markup αναπαράσταση =predecessor= και μία
+    rendered αναπαράσταση =Preceded by=.
 
-   Για να το πετύχει αυτό το =MetaInfobox= χρησιμοποιεί την σελίδα
-   τεκμηρίωσης του template για να βρει το markup representation όλων
-   των αποδεκτών χαρακτηριστικών ενός τύπου infobox. Στη συνέχεια
-   δημιουργεί ένα infobox οπού κάθε χαρακτηριστικό έχει τιμή τη markup
-   αναπαράσταση του χαρακτηριστικού αυτού, τυλιγμένη με τη
-   συμβολοσειρά =!!!=. (Για παράδειγμα το χαρακτηριστικό με markup
-   όνομα =predecessor= θα έχει τιμή =!!!predecessor!!!=). Στη συνέχει
-   κανει render το infobox που δημιούργησε και ψάχνει για
-   =!!!predecessor!!!= στις rendered τιμές. Θεωρούμε ότι οι τα
-   αντίστοιχα rendered ονόματα αντιστοιχούν στα markup
-   χαρακτηριστικά. Σημειώστε πως η αντιστοιχεία των rendered
-   χαρακτηριστικών με τα markup χαρακτηριστικά δεν είναι αμφοσήμαντη,
-   δηλαδή κάθε markup χαρακτηριστικό μπορεί να αντιστοιχεί σε μηδέν η
-   περισσότερα rendered χαρακτηριστικά και το αντίστροφο.
+    Για να το πετύχει αυτό το =MetaInfobox= χρησιμοποιεί την σελίδα
+    τεκμηρίωσης του template για να βρει το markup representation όλων
+    των αποδεκτών χαρακτηριστικών ενός τύπου infobox. Στη συνέχεια
+    δημιουργεί ένα infobox οπού κάθε χαρακτηριστικό έχει τιμή τη markup
+    αναπαράσταση του χαρακτηριστικού αυτού, τυλιγμένη με τη
+    συμβολοσειρά =!!!=. (Για παράδειγμα το χαρακτηριστικό με markup
+    όνομα =predecessor= θα έχει τιμή =!!!predecessor!!!=). Στη συνέχει
+    κανει render το infobox που δημιούργησε και ψάχνει για
+    =!!!predecessor!!!= στις rendered τιμές. Θεωρούμε ότι οι τα
+    αντίστοιχα rendered ονόματα αντιστοιχούν στα markup
+    χαρακτηριστικά. Σημειώστε πως η αντιστοιχεία των rendered
+    χαρακτηριστικών με τα markup χαρακτηριστικά δεν είναι αμφοσήμαντη,
+    δηλαδή κάθε markup χαρακτηριστικό μπορεί να αντιστοιχεί σε μηδέν η
+    περισσότερα rendered χαρακτηριστικά και το αντίστροφο.
 
-   Για παράδειγμα για ένα infobox τύπου =Foo= με αποδεκτά χαρακτηριστικά /A/, /B/,
-   /C/ και /D/ το =MetaInfobox= θα δημιουργούσε markup:
+    Για παράδειγμα για ένα infobox τύπου =Foo= με αποδεκτά χαρακτηριστικά /A/, /B/,
+    /C/ και /D/ το =MetaInfobox= θα δημιουργούσε markup:
 
-   #+BEGIN_EXAMPLE
-     {{Infobox Foo
-     | A = !!!A!!!
-     | B = !!!B!!!
-     | C = !!!C!!!
-     | D = !!!D!!!
-     }}
-   #+END_EXAMPLE
+    #+BEGIN_EXAMPLE
+      {{Infobox Foo
+      | A = !!!A!!!
+      | B = !!!B!!!
+      | C = !!!C!!!
+      | D = !!!D!!!
+      }}
+    #+END_EXAMPLE
 
-   Και η rendered μορφή θα ήταν, ανάλογα με την υλοποίηση του =Foo=
-   infobox.
+    Και η rendered μορφή θα ήταν, ανάλογα με την υλοποίηση του =Foo=
+    infobox.
 
-   | Attribute | Value                   |
-   |-----------+-------------------------|
-   | A         | !!!A!!! !!!B!!! !!!C!!! |
-   | B         | !!!A!!! !!!B!!! !!!C!!! |
-   | C         | !!!A!!! !!!B!!! !!!C!!! |
-   | D         | !!!D!!!                 |
+    | Attribute | Value                   |
+    |-----------+-------------------------|
+    | A         | !!!A!!! !!!B!!! !!!C!!! |
+    | B         | !!!A!!! !!!B!!! !!!C!!! |
+    | C         | !!!A!!! !!!B!!! !!!C!!! |
+    | D         | !!!D!!!                 |
 
-   Έτσι η αντιστοιχία γίνεται σχετικά εμφανής.
+    Έτσι η αντιστοιχία γίνεται σχετικά εμφανής.
 
-** Article
+*** Article
 
-   Η class =Article= είναι υπεύθυνη για την πρόσβαση σε κάθε πόρο
-   σχετικό με το άρθρο γενικότερα. Αυτό περιλαμβάνει τις παραγράφους,
-   επικεφαλίδες, τον πηγαίο markup κωδικα και τις κατηγορίες
-   MediaWiki.
+    Η class =Article= είναι υπεύθυνη για την πρόσβαση σε κάθε πόρο
+    σχετικό με το άρθρο γενικότερα. Αυτό περιλαμβάνει τις παραγράφους,
+    επικεφαλίδες, τον πηγαίο markup κωδικα και τις κατηγορίες
+    MediaWiki.
 
-** Fetcher
+*** Fetcher
 
-   Η κλάση =Fetcher= είναι μια αφαίρεση από την επικοινωνία της
-   WikipediaBase με τον έξω κόσμο. Είναι ένα μονήρες αντικείμενο που
-   υλοποιεί μια συγκεκριμένη διεπαφή.
+    Η κλάση =Fetcher= είναι μια αφαίρεση από την επικοινωνία της
+    WikipediaBase με τον έξω κόσμο. Είναι ένα μονήρες αντικείμενο που
+    υλοποιεί μια συγκεκριμένη διεπαφή.
 
-   Τα υλοποιημένα =Fetchers= σε κληρονομική ιεραρχία που φαίνεται από
-   την παρακάτω λίστα.
+    Τα υλοποιημένα =Fetchers= σε κληρονομική ιεραρχία που φαίνεται από
+    την παρακάτω λίστα.
 
-   - =BaseFetcher= :: είναι η υπερκλάση όλων των fetchers. Θα
-        επιστρέψει το ιδιο σύμβολο αντί να προσπαθήσει να το επιλύσει
-        με οποιονδήποτε τρόπο. Κάνουμε override αυτή τη λειτουργία
-        στις κληρονόμους κλάσεις για να υλοποιήσουμε τη λογική της
-        διεπαφής με τον έξω κόσμο
-   - =Fetcher= :: Υλοποιεί τη βασική λειτουργία. Αναζητά πληροφορίες
-        απο το wikipedia.org. Είναι δυνατόν να κατευθύνουμε ένα
-        fetcher αυτό προς ένα mirror αλλά η εκτέλεση σε
-        wikipedia-mirror είναι από άποψη πόρων εκτέλεσης απαγορευτική.
-   - =CachingFetcher= :: κληρονομεί fetcher και διατηρεί τη
-        λειτουργικότητα , μόνο που χρησιμοποιεί Redis για την
-        προσωρινή αποθήκευση των fetched συμβόλων .  Είναι η
-        προεπιλεγμένη fetcher class.
-   - =StaticFetcher= :: είναι μια κλάση που υλοποιεί το interface
-        BaseFetcher αλλά αντί να φτάσει σε κάποια πηγή δεδομένων για
-        τα δεδομένα η τιμές επιστροφής είναι στατικά
-        ορισμένες. Χρησιμοποιείται κυρίως από το =MetaInfobox= για να
-        χρησιμοποιεί τη λειτουργία του Infobox να μεταφέρει αυθαίρετες
-        πληροφορίες.
+    - =BaseFetcher= :: είναι η υπερκλάση όλων των fetchers. Θα
+         επιστρέψει το ιδιο σύμβολο αντί να προσπαθήσει να το επιλύσει
+         με οποιονδήποτε τρόπο. Κάνουμε override αυτή τη λειτουργία
+         στις κληρονόμους κλάσεις για να υλοποιήσουμε τη λογική της
+         διεπαφής με τον έξω κόσμο
+    - =Fetcher= :: Υλοποιεί τη βασική λειτουργία. Αναζητά πληροφορίες
+         απο το wikipedia.org. Είναι δυνατόν να κατευθύνουμε ένα
+         fetcher αυτό προς ένα mirror αλλά η εκτέλεση σε
+         wikipedia-mirror είναι από άποψη πόρων εκτέλεσης απαγορευτική.
+    - =CachingFetcher= :: κληρονομεί fetcher και διατηρεί τη
+         λειτουργικότητα , μόνο που χρησιμοποιεί Redis για την
+         προσωρινή αποθήκευση των fetched συμβόλων .  Είναι η
+         προεπιλεγμένη fetcher class.
+    - =StaticFetcher= :: είναι μια κλάση που υλοποιεί το interface
+         BaseFetcher αλλά αντί να φτάσει σε κάποια πηγή δεδομένων για
+         τα δεδομένα η τιμές επιστροφής είναι στατικά
+         ορισμένες. Χρησιμοποιείται κυρίως από το =MetaInfobox= για να
+         χρησιμοποιεί τη λειτουργία του Infobox να μεταφέρει αυθαίρετες
+         πληροφορίες.
 
-   Από προεπιλογή, το markup προέρχεται μια βάση δεδομένων. Αν η
-   παράμετρος =force_live= έχει οριστεί σε =True= τότε το markup θα
-   ληφθεί από live wikipedia.org.  Όταν οι δοκιμές τρέχουν στο
-   TravisCI{{{ref(travis)}}}, θέλουμε πάντα να χρησιμοποιούνται
-   ζωντανά δεδομένα. Ελέγχουμε αν το Travis εκτελεί δοκιμές
-   κοιτάζοντας τη μεταβλητή =WIKIPEDIABASE_FORCE_LIVE= μεταβλητή
-   περιβάλλοντος.
+    Από προεπιλογή, το markup προέρχεται μια βάση δεδομένων. Αν η
+    παράμετρος =force_live= έχει οριστεί σε =True= τότε το markup θα
+    ληφθεί από live wikipedia.org.  Όταν οι δοκιμές τρέχουν στο
+    TravisCI{{{ref(travis)}}}, θέλουμε πάντα να χρησιμοποιούνται
+    ζωντανά δεδομένα. Ελέγχουμε αν το Travis εκτελεί δοκιμές
+    κοιτάζοντας τη μεταβλητή =WIKIPEDIABASE_FORCE_LIVE= μεταβλητή
+    περιβάλλοντος.
 
-** Renderer
+*** Renderer
 
-   =Renderers= είναι μονήρεις classes, χρήσιμες για την απόδοση
-   MediaWiki markup σε HTML . Αρχικά το wikiepedia sandbox
-   χρησιμοποιήθηκε από τη wikipediabase για την απόδοση σελίδων,
-   επειδή είναι ελαφρώς ταχύτερο από την API, αλλά το wikipedia-mirror
-   ήταν πολύ αργό και το wikipedia.org το θεωρούσε κατάχρηση της
-   υπηρεσίας και μπλόκαρε το IP μας μετά από μερικά τεστ. Γι' αυτό το
-   λόγο τελικά μεταπηδήσαμε στο API με Redis caching, το οποίο
-   λειτουργούν αρκετά καλά, μιας που τα =Renderer= αντικείμενα
-   καταλήγουν να χρησιμοποιούνται μόνο απο το MetaInfobox, το οποίο
-   έχει ένα αρκετά περιορισμένο πεδίο εφαρμογής , και έτσι το cache να
-   χάνει σπάνια.
+    =Renderers= είναι μονήρεις classes, χρήσιμες για την απόδοση
+    MediaWiki markup σε HTML . Αρχικά το wikiepedia sandbox
+    χρησιμοποιήθηκε από τη wikipediabase για την απόδοση σελίδων,
+    επειδή είναι ελαφρώς ταχύτερο από την API, αλλά το wikipedia-mirror
+    ήταν πολύ αργό και το wikipedia.org το θεωρούσε κατάχρηση της
+    υπηρεσίας και μπλόκαρε το IP μας μετά από μερικά τεστ. Γι' αυτό το
+    λόγο τελικά μεταπηδήσαμε στο API με Redis caching, το οποίο
+    λειτουργούν αρκετά καλά, μιας που τα =Renderer= αντικείμενα
+    καταλήγουν να χρησιμοποιούνται μόνο απο το MetaInfobox, το οποίο
+    έχει ένα αρκετά περιορισμένο πεδίο εφαρμογής , και έτσι το cache να
+    χάνει σπάνια.
 
-   Μια ενδιαφέρουσα πληροφορία για την κατηγορία =Renderer= ήταν ότι
-   αυτός ήταν ο λόγος που ένα ζευγάρι CSAIL IPs να αποκλειστεί
-   προσωρινά από την επεξεργασία της wikipedia. Ενώ η wikipedia.org
-   έχει μια πολύ επιεική πολιτική όταν πρόκειται για την αποκλεισμό
-   των ανθρώπων που έχουν κανει spamming τους servers,
-   επαναλαμβανόμενες δοκιμές της κατηγορίας Renderer με στόχευση
-   wikipedia sandbox προκάλεσε το ip του δοκιμαστικού μηχανήμτος να
-   αποκλεισθεί προσωρινά με το σκεπτικό ότι "η δραστηριότητα του δεν
-   προάγει την βελτίωση της wikipedia". Εμείς επανατοποθετήσαμε το
-   =Renderer= να χρησιμοποιηεί το wikipedia API και ποτέ δεν είχαμε
-   ξανά πρόβλημα με την ρύθμιση της wikipedia.
+    Μια ενδιαφέρουσα πληροφορία για την κατηγορία =Renderer= ήταν ότι
+    αυτός ήταν ο λόγος που ένα ζευγάρι CSAIL IPs να αποκλειστεί
+    προσωρινά από την επεξεργασία της wikipedia. Ενώ η wikipedia.org
+    έχει μια πολύ επιεική πολιτική όταν πρόκειται για την αποκλεισμό
+    των ανθρώπων που έχουν κανει spamming τους servers,
+    επαναλαμβανόμενες δοκιμές της κατηγορίας Renderer με στόχευση
+    wikipedia sandbox προκάλεσε το ip του δοκιμαστικού μηχανήμτος να
+    αποκλεισθεί προσωρινά με το σκεπτικό ότι "η δραστηριότητα του δεν
+    προάγει την βελτίωση της wikipedia". Εμείς επανατοποθετήσαμε το
+    =Renderer= να χρησιμοποιηεί το wikipedia API και ποτέ δεν είχαμε
+    ξανά πρόβλημα με την ρύθμιση της wikipedia.
 
-** Pipeline
+*** Pipeline
 
-   Κατά την επίλυση ενός ερωτήματος η WikipediaBase ενεργοποιεί ένα
-   pipeline ενοτήτων για να διαπιστωθεί ποιος είναι ο καλύτερος τρόπος
-   απάντησης.
+    Κατά την επίλυση ενός ερωτήματος η WikipediaBase ενεργοποιεί ένα
+    pipeline ενοτήτων για να διαπιστωθεί ποιος είναι ο καλύτερος τρόπος
+    απάντησης.
 
-*** Frontend
+**** Frontend
 
-    Η WikipediaBase μπορεί να χρησιμοποιηθεί ως βιβλιοθήκη αλλά ο
-    πρωταρχικός της λειτουργία είναι ως backend στο START. Η
-    επικοινωνία μεταξύ START και WikipediaBase γίνεται πάνω από ένα
-    plaintext telnet σύνδεσής στην πόρτα 8023 χρησιμοποιώντας
-    sexpressions. Το frontend χειρίζεται το δίκτυο σύνδεσης με το
-    START, μεταφράζει τις προσλαμβανόμενες ερωτήσεις σε κλήσεις της
-    Knowledgebase και στη συνέχεια μεταφράζει την αντίδραση της
-    Knowledgebase σε κατάλληλα διαμορφωμένες εκφράσεις και τις
-    επιστρέφει πίσω στο telnet connection.
+     Η WikipediaBase μπορεί να χρησιμοποιηθεί ως βιβλιοθήκη αλλά ο
+     πρωταρχικός της λειτουργία είναι ως backend στο START. Η
+     επικοινωνία μεταξύ START και WikipediaBase γίνεται πάνω από ένα
+     plaintext telnet σύνδεσής στην πόρτα 8023 χρησιμοποιώντας
+     sexpressions. Το frontend χειρίζεται το δίκτυο σύνδεσης με το
+     START, μεταφράζει τις προσλαμβανόμενες ερωτήσεις σε κλήσεις της
+     Knowledgebase και στη συνέχεια μεταφράζει την αντίδραση της
+     Knowledgebase σε κατάλληλα διαμορφωμένες εκφράσεις και τις
+     επιστρέφει πίσω στο telnet connection.
 
-*** Knowledgebase
+**** Knowledgebase
 
-    Η knowledgebase είναι το σημείο εισαγωγής στο rest της wikipediabase.
+     Η knowledgebase είναι το σημείο εισαγωγής στο rest της wikipediabase.
 
-    Χρησιμοποιεί μοτίβο Provider/Acquirer να παρέχει διαφανή διεπαφή
-    της frontend με αυθαίρετες μεθόδους. Οι μέθοδοι αυτοί είναι
-    υπεύθυνοι για την επιλογή του αν θέλουμε να καταλήξουμε σε
-    classifiers, resolvers οποιοδήποτε άλλο μηχανισμό για να δοθεί
-    απάντηση στο ερώτημα. Διαθέσιμοι classifiers και resolvers
-    γίνονται προσβάσιμοι αυτόματα στη knowledgebase χρησιμοποιώντας τη
-    βασική τους κλάση.
+     Χρησιμοποιεί μοτίβο Provider/Acquirer να παρέχει διαφανή διεπαφή
+     της frontend με αυθαίρετες μεθόδους. Οι μέθοδοι αυτοί είναι
+     υπεύθυνοι για την επιλογή του αν θέλουμε να καταλήξουμε σε
+     classifiers, resolvers οποιοδήποτε άλλο μηχανισμό για να δοθεί
+     απάντηση στο ερώτημα. Διαθέσιμοι classifiers και resolvers
+     γίνονται προσβάσιμοι αυτόματα στη knowledgebase χρησιμοποιώντας τη
+     βασική τους κλάση.
 
-    # MARK
-*** Classifiers
+     # MARK
+**** Classifiers
 
-    Κάθε Classifier είναι μονήρης κλάση και υλοποιεί μια ευρετική για
-    για να συνάξει μια λίστα από κατηγορίες ενός αντικειμένου. Ένα
-    αντικείμενο μπορεί να επιστρέφει μηδέν ή περισσότερες
-    κατηγορίες.
+     Κάθε Classifier είναι μονήρης κλάση και υλοποιεί μια ευρετική για
+     για να συνάξει μια λίστα από κατηγορίες ενός αντικειμένου. Ένα
+     αντικείμενο μπορεί να επιστρέφει μηδέν ή περισσότερες
+     κατηγορίες.
 
-    Συνήθως, ένας Classifier θα συμπεράνει μόνο αν ένα αντικείμενο
-    πράγματι αναστέλλει μια συγκεκριμένη κατηγορία ή όχι, αλλά αυτό
-    δεν είναι απαραίτητο.
+     Συνήθως, ένας Classifier θα συμπεράνει μόνο αν ένα αντικείμενο
+     πράγματι αναστέλλει μια συγκεκριμένη κατηγορία ή όχι, αλλά αυτό
+     δεν είναι απαραίτητο.
 
-**** Term
+***** Term
 
-     Ο =TermClassifier= απλά αναθέτει την κατηγορία
-     =wikipedia-term=. Η Wikipediabase διαπραγματεύεται μόνο μόνο με
-     πληροφορίες σχετικές με τη wikipedia. Συνεπώς όλες οι έννοιες που
-     συναντώνται είναι σε αυτήν την κατηγορία.
+      Ο =TermClassifier= απλά αναθέτει την κατηγορία
+      =wikipedia-term=. Η Wikipediabase διαπραγματεύεται μόνο μόνο με
+      πληροφορίες σχετικές με τη wikipedia. Συνεπώς όλες οι έννοιες που
+      συναντώνται είναι σε αυτήν την κατηγορία.
 
-**** Infobox
+***** Infobox
 
-     Το =InfoboxClassifier= αναθέτει σε ένα όρο την κατηγορία
-     infobox. Για παράδειγμα η σελίδα Bill Clinton περιέχει το
-     infobox:
+      Το =InfoboxClassifier= αναθέτει σε ένα όρο την κατηγορία
+      infobox. Για παράδειγμα η σελίδα Bill Clinton περιέχει το
+      infobox:
 
 
-     #+BEGIN_EXAMPLE
-       {{Infobox president
-       |name          = Bill Clinton
-       |image         = 44 Bill Clinton 3x4.jpg{{!}}border
-       [...]
-       }}
-     #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+        {{Infobox president
+        |name          = Bill Clinton
+        |image         = 44 Bill Clinton 3x4.jpg{{!}}border
+        [...]
+        }}
+      #+END_EXAMPLE
 
-     Και γι αυτό λαμβάνει την κατηγορία =wikipedia-president=.
+      Και γι αυτό λαμβάνει την κατηγορία =wikipedia-president=.
 
-**** Person
+***** Person
 
-     Το =PersonClassifier= αναθέτει την κατηγορία =wikibase-person=
-     χρησιμοποιώντας κάποια χαρκτηριστικά με την σειρά που
-     περιγράφονται:
+      Το =PersonClassifier= αναθέτει την κατηγορία =wikibase-person=
+      χρησιμοποιώντας κάποια χαρκτηριστικά με την σειρά που
+      περιγράφονται:
 
-***** Category regexes
+****** Category regexes
 
-      Χρησιμοποιεί τις ακόλουθες συνήθεις εκφράσεις (regular
-      expressions) για να ταυτίσει τις κατηγορίες ενός άρθρου.
+       Χρησιμοποιεί τις ακόλουθες συνήθεις εκφράσεις (regular
+       expressions) για να ταυτίσει τις κατηγορίες ενός άρθρου.
 
-      - =.* person=
-      - =\^\d+ deaths.*=
-      - =\^\d+ births.*=
-      - =.* actors=
-      - =.* deities=
-      - =.* gods=
-      - =.* goddesses=
-      - =.* musicians=
-      - =.* players=
-      - =.* singers=
+       - =.* person=
+       - =\^\d+ deaths.*=
+       - =\^\d+ births.*=
+       - =.* actors=
+       - =.* deities=
+       - =.* gods=
+       - =.* goddesses=
+       - =.* musicians=
+       - =.* players=
+       - =.* singers=
 
-***** Category regex excludes
+****** Category regex excludes
 
-      Αποκλείει τις ακόλουθες regexes.
+       Αποκλείει τις ακόλουθες regexes.
 
-      - =\sbased on\s=
-      - =\sabout\s=
-      - =lists of\s=
-      - =animal\s=
+       - =\sbased on\s=
+       - =\sabout\s=
+       - =lists of\s=
+       - =animal\s=
 
-***** Category matches
+****** Category matches
 
-      Γνωρίζουμε ότι ένα άρθρο αναφέρεται σε ένα πρόσωπο εάν η σελίδα ανήκει
-      σε μια από τις ακόλουθες mediawikia κατηγορίες:
+       Γνωρίζουμε ότι ένα άρθρο αναφέρεται σε ένα πρόσωπο εάν η σελίδα ανήκει
+       σε μια από τις ακόλουθες mediawikia κατηγορίες:
 
-      - american actors
-      - american television actor stubs
-      - american television actors
-      - architects
-      - british mps
-      - character actors
-      - computer scientist
-      - dead people rumoured to be living
-      - deities
-      - disappeared people
-      - fictional characters
-      - film actors
-      - living people
-      - musician stubs
-      - singer stubs
-      - star stubs
-      - united kingdom writer stubs
-      - united states singer stubs
-      - writer stubs
-      - year of birth missing
-      - year of death missing
+       - american actors
+       - american television actor stubs
+       - american television actors
+       - architects
+       - british mps
+       - character actors
+       - computer scientist
+       - dead people rumoured to be living
+       - deities
+       - disappeared people
+       - fictional characters
+       - film actors
+       - living people
+       - musician stubs
+       - singer stubs
+       - star stubs
+       - united kingdom writer stubs
+       - united states singer stubs
+       - writer stubs
+       - year of birth missing
+       - year of death missing
 
-      Για ένα παράδειγμα δείτε το παράρτημα.
+       Για ένα παράδειγμα δείτε το παράρτημα.
 
-      Όπως είναι φανερό η λίστα με τις κατηγορίες είναι αθυαίρετη και
-      όχι πλήρης. Πολλαπλές μέθοδοι μπορούν να χρησιμοποιηθούν για να
-      διορθωθεί αυτό.
+       Όπως είναι φανερό η λίστα με τις κατηγορίες είναι αθυαίρετη και
+       όχι πλήρης. Πολλαπλές μέθοδοι μπορούν να χρησιμοποιηθούν για να
+       διορθωθεί αυτό.
 
-      Μερικές από αυτές είναι:
+       Μερικές από αυτές είναι:
 
-      - Μέθοδοι με Supervised machine learning όπως SVM χρησιμοποιώντας άλλες
-        μεθόδους να ορίσουν ένα πρόσωπο και να δημιουργήσουν εκπαιδευτικές
-        ομάδες.
-      - Εμπλουτίζοντας την υπάρχουσα λίστα κατηγοριών χρησιμοποιώντας
-        στατιστικά από κατηγορίες άρθρων που έχουμε βρει με άλλους
-        τρόπους ότι αναφέρονται σε πρόσωπα.
+       - Μέθοδοι με Supervised machine learning όπως SVM χρησιμοποιώντας άλλες
+         μεθόδους να ορίσουν ένα πρόσωπο και να δημιουργήσουν εκπαιδευτικές
+         ομάδες.
+       - Εμπλουτίζοντας την υπάρχουσα λίστα κατηγοριών χρησιμοποιώντας
+         στατιστικά από κατηγορίες άρθρων που έχουμε βρει με άλλους
+         τρόπους ότι αναφέρονται σε πρόσωπα.
 
 *** Resolvers
 
@@ -1546,55 +1542,52 @@
 
 *** Παράδειγμα εκτέλεσης ενός python test
 
-    ** Python test runs
+      #+BEGIN_SRC sh
+       $ python setup.py test -s tests.test_lispify
+       running test
+       running egg_info
+       writing requirements to wikipediabase.egg-info/requires.txt
+       writing wikipediabase.egg-info/PKG-INFO
+       writing top-level names to wikipediabase.egg-info/top_level.txt
+       writing dependency_links to wikipediabase.egg-info/dependency_links.txt
+       writing entry points to wikipediabase.egg-info/entry_points.txt
+       reading manifest file 'wikipediabase.egg-info/SOURCES.txt'
+       reading manifest template 'MANIFEST.in'
+       writing manifest file 'wikipediabase.egg-info/SOURCES.txt'
+       running build_ext
+       test_bool (tests.test_lispify.TestLispify) ... ok
+       test_bool_with_typecode (tests.test_lispify.TestLispify) ... ok
+       test_date_multiple_voting (tests.test_lispify.TestLispify) ... ok
+       test_date_simple (tests.test_lispify.TestLispify) ... ok
+       test_date_with_range (tests.test_lispify.TestLispify) ... ok
+       test_dict (tests.test_lispify.TestLispify) ... ok
+       test_dict_with_escaped_string (tests.test_lispify.TestLispify) ... ok
+       test_dict_with_list (tests.test_lispify.TestLispify) ... ok
+       test_double_nested_list (tests.test_lispify.TestLispify) ... ok
+       test_error (tests.test_lispify.TestLispify) ... ok
+       test_error_from_exception (tests.test_lispify.TestLispify) ... ok
+       test_keyword (tests.test_lispify.TestLispify) ... ok
+       test_keyword_with_typecode (tests.test_lispify.TestLispify) ... ok
+       test_list (tests.test_lispify.TestLispify) ... ok
+       test_list_of_dict (tests.test_lispify.TestLispify) ... ok
+       test_list_of_dict_with_typecode (tests.test_lispify.TestLispify) ... ok
+       test_list_with_typecode (tests.test_lispify.TestLispify) ... ok
+       test_nested_list (tests.test_lispify.TestLispify) ... ok
+       test_none (tests.test_lispify.TestLispify) ... ok
+       test_none_with_typecode (tests.test_lispify.TestLispify) ... ok
+       test_number (tests.test_lispify.TestLispify) ... ok
+       test_number_with_typecode (tests.test_lispify.TestLispify) ... ok
+       test_string (tests.test_lispify.TestLispify) ... ok
+       test_string_escaped (tests.test_lispify.TestLispify) ... ok
+       test_string_not_keyword (tests.test_lispify.TestLispify) ... ok
+       test_string_with_typecode (tests.test_lispify.TestLispify) ... ok
+       test_unicode_string (tests.test_lispify.TestLispify) ... ok
 
+       ----------------------------------------------------------------------
+       Ran 27 tests in 0.047s
 
-    #+BEGIN_SRC sh
-     $ python setup.py test -s tests.test_lispify
-     running test
-     running egg_info
-     writing requirements to wikipediabase.egg-info/requires.txt
-     writing wikipediabase.egg-info/PKG-INFO
-     writing top-level names to wikipediabase.egg-info/top_level.txt
-     writing dependency_links to wikipediabase.egg-info/dependency_links.txt
-     writing entry points to wikipediabase.egg-info/entry_points.txt
-     reading manifest file 'wikipediabase.egg-info/SOURCES.txt'
-     reading manifest template 'MANIFEST.in'
-     writing manifest file 'wikipediabase.egg-info/SOURCES.txt'
-     running build_ext
-     test_bool (tests.test_lispify.TestLispify) ... ok
-     test_bool_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_date_multiple_voting (tests.test_lispify.TestLispify) ... ok
-     test_date_simple (tests.test_lispify.TestLispify) ... ok
-     test_date_with_range (tests.test_lispify.TestLispify) ... ok
-     test_dict (tests.test_lispify.TestLispify) ... ok
-     test_dict_with_escaped_string (tests.test_lispify.TestLispify) ... ok
-     test_dict_with_list (tests.test_lispify.TestLispify) ... ok
-     test_double_nested_list (tests.test_lispify.TestLispify) ... ok
-     test_error (tests.test_lispify.TestLispify) ... ok
-     test_error_from_exception (tests.test_lispify.TestLispify) ... ok
-     test_keyword (tests.test_lispify.TestLispify) ... ok
-     test_keyword_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_list (tests.test_lispify.TestLispify) ... ok
-     test_list_of_dict (tests.test_lispify.TestLispify) ... ok
-     test_list_of_dict_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_list_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_nested_list (tests.test_lispify.TestLispify) ... ok
-     test_none (tests.test_lispify.TestLispify) ... ok
-     test_none_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_number (tests.test_lispify.TestLispify) ... ok
-     test_number_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_string (tests.test_lispify.TestLispify) ... ok
-     test_string_escaped (tests.test_lispify.TestLispify) ... ok
-     test_string_not_keyword (tests.test_lispify.TestLispify) ... ok
-     test_string_with_typecode (tests.test_lispify.TestLispify) ... ok
-     test_unicode_string (tests.test_lispify.TestLispify) ... ok
-
-     ----------------------------------------------------------------------
-     Ran 27 tests in 0.047s
-
-     OK
-    #+END_SRC
+       OK
+      #+END_SRC
 
 *** Βρίσκοντας συνώνυμα με MySQL
 
@@ -1705,7 +1698,7 @@
     - People from Echo Park, Los Angeles
     - Silver Bear for Best Actor winners
 
-      Οι κατηγορίες αυτές μοιάζουν ως εξής στο άρθρο
+    Οι κατηγορίες αυτές μοιάζουν ως εξής στο άρθρο
 
       #+CAPTION: The rendered list of categores for Leonardo DiCaprio
       #+NAME:   fig:dicaprio-categories
@@ -1717,12 +1710,12 @@
 
   Wikipedia mirror είναι ένα σύστημα με στόχο να αυτοματοποιήσει τη
   δημιουργία ενός τοπικού κλώνου της wikipedia περιέχοντας μόνο τα
-  άρθρα --- δεν περιέχει τους χρήστες , συζήτηση και επεξεργασμένη
-  ιστορία. Η αυτοματοποιημένη διαδικασία περιλαμβάνει τη ρύθμιση ενός
-  διακομιστή, μια βάση δεδομένων και γέμισμα αυτής της βάσης δεδομένων
-  με τα άρθρα της wikipedia.  Ο σκοπός για αυτό είναι να παρέχει την
-  δυνατότητα πρόσβασης του συνόλου των δεδομένων της Wikipedia,
-  ανεξάρτητα από το wikipedia.org .
+  άρθρα --- δεν περιέχει τους χρήστες , συζήτηση και ιστορικό
+  επεξεργασιών. Η αυτοματοποιημένη διαδικασία περιλαμβάνει τη ρύθμιση
+  ενός διακομιστή, μια βάση δεδομένων και γέμισμα αυτής της βάσης
+  δεδομένων με τα άρθρα της wikipedia.  Ο σκοπός για αυτό είναι να
+  παρέχει την δυνατότητα πρόσβασης του συνόλου των δεδομένων της
+  Wikipedia, ανεξάρτητα από το wikipedia.org .
 
 ** Mediawiki stack overview
 
@@ -2865,6 +2858,617 @@
     δουλειά εμπιστευόμενος ότι οι τιμές των κελιών που αναφέρονταν σε
     άλλους πίνακες όντως έδειχναν κάπου.
 
-** Επιδόσεις
+** Παραρτήματα
+
+*** Πηγαίοι κωδικές
+
+**** page_remover.c
+
+     #+BEGIN_SRC c
+       /*
+        * Copyright 2014 Chris Perivolaropoulos <cperivol@csail.mit.edu>
+        *
+        * This program is free software: you can redistribute it and/or
+        * modify it under the terms of the GNU General Public License as
+        * published by the Free Software Foundation, either version 3 of the
+        * License, or (at your option) any later version.
+        *
+        * This program is distributed in the hope that it will be useful, but
+        * WITHOUT ANY WARRANTY; without even the implied warranty of
+        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+        *
+        * See the GNU General Public License for more details.  You should
+        * have received a copy of the GNU General Public License along with
+        * this program.
+        *
+        * If not, see <http://www.gnu.org/licenses/>.
+        *
+        * This should fill a range in a file with spaces. This is an in-place
+        * operation so it should be pretty fast.
+        *
+        * Usage: page_remover PATH OFFSET LENGHT
+        */
+
+       #include <assert.h>
+       #include <fcntl.h>
+       #include <pthread.h>
+       #include <stdio.h>
+       #include <stdlib.h>
+       #include <string.h>
+       #include <sys/mman.h>
+       #include <sys/stat.h>
+       #include <sys/types.h>
+       #include <semaphore.h>
+       #include <unistd.h>
+       #include <unistd.h>
+
+       #define USAGE_INFO "page_remover PATH OFFSET LENGTH"
+       #define PRINT(ctx, args...) do { sem_wait(&ctx->stdio_mutex);	\
+  				      printf(args);			\
+  				      fflush(stdout);		\
+  				      sem_post(&ctx->stdio_mutex);	\
+  				      } while(0)
+
+       typedef struct context {
+           int fd;
+           size_t size;
+           off_t off;
+           sem_t stdio_mutex;
+           void* data;
+       } context_t;
+
+       context_t* context_init(char* fname, off_t off, size_t len)
+       {
+           context_t * ctx = (context_t*)malloc(sizeof(context_t));
+           off_t pa_off = off & ~(sysconf(_SC_PAGE_SIZE) - 1);
+
+           sem_init(&ctx->stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
+
+           PRINT(ctx, "Opening %s at %lu (len: %lu)\n", fname, off, len);
+
+           ctx->off = off-pa_off;
+           ctx->fd = open(fname, O_RDWR, 0x0666);
+           if (ctx->fd == -1) {
+  	     perror("open");
+  	     return NULL;
+           }
+
+           ctx->size = len;
+           ctx->data = mmap(0, len+ctx->off, PROT_READ | PROT_WRITE,
+  		          MAP_SHARED, ctx->fd, pa_off);
+           if (ctx->data == MAP_FAILED) {
+  	     perror ("mmap");
+  	     return NULL;
+           }
+
+           return ctx;
+       }
+
+       void context_destroy(context_t* ctx)
+       {
+           if (close (ctx->fd) == -1)
+  	     perror ("close");
+
+           if (munmap ((void*)ctx->data, ctx->size) == -1)
+  	     perror ("munmap");
+
+           sem_destroy(&ctx->stdio_mutex);
+           free(ctx);
+       }
+
+       int main(int argc, char *argv[])
+       {
+           if (argc != 4)
+  	     fprintf(stderr, USAGE_INFO);
+
+           context_t *ctx = context_init(argv[1], atoi(argv[2]), atoi(argv[3]));
+
+           /* You MIGHT want to thread this but I dont think it will make
+            ,* much more difference than memset. */
+           memset(ctx->data + ctx->off, ' ', ctx->size);
+
+           context_destroy(ctx);
+           return 0;
+       }
+
+     #+END_SRC
+
+**** utf8thread.c
+
+     #+BEGIN_SRC c
+       #include <assert.h>
+       #include <fcntl.h>
+       #include <pthread.h>
+       #include <stdio.h>
+       #include <stdlib.h>
+       #include <string.h>
+       #include <sys/mman.h>
+       #include <sys/stat.h>
+       #include <sys/types.h>
+       #include <semaphore.h>
+       #include <unistd.h>
+       #include <unistd.h>
+
+       sem_t stdio_mutex;
+
+       #define PRINT(args...) do {sem_wait(&stdio_mutex);	\
+  	     printf(args);					\
+  	     fflush(stdout);					\
+  	     sem_post(&stdio_mutex);				\
+           } while(0)
+
+       /* #define DEBUG(args...)		PRINT(args) */
+       #define DEBUG(...)
+
+       #define DEFAULT_CHAR ' '
+       #define WORKERS 8
+       #define MESSAGE_DENSITY 1000000000
+
+       typedef unsigned long long u64;
+
+       #define UTF_LC(l) ((0xff >> (8 - (l))) << (8 - (l)))
+       #define UTF_CHECK(l, c) (((UTF_LC(l) & (c)) == UTF_LC(l)) && (0 == ((c) & (1 << (7-(l))))))
+
+
+       #define UTF_LEN(x) (UTF_CHECK(6, x) ? 6 :	\
+  		         UTF_CHECK(5, x) ? 5 :	\
+  		         UTF_CHECK(4, x) ? 4 :	\
+  		         UTF_CHECK(3, x) ? 3 :	\
+  		         UTF_CHECK(2, x) ? 2 : -1)
+
+       struct crange {
+           u64 start, end;
+       };
+
+       /* Get return the next character after the last correct one. */
+       inline u64 valid_utf8(u64 c)
+       {
+           char i;
+           /* Ascii */
+           if ((*(char*)c & 0x80) == 0)
+  	     return c+1;
+
+           /*  */
+           for (i = UTF_LEN(*(char*)c)-1; i>0; i--) {
+  	     c++;
+  	     if (!UTF_CHECK(1, *(char*)c)) {
+  	         return (u64)NULL;
+  	     }
+           }
+
+           return i<0 ? 0 : c+1;
+       }
+
+
+       void* fix_range(void* _r)
+       {
+           struct crange* r = _r;
+           u64 tmp, id = r->start;
+           long long unsigned count = 0;
+
+           while ((u64)r->start < (u64)r->end) {
+  	     if (count++ % MESSAGE_DENSITY == 0)
+  	         printf ("[worker: 0x%016llx] Done with %lluK.\n", id, count % 1024);
+
+  	     if (!(tmp = valid_utf8(r->start))){
+  	         PRINT("Invalid char 0x%x (next: 0x%x)\n",
+  		       ,*(char*)r->start, *(char*)(r->start+1));
+  	         ,*((char*)r->start) = DEFAULT_CHAR;
+  	         (r->start)++;
+  	     } else {
+  	         r->start = tmp;
+  	     }
+           }
+
+           PRINT ("[worker: 0x%016llx] OUT\n", id);
+           return NULL;
+       }
+
+       void run(u64 p, u64 sz)
+       {
+           int n, i;
+           u64 wsize;
+           pthread_t workers[WORKERS];
+           struct crange rngs[WORKERS];
+
+           wsize = sz/WORKERS + 1;
+           printf("Base address: 0x%016llx, step size: 0x%016llx\n", p, wsize);
+
+           for (i=0; i<WORKERS; i++){
+  	     rngs[i].start = p + wsize*i;
+  	     rngs[i].end = p + wsize*i + wsize;
+
+  	     PRINT("Spawning worker %d on range [0x%016llx, 0x%016llx), %llu bytes...", i, rngs[i].start, rngs[i].end, wsize);
+  	     if ((n = pthread_create(workers+i, NULL, fix_range, (void*)(rngs+i)))) {
+  	         PRINT("FAIL\n");
+  	         perror("worker");
+  	         return;
+  	     }
+  	     PRINT("OK\n");
+           }
+
+           PRINT ("Wrapping up...\n");
+           for (i=0; i<WORKERS; i++) {
+  	     PRINT ("Joining worker %d...", i);
+  	     pthread_join(workers[i], NULL);
+  	     PRINT ("OK\n");
+  	     PRINT("Worker %d went through %llu bytes.\n",
+  	           i, (u64)rngs[i].end - (u64)rngs[i].start);
+           }
+       }
+
+
+       int main(int argc, char *argv[])
+       {
+           int fd;
+           long long int sz, p;
+           struct stat buf;
+
+           sem_init(&stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
+
+           fd = open(argv[1], O_RDWR, 0x0666);
+           if (fd == -1) {
+  	     perror("open");
+  	     return 1;
+           }
+
+           fstat(fd, &buf);
+           sz = buf.st_size;
+           printf("File size: 0x%016llx\n", sz);
+
+           p = (u64)mmap (0, buf.st_size, PROT_READ | PROT_WRITE , MAP_SHARED, fd, 0);
+           if (p == -1) {
+  	     perror ("mmap");
+  	     return 1;
+           }
+
+           run(p, buf.st_size);
+
+           if (close (fd) == -1) {
+  	     perror ("close");
+  	     return 1;
+           }
+
+
+           if (munmap ((void*)p, buf.st_size) == -1) {
+  	     perror ("munmap");
+  	     return 1;
+           }
+
+           sem_destroy(&stdio_mutex);
+
+           return 0;
+       }
+     #+END_SRC
+
+**** sql-clear.sh
+
+     #+BEGIN_SRC sh
+       #!/bin/bash
+       MUSER="$1"
+       MPASS="$2"
+       MDB="$3"
+       MYSQL=$4
+
+       # Detect paths
+       AWK=$(which awk)
+       GREP=$(which grep)
+
+       if [ $# -ne 4 ]
+       then
+  	     echo "Usage: $0 {MySQL-User-Name} {MySQL-User-Password} {MySQL-Database-Name} {MySQL executable to use}"
+  	     echo "Drops all tables from a MySQL"
+  	     exit 1
+       fi
+
+       TABLES=$($MYSQL -u $MUSER -p$MPASS $MDB -e 'show tables' | $AWK '{ print $1}' | $GREP -v '^Tables' )
+
+       for t in $TABLES
+       do
+  	     echo "Clearing $t table from $MDB database..."
+  	     $MYSQL -u $MUSER -p$MPASS $MDB -e "truncate table $t"
+       done
+     #+END_SRC
+
+**** webmonitor.py
+
+     #+BEGIN_SRC python
+       """
+       Just feed pairs of
+
+       <epoc date> <float value>
+
+       or even just
+
+       <float value>
+
+       One way to do that would be
+
+           $ <cmd> stdbuf -oL awk "{print \$1/$$max}" | python webmonitor.py
+
+       and I will plot them on port 8888. This will also pipe the input right
+       out to the output. Strange input will be ignored and piped this way,
+       but this needs to be done by awk aswell in the above example.
+       """
+
+       import sys
+       import json
+       import time
+
+       from threading import Thread
+       from collections import deque
+
+       import tornado.websocket as websocket
+       import tornado.ioloop
+       import tornado.web
+
+       HTML = """
+       <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+       <html>
+         <head>
+           <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+           <title>DrNinjaBatmans Websockets</title>
+
+           <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
+           <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+
+           <script>
+       var chart; // global
+       var url = location.hostname + ':' + (parseInt(location.port));
+       var ws = new WebSocket('ws://' + url + '/websocket');
+       ws.onmessage = function(msg) {
+           add_point(msg.data);
+       };
+
+       // ws.onclose = function() { alert('Connection closed.'); };
+
+       var add_point = function(point) {
+           var series = chart.series[0],
+  	     shift = series.data.length > %d;
+           chart.series[0].addPoint(eval(point), true, shift);
+       };
+
+       $(document).ready(function() {
+           chart = new Highcharts.Chart(JSON.parse('%s'));
+       });
+           </script>
+
+         </head><body><div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div></body></html>
+       """
+
+       config = {
+           'visible_points': 10,
+           'py_chart_opts': { 'chart': { 'renderTo': 'container',
+                                         'defaultSeriesType': 'spline'},
+                              'title': { 'text': 'DrNinjaBatmans data'},
+                              'xAxis': { 'type': 'datetime',
+                                         'tickPixelInterval': '150'},
+                              'yAxis': { 'minPadding': 0.2,
+                                         'maxPadding': 0.2,
+                                         'title': {'text': 'Value',
+                                                   'margin': 80}
+                                     },
+                              'series': [{ 'name': 'Data',
+                                           'data': []}]}
+
+       }
+
+       def date_float(s):
+           try:
+               date, val = s.split()
+           except ValueError:
+               val = s.strip()
+               date = time.time()
+
+           return int(date), float(val)
+
+
+       def send_stdin(fn=date_float):
+           for raw in sys.stdin:
+               sys.stdout.write(raw)
+
+               # Ignore strange input.
+               try:
+                   jsn = json.dumps(fn(raw))
+
+                   buf.append(jsn)
+
+                   for w in websockets:
+                       try:
+                           w.write_message(jsn)
+                       except websocket.WebSocketClosedError:
+                           pass
+
+               except:
+                   pass
+
+           for ws in websockets:
+               ws.close()
+
+       class StdinSocket(websocket.WebSocketHandler):
+           def open(self):
+               for i in buf:
+                   self.write_message(i)
+
+               websockets.append(self)
+
+
+           def closs(self):
+               websockets.remove(self)
+
+       class MainHandler(tornado.web.RequestHandler):
+           def get(self):
+               self.write(HTML % (int(config['visible_points']),
+                                  json.dumps(config['py_chart_opts'])))
+
+
+       if __name__ == "__main__":
+           application = tornado.web.Application([
+               (r"/", MainHandler),
+               (r'/websocket', StdinSocket),
+           ])
+           buf = deque(maxlen=int(config['visible_points']))
+           websockets = []
+
+
+           config['args'] = []
+           for a in sys.argv[1:]:
+               if '=' in a:
+                   k, v = a.split('=', 1)
+                   config[k] = v
+               else:
+                   config['args'].append(a)
+
+           Thread(target=send_stdin).start()
+           application.listen(8888)
+           tornado.ioloop.IOLoop.instance().start()
+
+     #+END_SRC
+
+**** xml-parse.sh
+
+     #+BEGIN_SRC sh
+         #!/bin/bash
+       #
+       # Simply removing specific articles fixes the xerces error with
+       # UTF8. If the articles are alone the error goes away
+       # aswell. Extremely weird but that's life. Fortunately the article is
+       # just a stub about some toad (Cranopsis bocourti)
+       #
+       # xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]
+       #
+       # if `inplace` is there the c program will be used to cover the article
+       # with spaces. This is much faster. Should be anyway. Otherwise the
+       # page is just ommited and the result is dumped in stdout. Helping
+       # messages are dumped in stderr After this you can run:
+       #
+       # java -jar tools/mwdumper.jar RESULTING_XML --format=sql:1.5 > SQL_DUMP
+
+       set -e
+       set -o pipefail
+
+       if [[ $# -lt 2 ]]; then
+           echo "xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]" 1>&2
+           exit 0
+       fi
+
+       function my_dd {
+           coreutils_version=$(dd --version | head -1 | cut -d\  -f3 | colrm 2 2 )
+           if [[ $coreutils_version -ge 822 ]]; then
+  	     eval "dd iflag=count_bytes iflag=direct oflag=seek_bytes ibs=1M $@"
+           else
+  	     echo "Your coreutils may be a bit old ($coreutils_version). 822 is the one cool kids use." >&2
+  	     eval "dd $@ ibs=1"
+           fi
+       }
+
+       ORIGINAL_XML=$1
+
+       # Dump a part of the file in sdout using dd.
+       # Usage:
+       # file_range <filename> <first_byte> <start|end|length>
+       #
+       # Length can be negative
+       function file_range {
+           file=$1
+           start=$2
+           len=$3
+
+
+           case $len in
+  	     "end") my_dd if=$file skip=$start || exit 1; return 0;;
+  	     "start") my_dd if=$file count=$start || exit 1; return 0;;
+  	     "") echo "len was empty (file: $file, start: $start, len $len). Correct format <filename> <byte start> <length|'start'|'end'>" 1>&2; exit 1;;
+  	     ,*) ;;
+           esac
+
+           if [[ $len -gt 0 ]]; then
+  	     # Dump to stdout
+  	     my_dd if=$file skip=$start count=$len || exit 1
+           else
+  	     skip=$(($start + ($len)))
+  	     len=$((- ($len)))
+
+  	     if [[ $skip -lt 0 ]]; then
+  	         skip=0
+  	         len=$start
+  	     fi
+
+  	     # Dump to stdout
+               my_dd if=$file skip=$skip count=$len || exit 1
+           fi
+       }
+
+       function backwards {
+           tac -b | rev
+       }
+
+       function byte_offset {
+           grep -b -o -m 1 -F  "$1" | cut -d : -f1
+       }
+
+       # Throw everything but the page in stdout
+       #
+       # neg_xml_page "Barack Obama"
+       function neg_xml_page {
+           term="<title>$1</title>"
+           title_offset=$(cat $ORIGINAL_XML | byte_offset "$term")
+           echo -e "\n\tMethod: $2(blank is ok)" 1>&2
+           echo -e "\tsearch term: $term" 1>&2
+           echo -e "\tfile: $ORIGINAL_XML" 1>&2
+           echo -e "\ttitle offset: $title_offset" 1>&2
+
+           # Fail the term is invalid
+           if [ -z "$title_offset" ]; then
+  	     echo "Found '$title_offset' Grep-ing (cat  $ORIGINAL_XML | grep -b -m 1 -F \"$term\" | cut -d: -f1)" 1>&2
+  	     exit 1
+           fi
+
+           to_page_start=$(($(file_range $ORIGINAL_XML $title_offset -1000 | backwards | byte_offset "$(echo '<page>' | rev)")+7))
+           echo -e "\tto page start (relative): $to_page_start" 1>&2
+
+           file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>" >&2
+           echo $(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) >&2
+           to_page_end=$(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) # len('</page>') == 7
+           echo -e "\tto page end (relative): $to_page_end" 1>&2
+
+           page_start=$(($title_offset - $to_page_start +1 ))
+           echo -e "\tpage start: $page_start" 1>&2
+
+           page_end=$(($title_offset + $to_page_end))
+           echo -e "\tpage end: $page_end" 1>&2
+
+           echo -e "\tbytes to copy: $(($(du -b $ORIGINAL_XML | cut -f1) - $page_start + $page_end))" 1>&2
+
+           echo "Going to copy $page_start bytes" 1>&2
+           file_range $ORIGINAL_XML $page_start start
+           echo "Finished the first half up to $page_start, $(( $(du -b $ORIGINAL_XML | cut -f 1) - $page_end )) to go" 1>&2
+           file_range $ORIGINAL_XML $page_end end
+           echo "Finished the whole thing." 1>&2
+       }
+
+       # Put stdin betwinn mediawiki tags and into stdout
+       function mediawiki_xml {
+           (head -1 $ORIGINAL_XML; sed -n "/<siteinfo>/,/<\/siteinfo>/p;/<\/siteinfo>/q" $ORIGINAL_XML ; cat - ; tail -1 $ORIGINAL_XML )
+       }
+
+       # 1: XML File
+       # 2: Article
+       # 3: Method (leave blank)
+       # Assert that the file is there and is not empty
+       fsize=$(du -b $ORIGINAL_XML | cut -f1)
+       if [[ 0 -eq $fsize ]]; then
+           echo "ERROR: empty xml file $ORIGINAL_XML" 1>&2
+           exit 1
+       fi
+
+       echo "Will remove article '$2' from file $1 (size: $fsize)" 1>&2
+       if ! neg_xml_page "$2" "$3"; then
+           ret=$?
+           echo "XML parsing script failed" 1>&2
+           exit $ret;
+       fi
+     #+END_SRC
+
 
 * References

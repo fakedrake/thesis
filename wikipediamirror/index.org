@@ -1,7 +1,6 @@
-
-+TITLE:       Wikipedia Mirror
+#+TITLE:       Wikipedia Mirror
 #+AUTHOR:      Chris Perivolaropoulos
-#+DATE:        Sunday 21 February 2016
+#+DATE:        Wednesday 28 May 2016
 #+EMAIL:       cperivol@csail.mit.edu
 #+DESCRIPTION: Automated building of a local wikipedia mirror.
 #+KEYWORDS:
