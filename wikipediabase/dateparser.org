@@ -8,7 +8,8 @@
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 
-=dateparser= resides in a separate package called overlay-parse
+=dateparser= resides in a separate package called
+=overlay-parse={{{ref(overlay_parse)}}}
 
 * Parsing with overlays
 
@@ -74,7 +75,6 @@
 
   to match patterns like \(22/07/1991\), where \(Separator(/)\)
   matches only the character "/"
-
 
 * The dates example
 

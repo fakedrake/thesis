@@ -1,4 +1,5 @@
-#+TITLE:       Wikipedia Mirror
+
++TITLE:       Wikipedia Mirror
 #+AUTHOR:      Chris Perivolaropoulos
 #+DATE:        Sunday 21 February 2016
 #+EMAIL:       cperivol@csail.mit.edu
@@ -30,14 +31,15 @@ wikipedia.org.
 
   The stack is comprised of
 
-  - An http server, in our case apache
-  - The web application runtime, in our case PHP
-  - A database, in our case MySQL
-  - The web application itself, in our case mediawiki
+  - An http server, in our case apache{{{ref(apache)}}}
+  - The web application runtime, in our case PHP{{{ref(php)}}}
+  - A database, in our case MySQL{{{ref(mysql)}}}
+  - The web application itself, in our case mediawiki{{{ref(mediawiki)}}}
 
   All of the above are provided by the the bitnami mediawiki stack.
-  Xampp used to be go-to for that but it is unmaintained so we decided
-  to go with bitnami which works pretty well.
+  Xampp{{{ref(xampp)}}} used to be go-to for that but it is
+  unmaintained so we decided to go with bitnami which works pretty
+  well.
 
   Once the stack is set up properly the wikipedia dump xml is
   downloaded and then turned into an sql dump with
@@ -75,7 +77,7 @@ wikipedia.org.
     It is fair to say that apache is at least one of the most popular
     web servers on the internet. wikipedia.org itself seems to be
     using a more complex stack involving [[https://en.wikipedia.org/wiki/Varnish_(software)][varnish]],{{{ref}}} an HTTP
-    accelerator, and [[https://en.wikipedia.org/wiki/Nginx][nginx]],{{{ref}}} an alternative, also quite
+    accelerator, and [[https://en.wikipedia.org/wiki/Nginx][nginx]],{{{ref(nginx)}}} an alternative, also quite
     popular HTTP server. We arrive at this conclusion by inspecting
     the headers returned by wikipedia.org. In the
     http://www.wikipedia.org case we are redirected to the secure
@@ -91,13 +93,6 @@ wikipedia.org.
     And if we directly ask for https://www.wikipedia.org nginx seems
     to be handling our request:
 
-    #+BEGIN_SRC sh
-      $ curl -s -D - https://www.wikipedia.org -o /dev/null
-      HTTP/1.1 200 OK
-      Server: nginx/1.9.4
-      [...]
-    #+END_SRC
-
     However it is beyond the scope of the project to precisely
     replicate wikipedia's infrastructure. We focus on the
     functionality. Therefore due to the popularity, familiarity and by
@@ -107,7 +102,7 @@ wikipedia.org.
 *** PHP
 
     Mediawiki, which is discussed later, is written entirely in
-    PHP{{{ref}}}, a popular server side, dynamically typed, object
+    PHP, a popular server side, dynamically typed, object
     oriented scripting language. PHP is essential and is installed
     along the bitnami mediawiki stack. PHP is popular among web
     developers partly due to its support for multiple relational
@@ -119,13 +114,13 @@ wikipedia.org.
 
     Mediawiki can use a number of different SQL database backends:
 
-    - *MSSQL:* An SQL database by Microsoft{{{ref}}}
-    - *MySQL:* Using the standard PHP library for MySQL{{{ref}}}.
-    - *MySQLi:* An extension to the MySQL backend{{{ref}}}.
-    - *Oracle:* A propitiatory SQL database by Oracle{{{ref}}}.
+    - *MSSQL:* An SQL database by Microsoft{{{ref(mssql)}}}
+    - *MySQL:* Using the standard PHP library for MySQL.
+    - *MySQLi:* An extension to the MySQL backend{{{ref(mysqli)}}}.
+    - *Oracle:* A propitiatory SQL database by Oracle{{{ref(oracle)}}}.
     - *SQLite:* An SQL database that is typically accessed as a
       library rather than over a client-server scheme as is the case
-      with the other options on the list.{{{ref}}}
+      with the other options on the list.
 
     Wikipedia provides multiple dump files for SQL tables of secondary
     importance in MySQL format (eg. page redirects, categories etc)
@@ -136,12 +131,14 @@ wikipedia.org.
 
 *** MediaWiki
 
-    Mediawiki{{{ref}}} is the heart of wikipedia. MediaWiki is a free
-    and open-source wiki application. It was originally developed by
-    the Wikimedia Foundation{{{ref}}} and runs on many websites,
-    including Wikipedia, Wikitionary and Wikimedia
-    Commons{{{ref}}}. As mentioned previously, it is written in the
-    PHP programming language and uses a backend database.
+    Mediawiki is the heart of wikipedia. MediaWiki is a free and
+    open-source{{{ref(foss)}}} wiki application. It was originally
+    developed by the Wikimedia Foundation{{{ref(wikimedia)}}} and runs
+    on many websites, including Wikipedia,
+    Wikitionary{{{ref(wikitionary)}}} and Wikimedia
+    Commons{{{ref(wikimedia_commons)}}}. As mentioned previously, it
+    is written in the PHP programming language and uses a backend
+    database.
 
     The software has more than 800 configuration settings and more
     than 2,000 extensions available for enabling various features to
@@ -155,8 +152,8 @@ wikipedia.org.
 
 * Setting up
 
-  Following are step by step instructions. First, clone the git
-  code repository:
+  Following are step by step instructions. First, clone the
+  git{{{ref(git)}}} code repository:
 
   #+BEGIN_SRC sh
     $ git clone https://github.com/fakedrake/wikipedia-mirror
@@ -187,9 +184,9 @@ wikipedia.org.
     $ make bmw-install
   #+END_SRC
 
-  Next step is to make sure =maven=,{{{ref}}} the java is a software
-  project management and comprehension is installed, required to
-  install and setup mwdumper (see below). You can do that by making
+  Next step is to make sure =maven=,{{{ref(maven)}}} the java is a
+  software project management and comprehension is installed, required
+  to install and setup mwdumper (see below). You can do that by making
   sure the following succeeds:
 
   #+BEGIN_SRC text
@@ -200,11 +197,12 @@ wikipedia.org.
   (for Java) using =sudo apt-get install maven=.
 
   Now everything is installed to automatically download Wikipedia's
-  XML dumps{{{ref}}} and then convert them to SQL using maven. First
-  maven will be downloaded and built. Then the compressed XML dumps
-  will be downloaded from the wikipedia, they will be uncompressed and
-  finally converted to MySQL dumps using =mwdumper=. This is a fairly
-  lengthy process taking 6 to 11 hours on a typical machine:
+  XML dumps{{{ref(wikipedia_dumps)}}} and then convert them to SQL
+  using mwdumper. First maven will be downloaded and built. Then the
+  compressed XML dumps will be downloaded from the wikipedia, they
+  will be uncompressed and finally converted to MySQL dumps using
+  =mwdumper=. This is a fairly lengthy process taking 6 to 11 hours on
+  a typical machine:
 
   #+BEGIN_SRC sh
     $ make sql-dump-parts

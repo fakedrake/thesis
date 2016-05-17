@@ -410,7 +410,7 @@ Silver. Other students have also joined the project shortly after.
 
 *** DBM
 
-    As mentioned before for caching several dbm{{{ref}}}
+    As mentioned before for caching several dbm{{{ref(dbm)}}}
     implementations are provided by the python standard library. None
     of the implementations shipped with python are part of the python
     standard library itself however. Some of the DBM implementations
@@ -439,13 +439,13 @@ Silver. Other students have also joined the project shortly after.
 
 *** SQLite
 
-    SQLite{{{ref}}} was also considered as caching backend
+    SQLite{{{ref(sqlite)}}} was also considered as caching backend
     database. Unfortunately its performance for our particular purpose
     was disappointing.
 
-    We used a very thin wrapper, =sqlitedict=, to get a key-value
-    interface to SQLite -- a relational database. The related
-    WikipediaBase code is very short:
+    We used a very thin wrapper, =sqlitedict={{{ref(sqlitedict)}}}, to
+    get a key-value interface to SQLite -- a relational database. The
+    related WikipediaBase code is very short:
 
     #+BEGIN_SRC python
       from sqlitedict import SqliteDict

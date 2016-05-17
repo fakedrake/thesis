@@ -2,8 +2,8 @@
 ;;; For more information see (info "(emacs) Directory Variables")
 
 ((nil
-  (google-translate-default-source-language . "en")
-  (google-translate-default-target-language . "el")
+  (google-translate-default-source-language . "el")
+  (google-translate-default-target-language . "en")
   (org-latex-packages-alist . (("" "listings") ("" "float")))
   (org-latex-listings . t)
   (ispell-dictionary . "el")
