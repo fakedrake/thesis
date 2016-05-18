@@ -494,10 +494,10 @@ wikipedia.org.
      problem with flushing large mapped files with =fsync= is that
      =fsync= searches for dirty pages in mapped memory pages linearly
      making it slower and slower as the file gets larger.
-     - Calibrate the
-       =innodb_io_capacity={{{ref(innodb_io_capacity)}}}. Unsurprisingly
-       the value of this variable was higher than the bandwidth of the
-       HDD.
+   - Calibrate the
+     =innodb_io_capacity={{{ref(innodb_io_capacity)}}}. Unsurprisingly
+     the value of this variable was higher than the bandwidth of the
+     HDD.
 
   The only optimization that actually made a difference in database
   population speed was to edit the MySQL dump to set:
