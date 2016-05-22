@@ -491,9 +491,10 @@ wikipedia.org.
      difference in database population.
    - Change =innodb_flush_method={{{ref(innodb_flush_method)}}} to
      =O_DSYNC= to avoid using the =fsync= system call. In short the
-     problem with flushing large mapped files with =fsync= is that
-     =fsync= searches for dirty pages in mapped memory pages linearly
-     making it slower and slower as the file gets larger.
+     problem with flushing large mapped files with
+     =fsync={{{ref(fsync)}}} is that =fsync= searches for dirty pages
+     in mapped memory pages linearly making it slower and slower as
+     the file gets larger.
    - Calibrate the
      =innodb_io_capacity={{{ref(innodb_io_capacity)}}}. Unsurprisingly
      the value of this variable was higher than the bandwidth of the

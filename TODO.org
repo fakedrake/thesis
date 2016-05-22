@@ -45,14 +45,14 @@
 ** DONE Attempts at optimizing MySQL
 ** DONE Mediawiki description from wikipedia.
 ** DONE XML parse sh
-* References [0%]
+* References [4%]
 ** TODO Infolab
 ** TODO Omnibase papers
 
     - Omnibase :: http://start.csail.mit.edu/publications/Katz-etal-NLDB02.pdf
     - Wikipedia :: https://en.wikipedia.org/wiki/Wikipedia
 ** TODO Start
-** TODO Setup a reference page
+** DONE Setup a reference page
 ** TODO DBMs
 ** TODO Links to the elements of the stack
 ** TODO Links to the elements of the wikipediabase stack

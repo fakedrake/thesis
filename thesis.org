@@ -8,7 +8,8 @@
 #+LANGUAGE:    en
 #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
-#+MACRO:       ref
+#+MACRO:       ref \cite{$1}
+#+MACRO:       deref \bibitem{$1}
 
 * Abstract
 
@@ -30,4 +31,5 @@
   #+INCLUDE: "./wikipediabase/index.org"
 * WikipediaMirror
   #+INCLUDE: "./wikipediamirror/index.org"
-* References
+* Bibliography
+  #+INCLUDE:  "./references.org"

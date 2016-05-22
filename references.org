@@ -1,0 +1,80 @@
+#+TITLE:       References
+#+AUTHOR:      Chris Perivolaropoulos
+#+DATE:        Saturday 14 May 2016
+#+EMAIL:       cperivol@csail.mit.edu
+#+DESCRIPTION: Making sense of semi structured data in wikipedia.
+#+KEYWORDS:
+#+LATEX_CLASS: report
+#+LANGUAGE:    en
+#+OPTIONS:     H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+STARTUP:     showall
+#+MACRO:       ref \cite{$1}
+#+MACRO:       deref \bibitem{$1}
+
+  # Writing this by hand because I do not have /real/ references.
+#+BEGIN_EXPORT latex
+\begingroup
+\renewcommand{\chapter}[2]{}
+\begin{thebibliography}{99}
+#+END_EXPORT
+
+{{{deref(start)}}} Boris Katz: Annotating the World Wide Web using
+Natural Language (RIAO '97)
+{{{deref(omnibase)}}} Boris Katz, Sue
+Felshin, Deniz Yuret, Ali Ibrahim, Jimmy Lin, Gregory Marton, Alton
+Jerome McFarland, and Baris Temelkuran: Omnibase: Uniform Access to
+Heterogeneous Data for Question Answering (NLDB 2002).
+{{{deref(apache)}}} Apache Software Foundation
+https://en.wikipedia.org/wiki/Apache_Software_Foundation
+{{{deref(bitnami)}}} Bitnami https://en.wikipedia.org/wiki/Bitnami
+{{{deref(dbm)}}} DBM https://en.wikipedia.org/wiki/Dbm
+{{{deref(emacs_overlays)}}} Emacs Overlays
+https://www.emacswiki.org/emacs/EmacsOverlays {{{deref(foss)}}} Free
+and open-source software
+https://en.wikipedia.org/wiki/Free_and_open-source_software
+{{{deref(git)}}} Git (software)
+https://en.wikipedia.org/wiki/Git_(software)
+{{{deref(infobox_hierarchy)}}} Wikipedia:List of infoboxes
+https://en.wikipedia.org/wiki/Wikipedia:List_of_infoboxes
+{{{deref(innodb_buffer_pool_size)}}} The InnoDB Buffer Pool
+https://dev.mysql.com/doc/refman/5.5/en/innodb-buffer-pool.html
+{{{deref(innodb_flush_method)}}} innodb_flush_method
+https://dev.mysql.com/doc/refman/5.5/en/innodb-parameters.html#sysvar_innodb_flush_method
+{{{deref(innodb_io_capacity)}}} innodb_io_capacity
+https://dev.mysql.com/doc/refman/5.5/en/innodb-parameters.html#sysvar_innodb_io_capacity
+{{{deref(make)}}} Make (software)
+https://en.wikipedia.org/wiki/Make_(software) {{{deref(maven)}}}
+Apache Maven https://en.wikipedia.org/wiki/Apache_Maven
+{{{deref(mediawiki)}}} MediaWiki
+https://en.wikipedia.org/wiki/MediaWiki {{{deref(mssql)}}} Microsoft
+SQL Server https://en.wikipedia.org/wiki/Microsoft_SQL_Server
+{{{deref(mwdumper)}}} MWDumper
+https://www.mediawiki.org/wiki/Manual:MWDumper {{{deref(mysql)}}}
+MySQL https://en.wikipedia.org/wiki/MySQL {{{deref(mysqli)}}} MySQLi
+https://en.wikipedia.org/wiki/MySQLi {{{deref(nginx)}}} Nginx
+https://en.wikipedia.org/wiki/Nginx {{{deref(oracle)}}} Oracle
+https://en.wikipedia.org/wiki/Oracle {{{deref(overlay_parse)}}}
+overlay-parse https://pypi.python.org/pypi/overlay-parse/1.1
+{{{deref(php)}}} PHP https://en.wikipedia.org/wiki/PHP
+{{{deref(sqlite)}}} SQLite https://en.wikipedia.org/wiki/SQLite
+{{{deref(sqlitedict)}}} sqlitedict
+https://pypi.python.org/pypi/sqlitedict {{{deref(total_function)}}}
+Total functional programming
+https://en.wikipedia.org/wiki/Total_functional_programming
+{{{deref(travis)}}} Travis CI https://en.wikipedia.org/wiki/Travis_CI
+{{{deref(wikimedia)}}} Wikimedia movement
+https://en.wikipedia.org/wiki/Wikimedia_movement
+{{{deref(wikimedia_commons)}}} Wikimedia Commons
+https://pam.wikipedia.org/wiki/Wikimedia_Commons
+{{{deref(wikipedia_dumps)}}} Wikipedia dumps
+https://dumps.wikimedia.org/enwiki/latest/
+{{{deref(wikipedia_sandbox)}}} Wikipedia Sandbox
+https://en.wikipedia.org/wiki/Wikipedia:Sandbox
+{{{deref(wikitionary)}}} Wiktionary
+https://en.wikipedia.org/wiki/Wiktionary {{{deref(xampp)}}} XAMPP
+https://en.wikipedia.org/wiki/XAMPP {{{deref(fsync)}}} fsync
+http://man7.org/linux/man-pages/man2/fsync.2.html
+#+BEGIN_EXPORT latex
+\end{thebibliography}
+\endgroup
+#+END_EXPORT
