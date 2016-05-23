@@ -1,9 +1,10 @@
 * Draft 5.0
-** TODO Acknowledgements
+** DONE Acknowledgements
+** TODO Fix title and toc
 ** TODO Add google assistant to
 ** TODO Move appendices to the end
-** TODO Take abstact off the contents
-** TODO Explain stuff
+** DONE Take abstact off the contents
+** DONE Explain stuff
 
    For example what needs extra instructions
 
@@ -13,7 +14,7 @@
    - wikipediabase
    - backend
 
-** TODO Add examples
+** DONE Add examples
 ** TODO Refernces about the infolab
 * Draft 4.0
 ** DONE Translation
