@@ -1,8 +1,23 @@
+* Draft 5.0
+** TODO Acknowledgements
+** TODO Add google assistant to
+** TODO Move appendices to the end
+** TODO Take abstact off the contents
+** TODO Explain stuff
+
+   For example what needs extra instructions
+
+   - s-expessions
+   - classes
+   - infobox
+   - wikipediabase
+   - backend
+
+** TODO Add examples
+** TODO Refernces about the infolab
 * Draft 4.0
-** TODO Translation
-** TODO Setup bibtex
-** TODO Lookup refrerences
-** TODO Ask if we should add the entire codebase
+** DONE Translation
+** DONE Lookup refrerences
 ** DONE Xetex setup
 
    Use the Georgia font
