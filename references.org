@@ -18,7 +18,13 @@
 \begin{thebibliography}{99}
 #+END_EXPORT
 
-{{{deref(wikipedia_sandbox)}}}
+{{{deref(infolab_github)}}} MiT InfoLab github organization page https://github.com/infolab-csail
+{{{deref(imdb)}}} Internet Movie DataBase http://www.imdb.com/
+{{{deref(cia_factbook)}}} The CIA world factbook https://www.cia.gov/library/publications/the-world-factbook/
+{{{deref(wikipedia)}}} Wikipedia, the free encyclopedia https://en.wikipedia.org/wiki/Wikipedia
+{{{deref(coreutils)}}} GNU Coreutils https://en.wikipedia.org/wiki/GNU_Core_Utilities
+{{{deref(bsd_toybox)}}} BSD Toybox https://en.wikipedia.org/wiki/Toybox
+{{{deref(wikipedia_sandbox)}}} Wikipedia sandbox https://en.wikipedia.org/wiki/Wikipedia:Sandbox
 {{{deref(start)}}} Boris Katz: Annotating the World Wide Web using
 Natural Language (RIAO '97)
 {{{deref(omnibase)}}} Boris Katz, Sue
@@ -39,9 +45,9 @@ https://en.wikipedia.org/wiki/Git_(software)
 https://en.wikipedia.org/wiki/Wikipedia:List_of_infoboxes
 {{{deref(innodb_buffer_pool_size)}}} The InnoDB Buffer Pool
 https://dev.mysql.com/doc/refman/5.5/en/innodb-buffer-pool.html
-{{{deref(innodb_flush_method)}}} innodb\_flush\_method
+{{{deref(innodb_flush_method)}}} =innodb_flush_method=
 https://dev.mysql.com/doc/refman/5.5/en/innodb-parameters.html#sysvar_innodb_flush_method
-{{{deref(innodb_io_capacity)}}} innodb\_io\_capacity
+{{{deref(innodb_io_capacity)}}} =innodb_io_capacity=
 https://dev.mysql.com/doc/refman/5.5/en/innodb-parameters.html#sysvar_innodb_io_capacity
 {{{deref(make)}}} Make (software)
 https://en.wikipedia.org/wiki/Make_(software) {{{deref(maven)}}}

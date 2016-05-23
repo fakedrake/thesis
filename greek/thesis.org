@@ -1,4 +1,4 @@
-#+TITLE:       Εξορύττοντας σχεσιακά δεδομένα από την Wikipedia
+#+TITLE:       Εξόρυξη σχεσιακών δεδομένων από την Wikipedia
 #+AUTHOR:      Χρήστος Περιβολαρόπουλος
 #+DATE:        Δευτέρα 23 Μαΐου 2016
 #+EMAIL:       cperivol@csail.mit.edu
@@ -468,7 +468,7 @@
 ** Getting started
 
    Η συνολική WikipediaBase βρίσκεται σε ένα git repository στο
-   infolab's github orginization page{{{ref(infolab_github}}}.
+   infolab's github orginization page{{{ref(infolab_github)}}}.
 
    #+BEGIN_SRC sh
      git clone git@github.com:infolab-csail/WikipediaBase
@@ -760,7 +760,8 @@
       - Category regex excludes
       - Category matches
 
-      Περιγράφονται λεπτομερώς στο παράρτημα.
+      Περιγράφονται λεπτομερώς στο παράρτημα /"Χαρακτηριστικά για τον
+      person classifier"/.
 
 **** Resolvers
 
@@ -1021,7 +1022,8 @@
    παραπάνω από ένα αυτού του είδους τεστ.
 
    Στην περίπτωση του fetcher, για να ακολουθήσουμε το παραπάνω
-   παράδειγμα, το συνολικό τεστ υπάρχει στο παράρτημα.
+   παράδειγμα, το συνολικό τεστ υπάρχει στο παράρτημα /"παράδειγμα
+   python unit test"/.
 
    Εφαρμόσαμε το εργαλείο nosetests να βρούμε και να τρέξουμε τα
    τεστ. Για να το κάνουμε αυτό το προσθέσαμε σαν προαπαιτούμενο στο
@@ -1081,7 +1083,8 @@
         or: setup.py cmd --help
    #+END_SRC
 
-   Δείτε το παράρτημα για επιτυχημένη εκτέλεση των τεστ.
+   Δείτε το παράρτημα /"παράδειγμα εκτέλεσης ενός python test"/ για
+   επιτυχημένη εκτέλεση των τεστ.
 
 ** Συνώνυμα
 
@@ -1111,7 +1114,7 @@
    άνθρωπος δεν είναι αποδεκτά. Λεπτομέρειες για τις ευρετικές που
    χρησιμοποιούμε για να αποφασίσουμε αν ένα συνώνυμο είναι αποδεκτό η
    όχι καθώς και ο τρόπος που παράγουμε συνώνυμα υπάρχουν στο
-   παράρτημα.
+   παράρτημα /"Παραγωγή συνωνύμων"/.
 
 ** Databases and data sources
 
@@ -1361,362 +1364,6 @@
       >>> just_ranges(u'German: [\u02c8v\u0254lf\u0261a\u014b ama\u02c8de\u02d0\u028as \u02c8mo\u02d0tsa\u0281t], English see fn.;[1] 27 January 1756\xa0\u2013 5 December 1791')
       [((27, 1, 1756), (5, 12, 1791))]
     #+END_SRC
-
-** Παραρτήματα
-*** Παραγωγή συνωνύμων
-
-    Για να συμβιβάσουμε αυτούς τους περιορισμούς δύο μέθοδοι
-    χρησιμοποιούνται: qualification και modification των υποψήφιων
-    συνωνύμων. Πρώτα προσπαθούμε τη modification μέθοδο και αν αυτό
-    αποτύχει επιχειρούμε να εκτελέσουμε qualification. Οι κανόνες για
-    modification έχουν ως εξής:
-
-    - Να διαγράψουμε τα άρθρα από την αρχή ενός συνωνύμου:
-      - "A "
-      - "An "
-      - "The "
-      - "(The) "
-      - The&nbsp;
-      - κτλ
-    - Να δημιουργούμε και και τα δύο versions, με και χωρίς
-      παρενθέσεις. Πχ, δεδομένου του συμβόλου "Raven (journal)"
-      δημιουργούμε:
-
-      - "Raven (journal)"
-      - "Raven"
-
-    - Να χρησιμοποιήσουμε τη συμβολοσειρά πριν και μετά το slash, αλλά όχι
-      το αρχικό =symbol=, πχ. δεδομένου του =symbol= "Russian
-      language/Russian alphabet" δημιουργούμε
-
-      - "Russian language"
-      - "Russian alphabet"
-
-    - Να αναστρέψουμε των ανεστραμμένων συμβόλων με κόμματα. Πχ δεδομένου
-      "Congo, Democratic Republic Of The", αναστρέφουμε για να πάρουμε
-      "Democratic Republic Of The Congo"
-    - Ώς συνήθως, να απορρίψουμε leading articles εάν είναι
-      αναγκαίο. Π.χ. δοθέντος συμβόλου "Golden ratio, the" το
-      αντικαθιστούμε με "the Golden ratio", στη συνέχεια διαγράφουμε
-      τα άρα για πάρουμε: "Golden ratio" το ίδιο συμβάνει για τα a,
-      an, κτλ.
-
-    Με αυτό τον τρόπο δημιουργήσαμε ένα αρχικό πακέτο συνωνύμων από το
-    ίδιο το όνομα του αντικειμένου. Επιπλέον μπορούμε να
-    δημιουργήσουμε άλλο ένα πακέτο από τα wikipedia redirects στο
-    άρθρο. Η Wikipedia παρέχει ένα SQL dump για όλα τα redirects. Για
-    να φορτώσουμε τον πίνακα του SQL dump σε μια βάση δεδομένων όπου
-    έχουμε φορτώσει ήδη τα δεδομένα της wikipedia:
-
-    #+BEGIN_SRC sh
-     wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz \
-       -O redirect.sql.gz && gzcat redirect.sql.gz | mysql
-    #+END_SRC
-
-    Και στη συνέχεια μπορούμε να τρέξομε το SQL query για να βρούμε
-    όλα τα συνώνυμα του (καλά και κακά) Bill Clinton:
-
-    #+BEGIN_SRC sql
-      mysql> select page_title, rd_title from \
-      redirect join page on
-      rd_from = page_id and
-      (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
-      (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
-      +-------------------------------------+--------------+
-      | page_title                          | rd_title     |
-      +-------------------------------------+--------------+
-      | BillClinton                         | Bill_Clinton |
-      | William_Jefferson_Clinton           | Bill_Clinton |
-      [.. see below for a formated verison of the data ...]
-      | William_Jefferson_Clinton           | Bill_Clinton |
-      +-------------------------------------+--------------+
-      46 rows in set (11.77 sec)
-    #+END_SRC
-
-
-    #+ATTR_LATEX: :environment longtable
-    | =page_title=                          | =rd_title=     |
-    |---------------------------------------+----------------|
-    | =BillClinton=                         | =Bill_Clinton= |
-    | =William_Jefferson_Clinton=           | =Bill_Clinton= |
-    | =President_Clinton=                   | =Bill_Clinton= |
-    | =William_Jefferson_Blythe_IV=         | =Bill_Clinton= |
-    | =Bill_Blythe_IV=                      | =Bill_Clinton= |
-    | =Clinton_Gore_Administration=         | =Bill_Clinton= |
-    | =Buddy_(Clinton's_dog)=               | =Bill_Clinton= |
-    | =Bill_clinton=                        | =Bill_Clinton= |
-    | =William_Jefferson_Blythe_III=        | =Bill_Clinton= |
-    | =President_Bill_Clinton=              | =Bill_Clinton= |
-    | =Bull_Clinton=                        | =Bill_Clinton= |
-    | =Clinton,_Bill=                       | =Bill_Clinton= |
-    | =William_clinton=                     | =Bill_Clinton= |
-    | =42nd_President_of_the_United_States= | =Bill_Clinton= |
-    | =Bill_Jefferson_Clinton=              | =Bill_Clinton= |
-    | =William_J._Clinton=                  | =Bill_Clinton= |
-    | =Billl_Clinton=                       | =Bill_Clinton= |
-    | =Bill_Clinton\=                       | =Bill_Clinton= |
-    | =Bill_Clinton's_Post_Presidency=      | =Bill_Clinton= |
-    | =Bill_Clinton's_Post-Presidency=      | =Bill_Clinton= |
-    | =Klin-ton=                            | =Bill_Clinton= |
-    | =Bill_J._Clinton=                     | =Bill_Clinton= |
-    | =William_Jefferson_"Bill"_Clinton=    | =Bill_Clinton= |
-    | =William_Blythe_III=                  | =Bill_Clinton= |
-    | =William_J._Blythe=                   | =Bill_Clinton= |
-    | =William_J._Blythe_III=               | =Bill_Clinton= |
-    | =Bil_Clinton=                         | =Bill_Clinton= |
-    | =WilliamJeffersonClinton=             | =Bill_Clinton= |
-    | =William_J_Clinton=                   | =Bill_Clinton= |
-    | =Bill_Clinton's_sex_scandals=         | =Bill_Clinton= |
-    | =Billy_Clinton=                       | =Bill_Clinton= |
-    | =Willam_Jefferson_Blythe_III=         | =Bill_Clinton= |
-    | =William_"Bill"_Clinton=              | =Bill_Clinton= |
-    | =Billll_Clinton=                      | =Bill_Clinton= |
-    | =Bill_Klinton=                        | =Bill_Clinton= |
-    | =William_Clinton=                     | =Bill_Clinton= |
-    | =Willy_Clinton=                       | =Bill_Clinton= |
-    | =William_Jefferson_(Bill)_Clinton=    | =Bill_Clinton= |
-    | =Bubba_Clinton=                       | =Bill_Clinton= |
-    | =MTV_president=                       | =Bill_Clinton= |
-    | =MTV_President=                       | =Bill_Clinton= |
-    | =The_MTV_President=                   | =Bill_Clinton= |
-    | =Howard_G._Paster=                    | =Bill_Clinton= |
-    | =Clintonesque=                        | =Bill_Clinton= |
-    | =William_Clinton=                     | =Bill_Clinton= |
-    | =William_Jefferson_Clinton=           | =Bill_Clinton= |
-
-
-*** Καλά και κακά συνώνυμα
-
-    Υπάρχουν κανόνες για το ποιο είναι καλό ή κακό συνώνυμο
-
-    - Δεν πρέπει να ξεκινούν με άρθρα ("the", "a", "an")
-    - Δεν πρέπει να ξεκινούν με "File:" or "TimedText:".
-    - Δεν πρέπει να περιέχουν HTML anchors. Πχ
-      "Alexander_Pushkin#Legacy"
-    - Δεν πρέπει να ξεκινούν με τα ακόλουθα:
-      - "List of "
-      - "Lists of "
-      - "Wikipedia: "
-      - "Category: "
-      - ":Category: "
-      - "User: "
-      - "Image: "
-      - "Media: "
-      - "Arbitration in location"
-      - "Communications in location"
-      - "Constitutional history of location"
-      - "Economy of location"
-      - "Demographics of location"
-      - "Foreign relations of location"
-      - "Geography of location"
-      - "History of location"
-      - "Military of location"
-      - "Politics of location"
-      - "Transport in location"
-      - "Outline of topic"
-    - Δεν πρέπει να ταιριάζει =\d\d\d\d in location= ή =location in
-      \d\d\d\d=
-    - Δεν πρέπει να είναι ονόματα των disabiguation pages. Για να το
-      κάνουμε αυτό έτσι ώστε να συμπεριλαμβάνει όλες τις σχετικές
-      σελίδες (συμπεριλαμβανομένων των τυπογραφικών λαθών) εννοούμε
-      σύμβολα που ταιριάζουν με =\([Dd]isambig[\^)]*\)=.
-    - Συνώνυμα που α) θα μπορούσαν να εκληφθούν ότι ξεκινούν με άρθρα
-      και β) μπορεί να εκλείπουν κάτι χρήσιμο. Αυτό σημαίνει ότι για
-      παράδειγμα "A. House" (συνώνυμο του «Abraham House") είναι
-      ελλιπών προδιαγραφών διότι ενδέχεται να παραπλανήσει το START
-      στην περίπτωση των ερωτήσεων όπως "Πόσο κοστίζει ένα σπίτι στη
-      Silicon Valley;". Αφετέρου "a priori" μπορεί να διατηρηθεί
-      επειδή δεν υπάρχουν λογικές ερωτήματα όπου "α" είναι ένα άρθρο
-      πριν "priori".
-
-
-*** Παράδειγμα python unit test
-
-
-    #+BEGIN_SRC python
-     class TestFetcher(unittest.TestCase):
-         def setUp(self):
-             self.fetcher = fetcher.get_fetcher()
-
-         def test_html(self):
-             html = self.fetcher.html_source("Led Zeppelin")
-             self.assertIn("Jimmy Page", html)
-
-         def test_markup_source(self):
-             src = self.fetcher.markup_source("Led Zeppelin")
-             self.assertIn("{{Infobox musical artist", src)
-
-
-         def test_unicode_html(self):
-             html = self.fetcher.html_source(u"Rhône")
-             self.assertIn("France", html)
-
-         def test_unicode_source(self):
-             src = self.fetcher.markup_source("Rhône")
-             self.assertIn("Geobox|River", src)
-
-         def test_silent_redirect(self):
-             # redirects are only supported when force_live is set to True
-             src = self.fetcher.markup_source("Obama", force_live=True)
-             self.assertFalse(re.match(fetcher.REDIRECT_REGEX, src))
-    #+END_SRC
-
-*** Παράδειγμα εκτέλεσης ενός python test
-
-    #+BEGIN_SRC sh
-       $ python setup.py test -s tests.test_lispify
-       running test
-       running egg_info
-       writing requirements to wikipediabase.egg-info/requires.txt
-       writing wikipediabase.egg-info/PKG-INFO
-       writing top-level names to wikipediabase.egg-info/top_level.txt
-       writing dependency_links to wikipediabase.egg-info/dependency_links.txt
-       writing entry points to wikipediabase.egg-info/entry_points.txt
-       reading manifest file 'wikipediabase.egg-info/SOURCES.txt'
-       reading manifest template 'MANIFEST.in'
-       writing manifest file 'wikipediabase.egg-info/SOURCES.txt'
-       running build_ext
-       test_bool (tests.test_lispify.TestLispify) ... ok
-       test_bool_with_typecode (tests.test_lispify.TestLispify) ... ok
-       test_date_multiple_voting (tests.test_lispify.TestLispify) ... ok
-       test_date_simple (tests.test_lispify.TestLispify) ... ok
-       test_date_with_range (tests.test_lispify.TestLispify) ... ok
-       test_dict (tests.test_lispify.TestLispify) ... ok
-       test_dict_with_escaped_string (tests.test_lispify.TestLispify) ... ok
-       test_dict_with_list (tests.test_lispify.TestLispify) ... ok
-       test_double_nested_list (tests.test_lispify.TestLispify) ... ok
-       test_error (tests.test_lispify.TestLispify) ... ok
-       test_error_from_exception (tests.test_lispify.TestLispify) ... ok
-       test_keyword (tests.test_lispify.TestLispify) ... ok
-       test_keyword_with_typecode (tests.test_lispify.TestLispify) ... ok
-       test_list (tests.test_lispify.TestLispify) ... ok
-       test_list_of_dict (tests.test_lispify.TestLispify) ... ok
-       test_list_of_dict_with_typecode (tests.test_lispify.TestLispify) ... ok
-       test_list_with_typecode (tests.test_lispify.TestLispify) ... ok
-       test_nested_list (tests.test_lispify.TestLispify) ... ok
-       test_none (tests.test_lispify.TestLispify) ... ok
-       test_none_with_typecode (tests.test_lispify.TestLispify) ... ok
-       test_number (tests.test_lispify.TestLispify) ... ok
-       test_number_with_typecode (tests.test_lispify.TestLispify) ... ok
-       test_string (tests.test_lispify.TestLispify) ... ok
-       test_string_escaped (tests.test_lispify.TestLispify) ... ok
-       test_string_not_keyword (tests.test_lispify.TestLispify) ... ok
-       test_string_with_typecode (tests.test_lispify.TestLispify) ... ok
-       test_unicode_string (tests.test_lispify.TestLispify) ... ok
-
-       ----------------------------------------------------------------------
-       Ran 27 tests in 0.047s
-
-       OK
-    #+END_SRC
-
-*** Χαρακτηριστικά για τον person classifier
-**** Category regexes
-
-     Χρησιμοποιεί τις ακόλουθες συνήθεις εκφράσεις (regular
-     expressions) για να ταυτίσει τις κατηγορίες ενός άρθρου.
-
-     - =.* person=
-     - =\^\d+ deaths.*=
-     - =\^\d+ births.*=
-     - =.* actors=
-     - =.* deities=
-     - =.* gods=
-     - =.* goddesses=
-     - =.* musicians=
-     - =.* players=
-     - =.* singers=
-
-**** Category regex excludes
-
-     Αποκλείει τις ακόλουθες regexes.
-
-     - =\sbased on\s=
-     - =\sabout\s=
-     - =lists of\s=
-     - =animal\s=
-
-**** Category matches
-
-     Γνωρίζουμε ότι ένα άρθρο αναφέρεται σε ένα πρόσωπο εάν η σελίδα ανήκει
-     σε μια από τις ακόλουθες mediawikia κατηγορίες:
-
-     - american actors
-     - american television actor stubs
-     - american television actors
-     - architects
-     - british mps
-     - character actors
-     - computer scientist
-     - dead people rumoured to be living
-     - deities
-     - disappeared people
-     - fictional characters
-     - film actors
-     - living people
-     - musician stubs
-     - singer stubs
-     - star stubs
-     - united kingdom writer stubs
-     - united states singer stubs
-     - writer stubs
-     - year of birth missing
-     - year of death missing
-
-     Για ένα παράδειγμα δείτε το παράρτημα.
-
-     Όπως είναι φανερό η λίστα με τις κατηγορίες είναι αθυαίρετη και
-     όχι πλήρης. Πολλαπλές μέθοδοι μπορούν να χρησιμοποιηθούν για να
-     διορθωθεί αυτό. Μερικές από αυτές είναι:
-
-     - Μέθοδοι με Supervised machine learning όπως SVM χρησιμοποιώντας άλλες
-       μεθόδους να ορίσουν ένα πρόσωπο και να δημιουργήσουν εκπαιδευτικές
-       ομάδες.
-     - Εμπλουτίζοντας την υπάρχουσα λίστα κατηγοριών χρησιμοποιώντας
-       στατιστικά από κατηγορίες άρθρων που έχουμε βρει με άλλους
-       τρόπους ότι αναφέρονται σε πρόσωπα.
-
-*** Παράδειγμα κατηγοριών άρθρων
-
-    Το άρθρο που αναφέρεται στον Leonardo DiCaprio εντασσεται στις
-    επόμενες κατηγορίες (με bold είναι η κατηγορία που χρησιμοποιεί το
-    WikipediaBase για να αποφασίσει πως το άρθρο αναφέρεται σε
-    άνθρωπο).
-
-    - Leonardo DiCaprio
-    - 1974 births
-    - *Living people*
-    - 20th-century American male actors
-    - 21st-century American male actors
-    - American environmentalists
-    - American film producers
-    - American male child actors
-    - American male film actors
-    - American male soap opera actors
-    - American male television actors
-    - American people of German descent
-    - American people of Italian descent
-    - American people of Russian descent
-    - American philanthropists
-    - Best Actor AACTA Award winners
-    - Best Actor Academy Award winners
-    - Best Drama Actor Golden Globe (film) winners
-    - Best Musical or Comedy Actor Golden Globe (film) winners
-    - California Democrats
-    - Film producers from California
-    - Formula E team owners
-    - Male actors from Hollywood, California
-    - Male actors from Palm Springs, California
-    - Male actors of Italian descent
-    - People from Echo Park, Los Angeles
-    - Silver Bear for Best Actor winners
-
-    Οι κατηγορίες αυτές μοιάζουν ως εξής στο άρθρο
-
-    #+CAPTION: The rendered list of categores for Leonardo DiCaprio
-    #+NAME:   fig:dicaprio-categories
-    #+attr_latex: :placement [H] :width \textwidth
-    [[./dicaprio_categories.png]]
 
 
 * WikipediaMirror
@@ -2016,7 +1663,8 @@
    Για τους σκοπούς μας έχει ενδιαφέρον μονό ο μετασχηματισμός από XML
    σε MySQL, ωστόσο συναντήθηκαν σημαντικές δυσκολίες σε αυτή τη
    διαδικασία. Λεπτομέρειες για το ποιές ήταν και πως αντιμετοπίστηκαν
-   δείτε την περιγραφή του xerces bug στο παράρτημα.
+   δείτε την περιγραφή του xerces bug στο παράρτημα /"To bug στη
+   βιβλιοθήκη xerces"/.
 
 ** Εργαλεία
 
@@ -2024,7 +1672,8 @@
    του χειρισμού και της παρακολούθησης της διαδικασία του φορτώματος
    των dumps στη βάση δεδομένων. Παρουσιάζονται με λεπτομέρεια
    παρακάτω. Εφ όσον ο πηγαίος κώδικάς τους είναι συνοπτικός
-   παρατίθεται ολόκληρος στο παράρτημα
+   παρατίθεται ολόκληρος στο παράρτημα /"Πηγαίοι κώδικες
+   wikipedia-mirror helpers"/
 
 *** utf8thread.c
 
@@ -2188,7 +1837,7 @@
    τρέχει όσο το δυνατόν λιγοτερες διεργασίες, αποφεύγοντας να
    ξαναδημιουργήσει αρχεία που χρειάζεται αλλα ήδη
    υπάρχουν. Λεπτομέρειες για τη λειτουργία των makefiles θα βρείτε
-   στο παράρτημα.
+   στο παράρτημα /"Λεπτομερώς τα Makefiles"/.
 
    Χρησιμοποιύμε τα makefiles για να μπορούμε να συνεχίζουμε μια
    διαδικασία που σταματήσαμε ή απέτυχε οσο πιο κοντα γίνεται στο
@@ -2231,19 +1880,19 @@
    παρουσιάζονται παρακάτω.
 
    - Ρύθμιση του
-     =innodb_buffer_pool_size={{{ref(innodb_buffer_pool_size)}}}. Ενώ
+     =innodb_buffer_pool_size= {{{ref(innodb_buffer_pool_size)}}}. Ενώ
      η διαθέσιμη μνήμη του ashmore είναι αρκετά μεγάλη, αυξάνοντας το
      buffer pool μέχρι και κάποια GB δεν είχε σοβαρό αντίκτυπο στην
      επίδοση.
-   - Αλλάζοντας το =innodb_flush_method={{{innodb_flush_method}}} σε
-     =O_DSYNC= για να αποφυγυμε κλήσεις στην
-     =fsync={{{ref(fsync}}}. Εν ολίγοις το πρόβλημα με την =fsync=
-     είναι ότι ψάχνει σειριακά τις mapped σελίδες ενός αρχείου για
-     dirty pages με αποτέλεσμα να γίνεται αργό για μεγάλα αρχεία.
-   - Ρυθμίζοντας το
-     =innodb_io_capacity={{{ref(innodb_io_capacity)}}}. Εν τέλη η
-     τιμή της μεταβλητής ήταν υψηλότερη από το bandwidth του σκληρού
-     δίσκου
+   - Αλλάζοντας το =innodb_flush_method=
+     {{{ref(innodb_flush_method)}}} σε =O_DSYNC= για να αποφυγυμε
+     κλήσεις στην =fsync= {{{ref(fsync)}}}. Εν ολίγοις το πρόβλημα με
+     την =fsync= είναι ότι ψάχνει σειριακά τις mapped σελίδες ενός
+     αρχείου για dirty pages με αποτέλεσμα να γίνεται αργό για μεγάλα
+     αρχεία.
+   - Ρυθμίζοντας το =innodb_io_capacity=
+     {{{ref(innodb_io_capacity)}}}. Εν τέλη η τιμή της μεταβλητής ήταν
+     υψηλότερη από το bandwidth του σκληρού δίσκου
 
    Η μόνη βελτιστοποίηση που είχε αισθητό αποτέλεσμα ήταν η αλλαγή
    του MySQL dump ώστε να θέτει
@@ -2256,1276 +1905,6 @@
    μνήμη πριν επικοινωνήσει με το δίσκο και επίσης μείωσε τη συνολική
    δουλειά εμπιστευόμενη ότι οι τιμές των κελιών που αναφέρονταν σε
    άλλους πίνακες όντως έδειχναν κάπου.
-
-** Παραρτήματα
-*** To bug στη βιβλιοθήκη xerces
-
-    Πιθανότατα η μεγαλύτερη δυσκολία κατά τη δημιουργία του
-    wikipedia-mirror ήταν η αντιμετώπιση ενός bug στο =mwdumper= --- το
-    εργαλείο για τη μετατροπή των XML dumps σε SQL dumps --- το οποίο
-    κάνει το εργαλείο να αποτυγχάνει σε τυχαία άρθρα. Εφ όσον δεν
-    μπορέσαμε να βρούμε τον κριβή λόγο που συμβαίνει αυτό το bug, το
-    παρακάμπτουμε διαγράφοντας τα άρθρα που προκαλούν το πρόβλημα, και
-    εφ όσον είναι ένα μεγάλο εμπόδιο σε μια κατά τα άλλα θεωρητικά
-    πεπατημένη διαδικασία περιγράφουμε τη διαδικασία μας λεπτομερώς.
-
-    Ιδού λοιπόν τι ακριβώς συμβαίνει: ενώ τρέχει το =make
-    sql-dump-parts= εγείρεται το παρακάτω exception:
-
-    #+BEGIN_SRC sh
-      ...
-
-      376,000 pages (14,460.426/sec), 376,000 revs (14,460.426/sec)
-      377,000 pages (14,458.848/sec), 377,000 revs (14,458.848/sec)
-      Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 2048
-              at org.apache.xerces.impl.io.UTF8Reader.read(Unknown Source)
-              at org.apache.xerces.impl.XMLEntityScanner.load(Unknown Source)
-              at org.apache.xerces.impl.XMLEntityScanner.scanContent(Unknown Source)
-              at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanContent(Unknown Source)
-              at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch(Unknown Source)
-              at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
-              at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
-              at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
-              at org.apache.xerces.parsers.XMLParser.parse(Unknown Source)
-              at org.apache.xerces.parsers.AbstractSAXParser.parse(Unknown Source)
-              at org.apache.xerces.jaxp.SAXParserImpl$JAXPSAXParser.parse(Unknown Source)
-              at javax.xml.parsers.SAXParser.parse(SAXParser.java:392)
-              at javax.xml.parsers.SAXParser.parse(SAXParser.java:195)
-              at org.mediawiki.importer.XmlDumpReader.readDump(XmlDumpReader.java:88)
-              at org.mediawiki.dumper.Dumper.main(Dumper.java:142)
-      make: *** [/scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql] Error 1
-    #+END_SRC
-
-    Διερευνούμε το πρόβλημα τρέχοντας =make --just-print
-    sql-dump-parts= με σκοπό να βρούμε επακριβώς την αλληλουχία εντολών
-    που προκάλεσαν το πρόβλημα και ανακαλύπτουμε πως η εντολή που
-    αποτυγχάνει είναι:
-
-
-    #+BEGIN_SRC sh
-      $ java -jar /scratch/cperivol/wikipedia-mirror/tools/mwdumper.jar   --format=sql:1.5 /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml > /root/path/wikipedia-parts//enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql
-    #+END_SRC
-
-    Ευτυχώς αυτή η εντολή δεν τρέχει για μεγάλο διάστημα έτσι μπορούμε
-    εύκολα να πειραματιστούμε. Εδώ είναι το =time= output:
-
-    #+BEGIN_SRC sh
-      26.65s user 1.73s system 78% cpu 35.949 total
-    #+END_SRC
-
-    Το λάθος φαίνεται να συμβαίνει κατά την διάρκεια του διαβάσματος του
-    XML dump συνεπώς δεν είναι ειδικό για το SQL output. Αυτό θα μπορούσε
-    να είναι χρήσιμο για να διαπιστώσουμε ποιο άρθρο προκαλεί το λάθος,
-    αποσύροντάς το και ελπίζοντας να λυθεί το πρόβλημα. Για να το
-    εντοπίσουμε κατ αρχάς προσπαθήσαμε να κάνουμε export σε XML:
-
-
-    #+BEGIN_SRC sh
-      $ java -jar /scratch/cperivol/wikipedia-mirror/tools/mwdumper.jar   --format=xml /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml > /tmp/just-a-copy.xml
-    #+END_SRC
-
-    Όπως ήταν αναμενόμενο, το ίδιο λάθος εμφανίστηκε. Στη συνέχεια
-    κοιτάμε τα τελευταία δύο άρθρα που έγιναν export. Θέλουμε να
-    μπορούμε να αυτοματοποιήσουμε τη διαδικασία συνεπώς το κάνουμε
-    χρησιμοποιόντας shell commands και όχι με το χέρι: Ξεκινάμε
-    τυπώνοντας με αντίστροφη σειρά το xml αρχείο που δημιουργήθηκε,
-    βρίσκοντας τις τελευταίες δύο εμφανίσεις του =<title>=
-    χρησιμοποιόντας το εργαλείο =grep= και αναστρέφοντας ξανά τις
-    προκύπτουσες γραμμές για να τυπώσουμε με την αρχική σειρά.
-    Σημειώνουμε ότι το εργαλείο =tac= είναι μέρος των
-    coreutils{{{ref(coreutils)}}} άλλα όχι του BSD
-    toybox{{{ref(bsd_toybox)}}}. Κατά συνέπεια θα υπάρχει σε όλες τις
-    διανομές GNU linux προεγκατεστημένο άλλα όχι και σε mac os x και
-    BSD.  Δουλεύει όπως cat, μόνο πoυ εμφανίζει τις γραμμές με
-    αντίστροφη σειρά):
-
-    #+BEGIN_SRC sh
-      $ tac /tmp/just-a-copy.xml | grep "<title>" -m 2 | tac
-            <title>The roaring 20s</title>
-            <title>Cranopsis bocourti</title> # <- This is the last one
-    #+END_SRC
-
-    Αυτή η λειτουργία τελειώνει γρήγορα παρά το ότι το
-    =/tmp/just-a-copy.xml= είναι αρκετά μεγάλο διότι το εργαλείο =tac=
-    ψάχνει πρώτα το τέλος του αρχείου και διαβάζει προς τα πίσω μέχρι
-    το =grep= να βρει τα 2 περιστατικά που ψάχνει για =<title>= και
-    κλείνει. Στο filesystem =ext3=, και τα παρόμοια filesystems, κατά
-    την διαδικασία αυτή δεν διασχίζεται ολόκληρο το αρχείο. Πράγματι,
-    από τον κώδικα =tac= βλέπουμε ότι γίνεται χρήση της =lseek= που
-    αναζητεί το τέλος του αρχείου χωρίς να το προσπελάσει ολόκληρο και
-    στη συνέχεια διαβάζει αντίστροφα:
-
-    #+BEGIN_SRC c
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
-          error (0, errno, _("%s: seek failed"), quotef (file));
-      /* Shift the pending record data right to make room for the new.
-         The source and destination regions probably overlap.  */
-      memmove (G_buffer + read_size, G_buffer, saved_record_size);
-      past_end = G_buffer + read_size + saved_record_size;
-      /* For non-regexp searches, avoid unnecessary scanning. */
-      if (sentinel_length)
-          match_start = G_buffer + read_size;
-      else
-          match_start = past_end;
-
-      if (safe_read (input_fd, G_buffer, read_size) != read_size)
-      {
-          error (0, errno, _("%s: read error"), quotef (file));
-          return false;
-      }
-    #+END_SRC
-
-    Ας σώσουμε την διαδρομή από το αρχικό xml αρχείο σε μια μεταβλητή
-    γιατί θα το χρησιμοποιήσουμε χρησιμοποιούμε πολύ. Έτσι από δω και
-    πέρα το =$ORIGINAL_XML= θα έχει διαδρομή από το αρχικό xml.
-
-    #+BEGIN_SRC sh
-      $ export ORIGINAL_XML=/scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml
-    #+END_SRC
-
-    Πρώτα ας δούμε αν κάτι περίεργο συμβαίνει με το xml αρχείο
-
-    #+BEGIN_SRC sh
-      $ grep "<title>Cranopsis bocourti</title>" -A 200 -B 100 $ORIGINAL_XML | less
-    #+END_SRC
-
-    Τίποτα περίεργο δεν βρέθηκε, έτσι δεν μπορούμε πραγματικά να
-    διορθώσουμε το πρόβλημα επιτόπου. Θα προσπαθήσουμε να αποσύρουμε
-    ολόκληρο το άρθρο και ελπίζουμε ότι θα δουλέψει (spoiler alert:
-    δουλεύει). Δεν μπρούμε όμως να κάνουμε κανονικό parsing του xml
-    format μιας που το μέσο μέγεθος του αρχείου που αντιμετωπίζουμε
-    είναι της τάξης των δεκάδες GB. Θα ήταν καλύτερα να βρούμε έναν πιο
-    γρήγορο και πιο low level τρόπο να ανασύρουμε το αρχείο. Θα
-    χρησιμοποιήσουμε λοιπόν καθαρά byte και string operations.
-
-    Θα προσπαθήσουμε αρχικά να επιθεωρήσουμε τους parents του τίτλου
-    από το προβληματικό άρθρο.  Ευτυχώς το xml που δημιουργήθηκε είναι
-    indented, έτσι μπορούμε να βρούμε τους parents που βασιζόμενοι σε
-    αυτό. Αριθμήσαμε 6 spaces από indentation στη γραμμή που ο mwdumper
-    απέτυχε, έτσι θα ψάξουμε προς τα πίσω από εκεί για τις γραμμές στις
-    οποίες το indentation μειώνεται. Οι γραμμές αυτές θα
-    αντιπροσωπεύουν τους προγόνους του άρθρου μέσα στην ιεραρχία του
-    XML:
-
-    #+BEGIN_SRC sh
-      $ for i in {0..6}; do \
-          echo "Level $i:"; \
-          tac /tmp/just-a-copy.xml | grep "^ \{$i\}<[^/]" -m 1 -n | tac; \
-      done
-
-      Level 0:
-      17564960:<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd" version="0.3" xml:lang="en">
-      Level 1:
-      Level 2:
-      38:  <page>
-      Level 3:
-      Level 4:
-      35:    <revision>
-      Level 5:
-      Level 6:
-      26:      <text xml:space="preserve">&lt;!-- This article was auto-generated by [[User:Polbot]]. --&gt;
-    #+END_SRC
-
-    Φαίνεται ότι η δομή του συγκεκριμένου xml έχει ως εξής: κάθε =page=
-    βρίσκεται σε σε ένα domain που ονομάζεται =mediawiki=. Θα
-    μπορούσαμε να δούμε αυτό επίσης και από την java source αλλά αν και
-    πιο ακριβό από άποψη υπολογιστικών πόρων είναι πιο γρήγορο από το
-    να προσπαθήσουμε να διαβάσουμε τη java του mwdumper.
-
-    Ο πιο εύκολος τρόπος να αφαιρέσουμε αυτό το άρθρο θα ήταν το
-    εργαλείο =awk=. Αλλά είναι πολύ αργό για τους σκοπούς μας και
-    θέλουμε να βελτιστοποιήσουμε και να αυτοματοποιήσουμε την όλη
-    διαδικασία. Πρώτα ας προσπαθήσουμε απλώς να συγκρίνουμε το orginal
-    xml και το xml που δημιουργήσαμε byte προς byte μιας που αυτό είναι
-    πολύ γρήγορη διεργασία, με την ελπίδα πως το άρθρο υπό συζήτηση θα
-    είναι η μόνη διαφορά και έτσι θα μπορούμε πανεύκολα να βρούμε το
-    σημείο οπού θα αρχίσουμε διαγράφουμε:
-
-    #+BEGIN_SRC sh
-      $ cmp /tmp/just-a-copy.xml $ORIGINAL_XML
-      /tmp/just-a-copy.xml /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml differ: byte 2, line 1
-    #+END_SRC
-
-    Η πρώτη διαφορά είναι στο 2ο byte, συνεπώς σίγουρα δεν πρόκειται
-    περί του άρθρου υπό συζήτηση.
-
-    #+BEGIN_SRC sh
-      $ head $ORIGINAL_XML
-      <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.8/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.8/ http://www.mediawiki.org/xml/export-0.8.xsd" version="0.8" xml:lang="en">
-        <siteinfo>
-          <sitename>Wikipedia</sitename>
-          <base>http://en.wikipedia.org/wiki/Main_Page</base>
-          <generator>MediaWiki 1.23wmf4</generator>
-          <case>first-letter</case>
-          <namespaces>
-            <namespace key="-2" case="first-letter">Media</namespace>
-            <namespace key="-1" case="first-letter">Special</namespace>
-            <namespace key="0" case="first-letter" />
-
-      $ head /tmp/just-a-copy.xml
-      <?xml version="1.0" encoding="utf-8" ?>
-      <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd" version="0.3" xml:lang="en">
-        <siteinfo>
-          <sitename>Wikipedia</sitename>
-          <base>http://en.wikipedia.org/wiki/Main_Page</base>
-          <generator>MediaWiki 1.23wmf4</generator>
-          <case>first-letter</case>
-          <namespaces>
-            <namespace key="-2">Media</namespace>
-    #+END_SRC
-
-    Τα γνωρίσματα των xml tags είναι αρκετά διαφορετικά. Ελπίζουμε
-    τουλάχιστον τα line numbers να συμπίπτουν ώστε αν δε μπορούμε να
-    πάμε κατ ευθείαν στο byte που μας ενδιαφέρει για να αρχίσουμε να
-    διαγράφουμε, τουλάχιστον να μπορούμε γρήγορα να μετρήσουμε τα
-    newlinεs για να βρούμε το άρθρο. Μετρήσαμε τον αριθμό των γραμμών
-    στο =/tmp/just-a-copy.xml= και ελπίζουμε ότι η αντίστοιχη γραμμή
-    στο =$ORIGINAL_XML= θα αναφέρεται στο προβληματικό άρθρο. Εάν αυτό
-    συμβεί μπορούμε να αγνοήσουμε τις περιβάλλουσες xml πληροφορίες και
-    να σβήσουμε το προβληματικό άρθρο με βάση αυτήν την πληροφορία. Θα
-    χρησιμοποιήσουμε =wc= το οποίο είναι αρκετά γρήγορο.
-
-    #+BEGIN_SRC sh
-      $ wc -l /tmp/just-a-copy.xml
-      17564961 /tmp/just-a-copy.xml
-    #+END_SRC
-
-    Και η αντίστοιχη γραμμή στο =$ORIGINAL_XML= είναι:
-
-    #+BEGIN_SRC sh
-      $ sed "17564960q;d" $ORIGINAL_XML
-      [[Willie Jones (American football)|Willie Jones]],
-    #+END_SRC
-
-    Ποδόσφαιρο (football)... καμιά σχέση με τα βατράχια
-    (frogs). Φαίνεται ότι δεν μπορούμε να αποφύγουμε κάποιο επίπεδο του
-    parsing.
-
-**** Parsing
-
-     Θα κάνουμε τις ακόλουθες θεωρήσεις για να αποφύγουμε το σε βάθος
-     parsing του εγγράφου:
-
-     - Το XML στο αρχικό αρχείο είναι valid.
-     - Κάθε XML μέσα στο άρθρο είναι HTML escaped
-
-     Κατ αρχάς δουλεύοντας με γραμμές είναι αργή διαδικασία γιατί το
-     user space code χρειάζεται να ψάχνει newlines. Δουλεύοντας με
-     bytes αναθέτουμε εργασία στο kernel, επιταχύνοντας την εργασία
-     σημαντικά. Έτσι το =dd= είναι το σωστό εργαλείο για την συγκεκριμένη
-     δουλειά.  Αλλά πρώτα θα βρούμε σε ποιο byte είναι το άρθρο που μας
-     ενδιαφέρει
-
-     #+BEGIN_SRC sh
-       $ grep -b "<title>Cranopsis bocourti</title>" -m 1 $ORIGINAL_XML
-       1197420547:    <title>Cranopsis bocourti</title>
-     #+END_SRC
-
-     Αυτό ίσως πάρει κάποιο χρόνο αλλά δυστυχώς είναι η μόνη μας
-     επιλογή.  Η στρατηγική μας είναι να φτιάξουμε 2 αρχεία: το
-     =/tmp/original_tail.xml= το οποίο να περιέχει όλα τα δεδομένα που
-     υπάρχουν *μετά* τη σελίδα που θέλουμε να βγάλουμε και το
-     =/tmp/original_head.xml= το οποίο περιέχει όλα τα δεδομένα *πριν*
-     τη σελίδα που θέλουμε να βγάλουμε.
-
-     Τώρα θα χρησιμοποιήσουμε =sed= να ψάξει για =</page>= μετά το byte
-     1197420547 το οποίο θα είναι το σημείο \(x\). Βάζουμε το μέρος του
-     =$ORIGINAL_XML= μετά στο σημείο \(x\) μέσα στο αρχείο
-     =/tmp/original_tail.xml=:
-
-     #+BEGIN_SRC sh
-       $ dd if=$ORIGINAL_XML skip=1197420547 ibs=1 | sed '0,/<\/page>/d' > /tmp/original_tail.xml
-     #+END_SRC
-
-     Θαυμάσια, αυτό δούλεψε! Το =dd= δεν αντιγράφει αντίστροφα έτσι θα
-     χρειαστεί να κάνουμε κάτι πιο περίπλοκο για να κατασκευάσουμε
-     =/tmp/original_head.xml=. Ας υποθέσουμε ότι η θέση που βρήκαμε τον
-     τίτλο της σελίδας που θέλουμε να αφαιρέσουμε είναι \(\alpha =
-     1197420547\) και το σημείο που η σελίδα αρχίζει είναι στο σημείο
-     \(\beta\). Είναι ασφαλές να υποθέσουμε ότι \( \beta > \alpha -
-     1000 \) (μπορούσαμε να αλλάξουμε τη σταθερά 1000 εάν αυτή η
-     υπόθεση ήταν λάθος, αλλά τελικά ήταν σωστή). Με αυτό τον τρόπο
-     χρειάζεται μόνο να ψάξουμε στο 1Kb για τη συμβολοσειρά =<page>=.
-
-     Αυτό θα ήταν ισοδύναμο με το εξής: αντί να κάνουμε copy τα bytes
-     στο εύρος \([0, \beta)\), να συνδέσουμε δυο διαστήματα \(
-     [0,\alpha - 1000] \cup (\alpha - 1000, \beta) \) δημιουργώντας ένα
-     subshell το οποίο θα έχει πρώτο output το πρώτο εύρος και στη
-     συνέχεια output \( (\alpha - 1000, \alpha) \) σταματόντας όταν
-     βρεί =<page>=, όπως φαίνεται στον παρακάτω κώδικα. Το αποτέλεσμα
-     της διεργασίας αυτής είναι το αρχείο =/tmp/original_head.xml=:
-
-     #+BEGIN_SRC sh
-       $ (dd count=$((1197420547-1000)) ibs=1 if=$ORIGINAL_XML; \
-          dd if=$ORIGINAL_XML count=1000 skip=$((1197420547-1000)) ibs=1 \
-              | tac | sed '/<page>/,$d' | tac) > /tmp/original_head.xml
-     #+END_SRC
-
-     τελικά ενώνουμε το =/tmp/original_head.xml= με το
-     =/tmp/original_tail.xml= στο αρχείο που δουλεύει κανονικά μ το
-     mwdumper.
-
-     # There is some semi-interesting stuff going on when one parses
-     # just the article. Maybe include that later...
-     # https://github.com/infolab-csail/wikipedia-mirror/issues/3#issuecomment-40738778
-
-
-**** Η τελική λύση
-
-     Όλα τα παραπάνω χρησιμοποιήθηκαν για να συντεθεί ένα script που
-     υπάρχει στο =data/xml-parse.sh= το οποίο χρησιμοποιήθηκε από το
-     makefiles για να απομακρύνει όλα τα προβληματικά άρθρα. Εάν το
-     =mwdumper= αποτύχει, ταυτοποιούμε το άρθρο που προκάλεσε το
-     πρόβλημα και το απομακρύνουμε χρησιμοποιώντας =xml-parse.sh=. Στη
-     συνέχεια ξανατρέχουμε το mwdumper.  Το επαναλαμβάνουμε αυτό μέχρι
-     το mwdumper να πετύχει. Συνολικά τα προβληματικά άρθρα είναι
-     περίπου 10-15, και είναι διαφορετικά ανάλογα με το dump που
-     χρησιμοποιείται.
-
-**** Καλύπτοντας με κενά
-
-     Από την παραπάνω έκθεση των τρόπων που αντιμετωπίσουμε το θέμα του
-     άρθρου που σπάει παραλείψαμε κάτι προφανές. Μια θεματικά
-     διαφορετική προσέγγιση: το να καλύψουμε το άρθρο που προκαλεί το
-     πρόβλημα με κενά. Μόλις εντοπίσουμε το εύρος στο οποίο η σελίδα
-     βρίσκεται μπορούμε να κάνουμε =mmap= επακριβώς στο τμήμα του
-     =$ORIGINAL_XML= και στη συνέχεια να κάνουμε =memset= καλύποντας το
-     με χαρακτήρες κενών.  Η το πρόγραμμα ζει στο
-     =data/page_remover.c=, Παρακάτω παρουσιάζουμε την κλήση στο
-     =mmap=:
-
-     #+BEGIN_SRC c
-       ctx->off = off-pa_off;
-       ctx->fd = open(fname, O_RDWR, 0x0666);
-       if (ctx->fd == -1) {
-           perror("open");
-           return NULL;
-       }
-
-       ctx->size = len;
-       ctx->data = mmap(0, len+ctx->off, PROT_READ | PROT_WRITE,
-      	          MAP_SHARED, ctx->fd, pa_off);
-       if (ctx->data == MAP_FAILED) {
-           perror ("mmap");
-           return NULL;
-       }
-     #+END_SRC
-
-     και το =memset=
-
-     #+BEGIN_SRC c
-       /* You MIGHT want to thread this but I dont think it will make
-        * much more difference than memset. */
-       memset(ctx->data + ctx->off, ' ', ctx->size);
-     #+END_SRC
-
-     Περιέργως αυτό δεν έλυσε το πρόβλημα του mwdumper το οποίο δείχνει
-     ότι μάλλον πρόκειται για memory leak από τη μεριά του =xerces= αλλά
-     αυτό ξεπερνά τους στόχους της παρούσας εργασίας.
-
-
-
-**** Η εντολή sed
-
-     Στο κεφάλαιο για το xerces bug αναφέραμε την χρήση της εντολής sed
-     και ίσως να είναι χρήσιμο να το αναπτύξουμε περεταίρω. =sed= είναι
-     ένα unix εργαλείο πού βρίσκεται στο πακέτο GNU coreutils το οποίο
-     σύμφωνα με το man page είναι ένας stream editor που φιλτράρει και
-     μεταμορφώνει κείμενο. Η βασική λειτουργία είναι ότι το "pattern
-     space", ή το input stream το οποίο είναι ένα unix stream --- που
-     έρχεται από το αρχείο, ένα pipe ή απλά stdin --- περνά μέσα από
-     ένα προγραμματίσιμο pipeline. Εκτυπώνεται είτε αυτούσιο το
-     modified pattern space είτε --- με τη χρήση του =-n= flag ---
-     επιλεγμένα τμήματα αυτού.  Ας δούμε τη χρήση που κάναμε παραπάνω
-     για το sed.
-
-     Αρχικά χρησιμοποιήσαμε sed για να εκτυπώσουμε μια μεμονωμένη line
-     σε ένα αρχείο:
-
-     #+BEGIN_SRC sh
-       $ sed "17564960q;d"
-     #+END_SRC
-
-
-     Αυτό το =sed= πρόγραμμα διαχωρίζει τις εντολές με semicolon
-     (=;=). Το =sed= απαριθμεί τις γραμμές του input stream και τρέχει
-     καθένα από τις εντολές διαχωρισμένες με ";" σε σειρά μέχρι μια να
-     επιτύχει.
-
-     Οι εντολές εδώ είναι =17564960q= και =d=. Η =17564960q= θα
-     σταματήσει το sed όταν φτάσει η παρούσα γραμμή είναι η γραμμή
-     νούμερο 17564960. Η =d= θα απορρίπτει την παρούσα γραμμή κάθε
-     φορά. Έτσι το sed απορρίπτει γραμμές μέχρι να συναντήσει τη γραμμή
-     17564960 την οποία εκτυπώνει και τελειώνει.
-
-     Χρησιμοποιούμε μια εντολή sed ως μέρος μιας σειράς εντολών shell
-     piped όλες μαζί με στόχο να εκτυπωθούν όλες ο γραμμές ενός stream
-     μετά από ένα συγκεκριμένο μοτίβο (στην περίπτωσή μας =</page>=).
-
-     #+BEGIN_SRC sh
-       $ sed '0,/<\/page>/d'
-     #+END_SRC
-
-
-     αυτή τη φορά είχαμε μόνο μια εντολή sed, =d=. To =sed= απαριθμεί
-     στις γραμμές στο stream, απορρίπτοντας γραμμές στο εύρος των
-     γραμμών από 0 μέχρι τη γραμμή που ταυτίζεται με το =<\/page>=,
-     ουσιαστικά τυπώνοντας μόνο γραμμές μετά το =</page>=.
-
-     Η τελική μας χρήση του =sed= είναι η αντίστροφη της προηγούμενης,
-
-     #+BEGIN_SRC sh
-       $ sed '/<page>/,$d'
-     #+END_SRC
-
-     Εδώ το sed απαριθμεί ξανά σε όλες τις lines τουstream. Αυτή τη
-     φορά απορρίπτοντας γραμμές ανάμεσα στην πρώτη και αυτήν που
-     ταιριάζει το =<page>= μέχρι την τελική γραμμή, σημειωμένη με =$=.
-*** Λεπτομερώς τα Makefiles
-
-    Ας αρχίσουμε με ένα παράδειγμα, σώζουμε το ακόλουθο ως Makefile σε
-    ένα project που περιέχει τα αρχεία =foo.c=, =foo.h=, =bar.c= και
-    =bar.h=:
-
-    αυτό σημαίνει ότι για να χτίσουμε το εκτελέσιμο =foobar=
-    χρειαζόμαστε =foo.o= και =bar.o=. Και για να χτίσουμε =foo.o= και
-    =bar.o= χρειαζόμαστε =foo.c= και =foo.h=, και =bar.c= και =bar.h=
-    αντίστοιχα.
-
-    Επίσης παρέχουμε εντολές για να χτισθεί το foo.o, bar.o και
-    foobar, οι οποίες είναι
-
-    - =gcc foo.c -c -o foo.o=
-    - =gcc bar.c -c -o bar.o=
-    - και =gcc foo.o bar.o -o foobar=
-
-    αντίστοιχα. παρατηρούμε ότι δεν υπάρχουν κανόνες για τα =.c= και
-    =.h= αρχεία. Αυτό συμβαίνει γιατί το =make= πρέπει να αποτυγχάνει
-    εάν δεν είναι παρόντα. Έτσι εάν τρέχουμε το =make foobar=, το
-    =make= θα ελέγχει για την ύπαρξη του =foobar= και την ημερομηνία
-    της τροποποίησης. Εάν το =foobar= λείπει ή η ημερομηνία
-    τροποποίησης είναι προηγούμενη από τις εξαρτήσεις του (δηλαδή
-    =foo.o= και =bar.o=) αυτό θα ξαναχτιστεί. Εάν κάποια από
-    εξαρτήσεις απουσιάζει η ίδια λογική ισχύει και για αυτή. Με αυτό
-    τον τρόπο εάν χτίσουμε μια φορά το =foobar=, και μετά
-    τροποποιήσουμε το =bar.c= και ξανατρέξουμε =make foobar=, το =make= θα
-    θεωρήσει αναδρομικά ότι:
-
-    - το =bar.o= είναι out of date όσον αφορά την εξάρτηση =bar.c=
-    - Όταν =bar.o= έχει πλέον μια πιο πρόσφατη ημερομηνία μετατροπής
-      από το =foobar= και για αυτό το τελευταίο είναι out of date όσον
-      αφορά την dependencyτου =bar.o=, έτσι χρειάζεται να ξανχτιστεί.
-
-    με αυτόν τον τρόπο το =make= πετυχαίνει μια σχεδόν βέλτιστη
-    στρατηγική για την επίτευξη κάθε φορά του ελάχιστου ποσοστού των
-    απαιτούμενων στόχων. Τώρα που ξεκαθαρίσαμε την βασική λογική των
-    =make= ας κάνουμε πιο σαφή μερικά από τα βασικά χαρακτηριστικά
-    τους που κάνουν τη ζωή μας πιο εύκολη.
-
-**** Phony targets
-
-     Μερικές εργασίες δεν είναι αρχεία και χρειάζονται να τρέχουν κάθε
-     φορά που το make τις συμπεριλαμβάνει στο dependency tree. Γι αυτά
-     έχουμε ένα ειδικό keyword .PHONY:.
-
-     Παρακάτω είναι ένα παράδειγμα.
-
-     # code
-     #+BEGIN_SRC makefile
-       .PHONY:
-       clean:
-           rm -rf *
-     #+END_SRC
-
-     Αυτό λέει στο =make= ότι κανένα αρχείο ονομαζόμενο clean δε θα
-     δημιουργηθεί τρέχοντας =rm -rf *=, και επίσης ακόμα και εάν
-     υπάρχει ένα up-to-date ονομαζόμενο αρχείο ονομαζόμενο =clean=,
-     αυτό το target θα τρέχει ανεξάρτητα.
-
-     Αξίζει να σημειώσουμε ότι οι phony εξαρτήσεις πάντα θα θεωρούνται
-     out of date.
-
-     Για παράδειγμα:
-
-     #+BEGIN_SRC makefile
-       .PHONY:
-       say-hello:
-           echo "hello"
-
-       test.txt: say-hello
-           touch test.txt
-     #+END_SRC
-
-     Όταν το =touch test.txt= θα τρέχει κάθε φορά που τρέχουμε =make
-     test.txt= απλώς γιατί το =make= δεν μπορεί να γνωρίζει με
-     βεβαιότητα ότι το phony target =say-hello= δεν άλλαξε τίποτε
-     σημαντικό για το =test.txt=. Για αυτό το λόγο τα phony targets
-     χρησιμοποιούνται για user facing tasks.
-
-**** Variables
-
-     Τα makefiles μπορούν να έχουν μεταβλητές ορισμένες με ποικίλους
-     τρόπους. Μερικές περιπτώσεις που έχουν γίνει για να
-     χρησιμοποιηθούν στην wikiepedia-mirror παρουσιάζονται παρακάτω.
-
-***** Αναδρομικές μεταβλητές
-
-      #+BEGIN_SRC makefile
-        OBJCETS = foo.o bar.o
-
-        show:
-            echo $(OBJECTS)
-      #+END_SRC
-
-      Τρέχοντας =make show= θα εμφανίσει =foo.o bar.o= στην
-      κονσόλα. Όλες οι μεταβλητές αντικαθιστώνται με τις τιμές τους αν
-      βάλει κάνεις πρενθέσεις γύρω από το όνομά τους και προθέσει ένα
-      δολάριο (=$=). Οι μεταβλητέσ των makefiles δεν έχουν τύπους,
-      αναφορά σε μια μεταβλητή είναι ισοδύναμη με string substitution,
-      όπως είναι και στο shell scripting.
-
-      Οι μεταβλητές που ορίζονται με ένα απλό =\== είναι recursively
-      expanded. Αυτό σημαίνει ότι αφού το όνομα της μεταβλητής
-      αντικαθίσταται από την τιμή της μια αναδρομική διαδικασία
-      συνεχίζει να κάνει expand τις τιμές που προκύπτουν με την ίδια
-      τη μεταβλητή ακόμα στο local scope.
-
-      #+BEGIN_SRC makefile
-        library = foo
-
-        foo-libs = -lfoo
-        foo-includes = -I./include/foo
-
-        bar-libs = -lbar
-        bar-includes = -I./include/bar
-
-        libs = $($(library)-libs)
-        includes = $($(library)-includes)
-
-        waz:
-           gcc waz.c $(includes) $(libs)
-      #+END_SRC
-
-      τρέχοντας =make=
-
-      #+BEGIN_SRC makefile
-        gcc waz.c $(includes) $(libs)
-        gcc waz.c $($(library)-includes) $($(library)-libs)
-        gcc waz.c $(foo-includes) $(foo-libs)
-        gcc waz.c -I./include/foo -lfoo
-      #+END_SRC
-
-      Παρατηρήστε πως οι αναφορές στις μεταβλητές καθαυτές
-      δημιουργήθηκαν.
-
-      Μεταβλητές μπορούν επίσης να ορισθούν στην εντολή =make=
-
-      #+BEGIN_SRC sh
-        $ make --just-print library=bar
-        gcc waz.c -I./include/bar -lbar
-      #+END_SRC
-
-
-***** Simple variables
-
-      Μερικές φορές δεν είναι επιθυμητό για τις μεταβλητές να είναι
-      expanded επ αόριστον:
-
-      #+BEGIN_SRC makefile
-        kurma = the world $(support1)
-        animal1 = four elephants
-        animal2 = tortoise
-        support1 = supported by $(animal1) $(support2)
-        support2 := supported by a $(animal2) $(support2)
-
-        all:
-           echo $(kurma)
-      #+END_SRC
-
-      Εδώ πορσπαθουμε να δημιουργήσουμε ένα άπειρο μήνυμα.
-
-      #+BEGIN_SRC sh
-        $ make --just-print
-        Makefile:5: *** Recursive variable `support2' references itself (eventually).  Stop.
-      #+END_SRC
-
-      το σύστημα μεταβλητών δηλαδή είναι κατά κάποιον τρόπο
-      total{{{ref(total_function)}}}, με άλλα λογία η εύρεση της τιμής
-      μεταβλητών μπορεί να είναι αναδρομική άλλα πρέπει να
-      τερματίζει. Μπορούμε να αποφύγουμε αυτόν τον περιορισμό
-      ορίζοντας μεταβλητές με ~:=~:
-
-
-      #+BEGIN_SRC sh
-        make --just-print
-        echo the world supported by four elephants supported by a tortoise
-      #+END_SRC
-
-***** Automatic variables
-
-      Το Makefile επίσης ορίζει μερικές contextual μεταβλητές οι
-      οποίες είναι ορισμένες. Οι πιο σημαντικές automatic variables
-      που ορίζει το gnu make είναι οι ακόλουθες
-
-      - =$@=: Το όνομα του αρχείου του target. Εάν το target είναι ένα
-        archive member, τότε =$@= είναι το όνομα του archive
-        αρχείου. Στο pattern rule που έχει πολλαπλά targets, $@ είναι
-        το όνομα του οποιουδήποτε target που κάνει το rule’s recipe να
-        τρέχει.
-      - =$%=: Το όνομα τουtarget member, όταν το target είναι ένα
-        archive member. Για παράδειγμα, εάν το target είναι
-        =foo.a(bar.o)= τότε =$%= είναι =bar.o= και =$@= είναι
-        =foo.a=. =$%= είναι άδειο όταν το target δεν είναι ένα archive
-        member.
-      - =$<=: Το όνομα του πρώτου prerequisite. Εάν το target πήρε το
-        recipe του από έναν implicit rule, αυτό θα είναι το πρώτο
-        prerequisite που προστέθηκε από το implicit rule.
-      - =$?=: Τα ονόματα από όλες τις εξαρτήσεις που είναι νεότερα από
-        το target, με κενά μεταξύ τους . Για τα prerequisites που
-        είναι archive members, μόνο named member
-        χρησιμοποιούνται(βλέπε Archives).
-      - =$^=: Τα ονόματα όλων των prerequisites, με κενά μεταξύ
-        τους. Για τα prerequisites τα οποία είναι archive members,
-        μόνο των named member χρησιμοποιείται. ένα
-        target έχει μόνο ένα prerequisite σε κάθε άλλο αρχείο από το
-        οποίο εξαρτάται, αναξαρτήτως από το πόσες φορές κάθε αρχείο
-        είναι καταχωρημένο ως ένα no matter how many times each file
-        prerequisite. Έτσι εάν τοποθετήσουμε στη λίστα ένα
-        prerequisite για περισσότερο από μια φορά για ένα target, η
-        value του =$ˆ= περιέχει μόνο ένα αντίγραφο του ονόματος.
-
-***** Συναρτήσεις
-
-      Οι συναρτήσεις είναι παρόμοιες με μεταβλητές ως προς το ότι και
-      αυτές γίνονται expand σε συμβολοσειρές. Η μόνη διαφορά είναι ότι
-      επιδέχονται παραμέτρους.
-
-      #+BEGIN_SRC makefile
-        greet = "Hello $1 (from $2)"
-        john-greets = $(call greet,$1,John)
-
-        .PHONY:
-        all:
-              @echo $(call john-greets,Chris)
-      #+END_SRC
-
-      Εδώ η έξοδος είναι
-
-      #+BEGIN_SRC sh
-        $ make
-        Hello Chris (from John)
-      #+END_SRC
-
-*** Πηγαίοι κωδικές
-
-**** page_remover.c
-
-     #+BEGIN_SRC c
-       /*
-        * Copyright 2014 Chris Perivolaropoulos <cperivol@csail.mit.edu>
-        *
-        * This program is free software: you can redistribute it and/or
-        * modify it under the terms of the GNU General Public License as
-        * published by the Free Software Foundation, either version 3 of the
-        * License, or (at your option) any later version.
-        *
-        * This program is distributed in the hope that it will be useful, but
-        * WITHOUT ANY WARRANTY; without even the implied warranty of
-        * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-        *
-        * See the GNU General Public License for more details.  You should
-        * have received a copy of the GNU General Public License along with
-        * this program.
-        *
-        * If not, see <http://www.gnu.org/licenses/>.
-        *
-        * This should fill a range in a file with spaces. This is an in-place
-        * operation so it should be pretty fast.
-        *
-        * Usage: page_remover PATH OFFSET LENGHT
-        */
-
-       #include <assert.h>
-       #include <fcntl.h>
-       #include <pthread.h>
-       #include <stdio.h>
-       #include <stdlib.h>
-       #include <string.h>
-       #include <sys/mman.h>
-       #include <sys/stat.h>
-       #include <sys/types.h>
-       #include <semaphore.h>
-       #include <unistd.h>
-       #include <unistd.h>
-
-       #define USAGE_INFO "page_remover PATH OFFSET LENGTH"
-       #define PRINT(ctx, args...) do { sem_wait(&ctx->stdio_mutex);	\
-  				      printf(args);			\
-  				      fflush(stdout);		\
-  				      sem_post(&ctx->stdio_mutex);	\
-  				      } while(0)
-
-       typedef struct context {
-           int fd;
-           size_t size;
-           off_t off;
-           sem_t stdio_mutex;
-           void* data;
-       } context_t;
-
-       context_t* context_init(char* fname, off_t off, size_t len)
-       {
-           context_t * ctx = (context_t*)malloc(sizeof(context_t));
-           off_t pa_off = off & ~(sysconf(_SC_PAGE_SIZE) - 1);
-
-           sem_init(&ctx->stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
-
-           PRINT(ctx, "Opening %s at %lu (len: %lu)\n", fname, off, len);
-
-           ctx->off = off-pa_off;
-           ctx->fd = open(fname, O_RDWR, 0x0666);
-           if (ctx->fd == -1) {
-  	     perror("open");
-  	     return NULL;
-           }
-
-           ctx->size = len;
-           ctx->data = mmap(0, len+ctx->off, PROT_READ | PROT_WRITE,
-  		          MAP_SHARED, ctx->fd, pa_off);
-           if (ctx->data == MAP_FAILED) {
-  	     perror ("mmap");
-  	     return NULL;
-           }
-
-           return ctx;
-       }
-
-       void context_destroy(context_t* ctx)
-       {
-           if (close (ctx->fd) == -1)
-  	     perror ("close");
-
-           if (munmap ((void*)ctx->data, ctx->size) == -1)
-  	     perror ("munmap");
-
-           sem_destroy(&ctx->stdio_mutex);
-           free(ctx);
-       }
-
-       int main(int argc, char *argv[])
-       {
-           if (argc != 4)
-  	     fprintf(stderr, USAGE_INFO);
-
-           context_t *ctx = context_init(argv[1], atoi(argv[2]), atoi(argv[3]));
-
-           /* You MIGHT want to thread this but I dont think it will make
-            ,* much more difference than memset. */
-           memset(ctx->data + ctx->off, ' ', ctx->size);
-
-           context_destroy(ctx);
-           return 0;
-       }
-
-     #+END_SRC
-
-**** utf8thread.c
-
-     #+BEGIN_SRC c
-       #include <assert.h>
-       #include <fcntl.h>
-       #include <pthread.h>
-       #include <stdio.h>
-       #include <stdlib.h>
-       #include <string.h>
-       #include <sys/mman.h>
-       #include <sys/stat.h>
-       #include <sys/types.h>
-       #include <semaphore.h>
-       #include <unistd.h>
-       #include <unistd.h>
-
-       sem_t stdio_mutex;
-
-       #define PRINT(args...) do {sem_wait(&stdio_mutex);	\
-  	     printf(args);					\
-  	     fflush(stdout);					\
-  	     sem_post(&stdio_mutex);				\
-           } while(0)
-
-       /* #define DEBUG(args...)		PRINT(args) */
-       #define DEBUG(...)
-
-       #define DEFAULT_CHAR ' '
-       #define WORKERS 8
-       #define MESSAGE_DENSITY 1000000000
-
-       typedef unsigned long long u64;
-
-       #define UTF_LC(l) ((0xff >> (8 - (l))) << (8 - (l)))
-       #define UTF_CHECK(l, c) (((UTF_LC(l) & (c)) == UTF_LC(l)) && (0 == ((c) & (1 << (7-(l))))))
-
-
-       #define UTF_LEN(x) (UTF_CHECK(6, x) ? 6 :	\
-  		         UTF_CHECK(5, x) ? 5 :	\
-  		         UTF_CHECK(4, x) ? 4 :	\
-  		         UTF_CHECK(3, x) ? 3 :	\
-  		         UTF_CHECK(2, x) ? 2 : -1)
-
-       struct crange {
-           u64 start, end;
-       };
-
-       /* Get return the next character after the last correct one. */
-       inline u64 valid_utf8(u64 c)
-       {
-           char i;
-           /* Ascii */
-           if ((*(char*)c & 0x80) == 0)
-  	     return c+1;
-
-           /*  */
-           for (i = UTF_LEN(*(char*)c)-1; i>0; i--) {
-  	     c++;
-  	     if (!UTF_CHECK(1, *(char*)c)) {
-  	         return (u64)NULL;
-  	     }
-           }
-
-           return i<0 ? 0 : c+1;
-       }
-
-
-       void* fix_range(void* _r)
-       {
-           struct crange* r = _r;
-           u64 tmp, id = r->start;
-           long long unsigned count = 0;
-
-           while ((u64)r->start < (u64)r->end) {
-  	     if (count++ % MESSAGE_DENSITY == 0)
-  	         printf ("[worker: 0x%016llx] Done with %lluK.\n", id, count % 1024);
-
-  	     if (!(tmp = valid_utf8(r->start))){
-  	         PRINT("Invalid char 0x%x (next: 0x%x)\n",
-  		       ,*(char*)r->start, *(char*)(r->start+1));
-  	         ,*((char*)r->start) = DEFAULT_CHAR;
-  	         (r->start)++;
-  	     } else {
-  	         r->start = tmp;
-  	     }
-           }
-
-           PRINT ("[worker: 0x%016llx] OUT\n", id);
-           return NULL;
-       }
-
-       void run(u64 p, u64 sz)
-       {
-           int n, i;
-           u64 wsize;
-           pthread_t workers[WORKERS];
-           struct crange rngs[WORKERS];
-
-           wsize = sz/WORKERS + 1;
-           printf("Base address: 0x%016llx, step size: 0x%016llx\n", p, wsize);
-
-           for (i=0; i<WORKERS; i++){
-  	     rngs[i].start = p + wsize*i;
-  	     rngs[i].end = p + wsize*i + wsize;
-
-  	     PRINT("Spawning worker %d on range [0x%016llx, 0x%016llx), %llu bytes...", i, rngs[i].start, rngs[i].end, wsize);
-  	     if ((n = pthread_create(workers+i, NULL, fix_range, (void*)(rngs+i)))) {
-  	         PRINT("FAIL\n");
-  	         perror("worker");
-  	         return;
-  	     }
-  	     PRINT("OK\n");
-           }
-
-           PRINT ("Wrapping up...\n");
-           for (i=0; i<WORKERS; i++) {
-  	     PRINT ("Joining worker %d...", i);
-  	     pthread_join(workers[i], NULL);
-  	     PRINT ("OK\n");
-  	     PRINT("Worker %d went through %llu bytes.\n",
-  	           i, (u64)rngs[i].end - (u64)rngs[i].start);
-           }
-       }
-
-
-       int main(int argc, char *argv[])
-       {
-           int fd;
-           long long int sz, p;
-           struct stat buf;
-
-           sem_init(&stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
-
-           fd = open(argv[1], O_RDWR, 0x0666);
-           if (fd == -1) {
-  	     perror("open");
-  	     return 1;
-           }
-
-           fstat(fd, &buf);
-           sz = buf.st_size;
-           printf("File size: 0x%016llx\n", sz);
-
-           p = (u64)mmap (0, buf.st_size, PROT_READ | PROT_WRITE , MAP_SHARED, fd, 0);
-           if (p == -1) {
-  	     perror ("mmap");
-  	     return 1;
-           }
-
-           run(p, buf.st_size);
-
-           if (close (fd) == -1) {
-  	     perror ("close");
-  	     return 1;
-           }
-
-
-           if (munmap ((void*)p, buf.st_size) == -1) {
-  	     perror ("munmap");
-  	     return 1;
-           }
-
-           sem_destroy(&stdio_mutex);
-
-           return 0;
-       }
-     #+END_SRC
-
-**** sql-clear.sh
-
-     #+BEGIN_SRC sh
-       #!/bin/bash
-       MUSER="$1"
-       MPASS="$2"
-       MDB="$3"
-       MYSQL=$4
-
-       # Detect paths
-       AWK=$(which awk)
-       GREP=$(which grep)
-
-       if [ $# -ne 4 ]
-       then
-  	     echo "Usage: $0 {MySQL-User-Name} {MySQL-User-Password} {MySQL-Database-Name} {MySQL executable to use}"
-  	     echo "Drops all tables from a MySQL"
-  	     exit 1
-       fi
-
-       TABLES=$($MYSQL -u $MUSER -p$MPASS $MDB -e 'show tables' | $AWK '{ print $1}' | $GREP -v '^Tables' )
-
-       for t in $TABLES
-       do
-  	     echo "Clearing $t table from $MDB database..."
-  	     $MYSQL -u $MUSER -p$MPASS $MDB -e "truncate table $t"
-       done
-     #+END_SRC
-
-**** webmonitor.py
-
-     #+BEGIN_SRC python
-       """
-       Just feed pairs of
-
-       <epoc date> <float value>
-
-       or even just
-
-       <float value>
-
-       One way to do that would be
-
-           $ <cmd> stdbuf -oL awk "{print \$1/$$max}" | python webmonitor.py
-
-       and I will plot them on port 8888. This will also pipe the input right
-       out to the output. Strange input will be ignored and piped this way,
-       but this needs to be done by awk aswell in the above example.
-       """
-
-       import sys
-       import json
-       import time
-
-       from threading import Thread
-       from collections import deque
-
-       import tornado.websocket as websocket
-       import tornado.ioloop
-       import tornado.web
-
-       HTML = """
-       <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-       <html>
-         <head>
-           <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-           <title>DrNinjaBatmans Websockets</title>
-
-           <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
-           <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
-
-           <script>
-       var chart; // global
-       var url = location.hostname + ':' + (parseInt(location.port));
-       var ws = new WebSocket('ws://' + url + '/websocket');
-       ws.onmessage = function(msg) {
-           add_point(msg.data);
-       };
-
-       // ws.onclose = function() { alert('Connection closed.'); };
-
-       var add_point = function(point) {
-           var series = chart.series[0],
-  	     shift = series.data.length > %d;
-           chart.series[0].addPoint(eval(point), true, shift);
-       };
-
-       $(document).ready(function() {
-           chart = new Highcharts.Chart(JSON.parse('%s'));
-       });
-           </script>
-
-         </head><body><div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div></body></html>
-       """
-
-       config = {
-           'visible_points': 10,
-           'py_chart_opts': { 'chart': { 'renderTo': 'container',
-                                         'defaultSeriesType': 'spline'},
-                              'title': { 'text': 'DrNinjaBatmans data'},
-                              'xAxis': { 'type': 'datetime',
-                                         'tickPixelInterval': '150'},
-                              'yAxis': { 'minPadding': 0.2,
-                                         'maxPadding': 0.2,
-                                         'title': {'text': 'Value',
-                                                   'margin': 80}
-                                     },
-                              'series': [{ 'name': 'Data',
-                                           'data': []}]}
-
-       }
-
-       def date_float(s):
-           try:
-               date, val = s.split()
-           except ValueError:
-               val = s.strip()
-               date = time.time()
-
-           return int(date), float(val)
-
-
-       def send_stdin(fn=date_float):
-           for raw in sys.stdin:
-               sys.stdout.write(raw)
-
-               # Ignore strange input.
-               try:
-                   jsn = json.dumps(fn(raw))
-
-                   buf.append(jsn)
-
-                   for w in websockets:
-                       try:
-                           w.write_message(jsn)
-                       except websocket.WebSocketClosedError:
-                           pass
-
-               except:
-                   pass
-
-           for ws in websockets:
-               ws.close()
-
-       class StdinSocket(websocket.WebSocketHandler):
-           def open(self):
-               for i in buf:
-                   self.write_message(i)
-
-               websockets.append(self)
-
-
-           def closs(self):
-               websockets.remove(self)
-
-       class MainHandler(tornado.web.RequestHandler):
-           def get(self):
-               self.write(HTML % (int(config['visible_points']),
-                                  json.dumps(config['py_chart_opts'])))
-
-
-       if __name__ == "__main__":
-           application = tornado.web.Application([
-               (r"/", MainHandler),
-               (r'/websocket', StdinSocket),
-           ])
-           buf = deque(maxlen=int(config['visible_points']))
-           websockets = []
-
-
-           config['args'] = []
-           for a in sys.argv[1:]:
-               if '=' in a:
-                   k, v = a.split('=', 1)
-                   config[k] = v
-               else:
-                   config['args'].append(a)
-
-           Thread(target=send_stdin).start()
-           application.listen(8888)
-           tornado.ioloop.IOLoop.instance().start()
-
-     #+END_SRC
-
-**** xml-parse.sh
-
-     #+BEGIN_SRC sh
-         #!/bin/bash
-       #
-       # Simply removing specific articles fixes the xerces error with
-       # UTF8. If the articles are alone the error goes away
-       # aswell. Extremely weird but that's life. Fortunately the article is
-       # just a stub about some toad (Cranopsis bocourti)
-       #
-       # xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]
-       #
-       # if `inplace` is there the c program will be used to cover the article
-       # with spaces. This is much faster. Should be anyway. Otherwise the
-       # page is just ommited and the result is dumped in stdout. Helping
-       # messages are dumped in stderr After this you can run:
-       #
-       # java -jar tools/mwdumper.jar RESULTING_XML --format=sql:1.5 > SQL_DUMP
-
-       set -e
-       set -o pipefail
-
-       if [[ $# -lt 2 ]]; then
-           echo "xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]" 1>&2
-           exit 0
-       fi
-
-       function my_dd {
-           coreutils_version=$(dd --version | head -1 | cut -d\  -f3 | colrm 2 2 )
-           if [[ $coreutils_version -ge 822 ]]; then
-  	     eval "dd iflag=count_bytes iflag=direct oflag=seek_bytes ibs=1M $@"
-           else
-  	     echo "Your coreutils may be a bit old ($coreutils_version). 822 is the one cool kids use." >&2
-  	     eval "dd $@ ibs=1"
-           fi
-       }
-
-       ORIGINAL_XML=$1
-
-       # Dump a part of the file in sdout using dd.
-       # Usage:
-       # file_range <filename> <first_byte> <start|end|length>
-       #
-       # Length can be negative
-       function file_range {
-           file=$1
-           start=$2
-           len=$3
-
-
-           case $len in
-  	     "end") my_dd if=$file skip=$start || exit 1; return 0;;
-  	     "start") my_dd if=$file count=$start || exit 1; return 0;;
-  	     "") echo "len was empty (file: $file, start: $start, len $len). Correct format <filename> <byte start> <length|'start'|'end'>" 1>&2; exit 1;;
-  	     ,*) ;;
-           esac
-
-           if [[ $len -gt 0 ]]; then
-  	     # Dump to stdout
-  	     my_dd if=$file skip=$start count=$len || exit 1
-           else
-  	     skip=$(($start + ($len)))
-  	     len=$((- ($len)))
-
-  	     if [[ $skip -lt 0 ]]; then
-  	         skip=0
-  	         len=$start
-  	     fi
-
-  	     # Dump to stdout
-               my_dd if=$file skip=$skip count=$len || exit 1
-           fi
-       }
-
-       function backwards {
-           tac -b | rev
-       }
-
-       function byte_offset {
-           grep -b -o -m 1 -F  "$1" | cut -d : -f1
-       }
-
-       # Throw everything but the page in stdout
-       #
-       # neg_xml_page "Barack Obama"
-       function neg_xml_page {
-           term="<title>$1</title>"
-           title_offset=$(cat $ORIGINAL_XML | byte_offset "$term")
-           echo -e "\n\tMethod: $2(blank is ok)" 1>&2
-           echo -e "\tsearch term: $term" 1>&2
-           echo -e "\tfile: $ORIGINAL_XML" 1>&2
-           echo -e "\ttitle offset: $title_offset" 1>&2
-
-           # Fail the term is invalid
-           if [ -z "$title_offset" ]; then
-  	     echo "Found '$title_offset' Grep-ing (cat  $ORIGINAL_XML | grep -b -m 1 -F \"$term\" | cut -d: -f1)" 1>&2
-  	     exit 1
-           fi
-
-           to_page_start=$(($(file_range $ORIGINAL_XML $title_offset -1000 | backwards | byte_offset "$(echo '<page>' | rev)")+7))
-           echo -e "\tto page start (relative): $to_page_start" 1>&2
-
-           file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>" >&2
-           echo $(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) >&2
-           to_page_end=$(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) # len('</page>') == 7
-           echo -e "\tto page end (relative): $to_page_end" 1>&2
-
-           page_start=$(($title_offset - $to_page_start +1 ))
-           echo -e "\tpage start: $page_start" 1>&2
-
-           page_end=$(($title_offset + $to_page_end))
-           echo -e "\tpage end: $page_end" 1>&2
-
-           echo -e "\tbytes to copy: $(($(du -b $ORIGINAL_XML | cut -f1) - $page_start + $page_end))" 1>&2
-
-           echo "Going to copy $page_start bytes" 1>&2
-           file_range $ORIGINAL_XML $page_start start
-           echo "Finished the first half up to $page_start, $(( $(du -b $ORIGINAL_XML | cut -f 1) - $page_end )) to go" 1>&2
-           file_range $ORIGINAL_XML $page_end end
-           echo "Finished the whole thing." 1>&2
-       }
-
-       # Put stdin betwinn mediawiki tags and into stdout
-       function mediawiki_xml {
-           (head -1 $ORIGINAL_XML; sed -n "/<siteinfo>/,/<\/siteinfo>/p;/<\/siteinfo>/q" $ORIGINAL_XML ; cat - ; tail -1 $ORIGINAL_XML )
-       }
-
-       # 1: XML File
-       # 2: Article
-       # 3: Method (leave blank)
-       # Assert that the file is there and is not empty
-       fsize=$(du -b $ORIGINAL_XML | cut -f1)
-       if [[ 0 -eq $fsize ]]; then
-           echo "ERROR: empty xml file $ORIGINAL_XML" 1>&2
-           exit 1
-       fi
-
-       echo "Will remove article '$2' from file $1 (size: $fsize)" 1>&2
-       if ! neg_xml_page "$2" "$3"; then
-           ret=$?
-           echo "XML parsing script failed" 1>&2
-           exit $ret;
-       fi
-     #+END_SRC
-
 
 * Συμπεράσματα και μελλοντικές επεκτάσεις
 
@@ -3560,6 +1939,1657 @@
   αυτού είναι προτιμότερη η χρήση των dumps κατ ευθείαν όπως είναι
   κατεβασμένα από τη wikipedia, παρ όλο που η μορφή της πληροφορίας
   δεν είναι ίδια, είτε η χρήση κατ ευθείαν της wikipedia.org.
+
+* Παραρτήματα
+  #+BEGIN_EXPORT latex
+  \appendix
+  #+END_EXPORT
+** Παραγωγή συνωνύμων
+   :PROPERTIES:
+   :CUSTOM_ID: app:synonym-prod
+   :END:
+
+   Για να συμβιβάσουμε αυτούς τους περιορισμούς δύο μέθοδοι
+   χρησιμοποιούνται: qualification και modification των υποψήφιων
+   συνωνύμων. Πρώτα προσπαθούμε τη modification μέθοδο και αν αυτό
+   αποτύχει επιχειρούμε να εκτελέσουμε qualification. Οι κανόνες για
+   modification έχουν ως εξής:
+
+   - Να διαγράψουμε τα άρθρα από την αρχή ενός συνωνύμου:
+     - "A "
+     - "An "
+     - "The "
+     - "(The) "
+     - The&nbsp;
+     - κτλ
+   - Να δημιουργούμε και και τα δύο versions, με και χωρίς
+     παρενθέσεις. Πχ, δεδομένου του συμβόλου "Raven (journal)"
+     δημιουργούμε:
+
+     - "Raven (journal)"
+     - "Raven"
+
+   - Να χρησιμοποιήσουμε τη συμβολοσειρά πριν και μετά το slash, αλλά όχι
+     το αρχικό =symbol=, πχ. δεδομένου του =symbol= "Russian
+     language/Russian alphabet" δημιουργούμε
+
+     - "Russian language"
+     - "Russian alphabet"
+
+   - Να αναστρέψουμε των ανεστραμμένων συμβόλων με κόμματα. Πχ δεδομένου
+     "Congo, Democratic Republic Of The", αναστρέφουμε για να πάρουμε
+     "Democratic Republic Of The Congo"
+   - Ώς συνήθως, να απορρίψουμε leading articles εάν είναι
+     αναγκαίο. Π.χ. δοθέντος συμβόλου "Golden ratio, the" το
+     αντικαθιστούμε με "the Golden ratio", στη συνέχεια διαγράφουμε
+     τα άρα για πάρουμε: "Golden ratio" το ίδιο συμβάνει για τα a,
+     an, κτλ.
+
+   Με αυτό τον τρόπο δημιουργήσαμε ένα αρχικό πακέτο συνωνύμων από το
+   ίδιο το όνομα του αντικειμένου. Επιπλέον μπορούμε να
+   δημιουργήσουμε άλλο ένα πακέτο από τα wikipedia redirects στο
+   άρθρο. Η Wikipedia παρέχει ένα SQL dump για όλα τα redirects. Για
+   να φορτώσουμε τον πίνακα του SQL dump σε μια βάση δεδομένων όπου
+   έχουμε φορτώσει ήδη τα δεδομένα της wikipedia:
+
+   #+BEGIN_SRC sh
+    wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz \
+      -O redirect.sql.gz && gzcat redirect.sql.gz | mysql
+   #+END_SRC
+
+   Και στη συνέχεια μπορούμε να τρέξομε το SQL query για να βρούμε
+   όλα τα συνώνυμα του (καλά και κακά) Bill Clinton:
+
+   #+BEGIN_SRC sql
+     mysql> select page_title, rd_title from \
+     redirect join page on
+     rd_from = page_id and
+     (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
+     (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
+     +-------------------------------------+--------------+
+     | page_title                          | rd_title     |
+     +-------------------------------------+--------------+
+     | BillClinton                         | Bill_Clinton |
+     | William_Jefferson_Clinton           | Bill_Clinton |
+     [.. see below for a formated verison of the data ...]
+     | William_Jefferson_Clinton           | Bill_Clinton |
+     +-------------------------------------+--------------+
+     46 rows in set (11.77 sec)
+   #+END_SRC
+
+
+   #+ATTR_LATEX: :environment longtable
+   | =page_title=                          | =rd_title=     |
+   |---------------------------------------+----------------|
+   | =BillClinton=                         | =Bill_Clinton= |
+   | =William_Jefferson_Clinton=           | =Bill_Clinton= |
+   | =President_Clinton=                   | =Bill_Clinton= |
+   | =William_Jefferson_Blythe_IV=         | =Bill_Clinton= |
+   | =Bill_Blythe_IV=                      | =Bill_Clinton= |
+   | =Clinton_Gore_Administration=         | =Bill_Clinton= |
+   | =Buddy_(Clinton's_dog)=               | =Bill_Clinton= |
+   | =Bill_clinton=                        | =Bill_Clinton= |
+   | =William_Jefferson_Blythe_III=        | =Bill_Clinton= |
+   | =President_Bill_Clinton=              | =Bill_Clinton= |
+   | =Bull_Clinton=                        | =Bill_Clinton= |
+   | =Clinton,_Bill=                       | =Bill_Clinton= |
+   | =William_clinton=                     | =Bill_Clinton= |
+   | =42nd_President_of_the_United_States= | =Bill_Clinton= |
+   | =Bill_Jefferson_Clinton=              | =Bill_Clinton= |
+   | =William_J._Clinton=                  | =Bill_Clinton= |
+   | =Billl_Clinton=                       | =Bill_Clinton= |
+   | =Bill_Clinton\=                       | =Bill_Clinton= |
+   | =Bill_Clinton's_Post_Presidency=      | =Bill_Clinton= |
+   | =Bill_Clinton's_Post-Presidency=      | =Bill_Clinton= |
+   | =Klin-ton=                            | =Bill_Clinton= |
+   | =Bill_J._Clinton=                     | =Bill_Clinton= |
+   | =William_Jefferson_"Bill"_Clinton=    | =Bill_Clinton= |
+   | =William_Blythe_III=                  | =Bill_Clinton= |
+   | =William_J._Blythe=                   | =Bill_Clinton= |
+   | =William_J._Blythe_III=               | =Bill_Clinton= |
+   | =Bil_Clinton=                         | =Bill_Clinton= |
+   | =WilliamJeffersonClinton=             | =Bill_Clinton= |
+   | =William_J_Clinton=                   | =Bill_Clinton= |
+   | =Bill_Clinton's_sex_scandals=         | =Bill_Clinton= |
+   | =Billy_Clinton=                       | =Bill_Clinton= |
+   | =Willam_Jefferson_Blythe_III=         | =Bill_Clinton= |
+   | =William_"Bill"_Clinton=              | =Bill_Clinton= |
+   | =Billll_Clinton=                      | =Bill_Clinton= |
+   | =Bill_Klinton=                        | =Bill_Clinton= |
+   | =William_Clinton=                     | =Bill_Clinton= |
+   | =Willy_Clinton=                       | =Bill_Clinton= |
+   | =William_Jefferson_(Bill)_Clinton=    | =Bill_Clinton= |
+   | =Bubba_Clinton=                       | =Bill_Clinton= |
+   | =MTV_president=                       | =Bill_Clinton= |
+   | =MTV_President=                       | =Bill_Clinton= |
+   | =The_MTV_President=                   | =Bill_Clinton= |
+   | =Howard_G._Paster=                    | =Bill_Clinton= |
+   | =Clintonesque=                        | =Bill_Clinton= |
+   | =William_Clinton=                     | =Bill_Clinton= |
+   | =William_Jefferson_Clinton=           | =Bill_Clinton= |
+
+** Καλά και κακά συνώνυμα
+   :PROPERTIES:
+   :CUSTOM_ID: app:good-bad-synonyms
+   :END:
+
+   Υπάρχουν κανόνες για το ποιο είναι καλό ή κακό συνώνυμο
+
+   - Δεν πρέπει να ξεκινούν με άρθρα ("the", "a", "an")
+   - Δεν πρέπει να ξεκινούν με "File:" or "TimedText:".
+   - Δεν πρέπει να περιέχουν HTML anchors. Πχ
+     "Alexander_Pushkin#Legacy"
+   - Δεν πρέπει να ξεκινούν με τα ακόλουθα:
+     - "List of "
+     - "Lists of "
+     - "Wikipedia: "
+     - "Category: "
+     - ":Category: "
+     - "User: "
+     - "Image: "
+     - "Media: "
+     - "Arbitration in location"
+     - "Communications in location"
+     - "Constitutional history of location"
+     - "Economy of location"
+     - "Demographics of location"
+     - "Foreign relations of location"
+     - "Geography of location"
+     - "History of location"
+     - "Military of location"
+     - "Politics of location"
+     - "Transport in location"
+     - "Outline of topic"
+   - Δεν πρέπει να ταιριάζει =\d\d\d\d in location= ή =location in
+     \d\d\d\d=
+   - Δεν πρέπει να είναι ονόματα των disabiguation pages. Για να το
+     κάνουμε αυτό έτσι ώστε να συμπεριλαμβάνει όλες τις σχετικές
+     σελίδες (συμπεριλαμβανομένων των τυπογραφικών λαθών) εννοούμε
+     σύμβολα που ταιριάζουν με =\([Dd]isambig[\^)]*\)=.
+   - Συνώνυμα που α) θα μπορούσαν να εκληφθούν ότι ξεκινούν με άρθρα
+     και β) μπορεί να εκλείπουν κάτι χρήσιμο. Αυτό σημαίνει ότι για
+     παράδειγμα "A. House" (συνώνυμο του «Abraham House") είναι
+     ελλιπών προδιαγραφών διότι ενδέχεται να παραπλανήσει το START
+     στην περίπτωση των ερωτήσεων όπως "Πόσο κοστίζει ένα σπίτι στη
+     Silicon Valley;". Αφετέρου "a priori" μπορεί να διατηρηθεί
+     επειδή δεν υπάρχουν λογικές ερωτήματα όπου "α" είναι ένα άρθρο
+     πριν "priori".
+
+** Παράδειγμα python unit test
+   :PROPERTIES:
+   :CUSTOM_ID: app:python-test-example
+   :END:
+
+
+   #+BEGIN_SRC python
+    class TestFetcher(unittest.TestCase):
+        def setUp(self):
+            self.fetcher = fetcher.get_fetcher()
+
+        def test_html(self):
+            html = self.fetcher.html_source("Led Zeppelin")
+            self.assertIn("Jimmy Page", html)
+
+        def test_markup_source(self):
+            src = self.fetcher.markup_source("Led Zeppelin")
+            self.assertIn("{{Infobox musical artist", src)
+
+
+        def test_unicode_html(self):
+            html = self.fetcher.html_source(u"Rhône")
+            self.assertIn("France", html)
+
+        def test_unicode_source(self):
+            src = self.fetcher.markup_source("Rhône")
+            self.assertIn("Geobox|River", src)
+
+        def test_silent_redirect(self):
+            # redirects are only supported when force_live is set to True
+            src = self.fetcher.markup_source("Obama", force_live=True)
+            self.assertFalse(re.match(fetcher.REDIRECT_REGEX, src))
+   #+END_SRC
+
+** Παράδειγμα εκτέλεσης ενός python test
+   :PROPERTIES:
+   :CUSTOM_ID: app:python-test
+   :END:
+
+
+   #+BEGIN_SRC sh
+      $ python setup.py test -s tests.test_lispify
+      running test
+      running egg_info
+      writing requirements to wikipediabase.egg-info/requires.txt
+      writing wikipediabase.egg-info/PKG-INFO
+      writing top-level names to wikipediabase.egg-info/top_level.txt
+      writing dependency_links to wikipediabase.egg-info/dependency_links.txt
+      writing entry points to wikipediabase.egg-info/entry_points.txt
+      reading manifest file 'wikipediabase.egg-info/SOURCES.txt'
+      reading manifest template 'MANIFEST.in'
+      writing manifest file 'wikipediabase.egg-info/SOURCES.txt'
+      running build_ext
+      test_bool (tests.test_lispify.TestLispify) ... ok
+      test_bool_with_typecode (tests.test_lispify.TestLispify) ... ok
+      test_date_multiple_voting (tests.test_lispify.TestLispify) ... ok
+      test_date_simple (tests.test_lispify.TestLispify) ... ok
+      test_date_with_range (tests.test_lispify.TestLispify) ... ok
+      test_dict (tests.test_lispify.TestLispify) ... ok
+      test_dict_with_escaped_string (tests.test_lispify.TestLispify) ... ok
+      test_dict_with_list (tests.test_lispify.TestLispify) ... ok
+      test_double_nested_list (tests.test_lispify.TestLispify) ... ok
+      test_error (tests.test_lispify.TestLispify) ... ok
+      test_error_from_exception (tests.test_lispify.TestLispify) ... ok
+      test_keyword (tests.test_lispify.TestLispify) ... ok
+      test_keyword_with_typecode (tests.test_lispify.TestLispify) ... ok
+      test_list (tests.test_lispify.TestLispify) ... ok
+      test_list_of_dict (tests.test_lispify.TestLispify) ... ok
+      test_list_of_dict_with_typecode (tests.test_lispify.TestLispify) ... ok
+      test_list_with_typecode (tests.test_lispify.TestLispify) ... ok
+      test_nested_list (tests.test_lispify.TestLispify) ... ok
+      test_none (tests.test_lispify.TestLispify) ... ok
+      test_none_with_typecode (tests.test_lispify.TestLispify) ... ok
+      test_number (tests.test_lispify.TestLispify) ... ok
+      test_number_with_typecode (tests.test_lispify.TestLispify) ... ok
+      test_string (tests.test_lispify.TestLispify) ... ok
+      test_string_escaped (tests.test_lispify.TestLispify) ... ok
+      test_string_not_keyword (tests.test_lispify.TestLispify) ... ok
+      test_string_with_typecode (tests.test_lispify.TestLispify) ... ok
+      test_unicode_string (tests.test_lispify.TestLispify) ... ok
+
+      ----------------------------------------------------------------------
+      Ran 27 tests in 0.047s
+
+      OK
+   #+END_SRC
+
+** Χαρακτηριστικά για τον person classifier
+   :PROPERTIES:
+   :CUSTOM_ID: app:person-classifier
+   :END:
+
+*** Category regexes
+
+    Χρησιμοποιεί τις ακόλουθες συνήθεις εκφράσεις (regular
+    expressions) για να ταυτίσει τις κατηγορίες ενός άρθρου.
+
+    - =.* person=
+    - =\^\d+ deaths.*=
+    - =\^\d+ births.*=
+    - =.* actors=
+    - =.* deities=
+    - =.* gods=
+    - =.* goddesses=
+    - =.* musicians=
+    - =.* players=
+    - =.* singers=
+
+*** Category regex excludes
+
+    Αποκλείει τις ακόλουθες regexes.
+
+    - =\sbased on\s=
+    - =\sabout\s=
+    - =lists of\s=
+    - =animal\s=
+
+*** Category matches
+
+    Γνωρίζουμε ότι ένα άρθρο αναφέρεται σε ένα πρόσωπο εάν η σελίδα ανήκει
+    σε μια από τις ακόλουθες mediawikia κατηγορίες:
+
+    - american actors
+    - american television actor stubs
+    - american television actors
+    - architects
+    - british mps
+    - character actors
+    - computer scientist
+    - dead people rumoured to be living
+    - deities
+    - disappeared people
+    - fictional characters
+    - film actors
+    - living people
+    - musician stubs
+    - singer stubs
+    - star stubs
+    - united kingdom writer stubs
+    - united states singer stubs
+    - writer stubs
+    - year of birth missing
+    - year of death missing
+
+    Για ένα παράδειγμα δείτε το παράρτημα Το άρθρο που αναφέρεται στον
+    Leonardo DiCaprio εντάσσεται στις επόμενες κατηγορίες (με bold
+    είναι η κατηγορία που χρησιμοποιεί το WikipediaBase για να
+    αποφασίσει πως το άρθρο αναφέρεται σε άνθρωπο).
+
+    - Leonardo DiCaprio
+    - 1974 births
+    - *Living people*
+    - 20th-century American male actors
+    - 21st-century American male actors
+    - American environmentalists
+    - American film producers
+    - American male child actors
+    - American male film actors
+    - American male soap opera actors
+    - American male television actors
+    - American people of German descent
+    - American people of Italian descent
+    - American people of Russian descent
+    - American philanthropists
+    - Best Actor AACTA Award winners
+    - Best Actor Academy Award winners
+    - Best Drama Actor Golden Globe (film) winners
+    - Best Musical or Comedy Actor Golden Globe (film) winners
+    - California Democrats
+    - Film producers from California
+    - Formula E team owners
+    - Male actors from Hollywood, California
+    - Male actors from Palm Springs, California
+    - Male actors of Italian descent
+    - People from Echo Park, Los Angeles
+    - Silver Bear for Best Actor winners
+
+    Οι κατηγορίες αυτές μοιάζουν ως εξής στο άρθρο
+
+    #+CAPTION: The rendered list of categores for Leonardo DiCaprio
+    #+NAME:   fig:dicaprio-categories
+    #+attr_latex: :placement [H] :width \textwidth
+    [[./dicaprio_categories.png]]
+
+    Όπως είναι φανερό η λίστα με τις κατηγορίες είναι αθυαίρετη και
+    όχι πλήρης. Πολλαπλές μέθοδοι μπορούν να χρησιμοποιηθούν για να
+    διορθωθεί αυτό. Μερικές από αυτές είναι:
+
+    - Μέθοδοι με Supervised machine learning όπως SVM χρησιμοποιώντας άλλες
+      μεθόδους να ορίσουν ένα πρόσωπο και να δημιουργήσουν εκπαιδευτικές
+      ομάδες.
+    - Εμπλουτίζοντας την υπάρχουσα λίστα κατηγοριών χρησιμοποιώντας
+      στατιστικά από κατηγορίες άρθρων που έχουμε βρει με άλλους
+      τρόπους ότι αναφέρονται σε πρόσωπα.
+
+
+** To bug στη βιβλιοθήκη xerces
+   :PROPERTIES:
+   :CUSTOM_ID: app:xerces-bug
+   :END:
+
+
+   Πιθανότατα η μεγαλύτερη δυσκολία κατά τη δημιουργία του
+   wikipedia-mirror ήταν η αντιμετώπιση ενός bug στο =mwdumper= --- το
+   εργαλείο για τη μετατροπή των XML dumps σε SQL dumps --- το οποίο
+   κάνει το εργαλείο να αποτυγχάνει σε τυχαία άρθρα. Εφ όσον δεν
+   μπορέσαμε να βρούμε τον κριβή λόγο που συμβαίνει αυτό το bug, το
+   παρακάμπτουμε διαγράφοντας τα άρθρα που προκαλούν το πρόβλημα, και
+   εφ όσον είναι ένα μεγάλο εμπόδιο σε μια κατά τα άλλα θεωρητικά
+   πεπατημένη διαδικασία περιγράφουμε τη διαδικασία μας λεπτομερώς.
+
+   Ιδού λοιπόν τι ακριβώς συμβαίνει: ενώ τρέχει το =make
+   sql-dump-parts= εγείρεται το παρακάτω exception:
+
+   #+BEGIN_SRC sh
+     ...
+
+     376,000 pages (14,460.426/sec), 376,000 revs (14,460.426/sec)
+     377,000 pages (14,458.848/sec), 377,000 revs (14,458.848/sec)
+     Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 2048
+             at org.apache.xerces.impl.io.UTF8Reader.read(Unknown Source)
+             at org.apache.xerces.impl.XMLEntityScanner.load(Unknown Source)
+             at org.apache.xerces.impl.XMLEntityScanner.scanContent(Unknown Source)
+             at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanContent(Unknown Source)
+             at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch(Unknown Source)
+             at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
+             at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+             at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+             at org.apache.xerces.parsers.XMLParser.parse(Unknown Source)
+             at org.apache.xerces.parsers.AbstractSAXParser.parse(Unknown Source)
+             at org.apache.xerces.jaxp.SAXParserImpl$JAXPSAXParser.parse(Unknown Source)
+             at javax.xml.parsers.SAXParser.parse(SAXParser.java:392)
+             at javax.xml.parsers.SAXParser.parse(SAXParser.java:195)
+             at org.mediawiki.importer.XmlDumpReader.readDump(XmlDumpReader.java:88)
+             at org.mediawiki.dumper.Dumper.main(Dumper.java:142)
+     make: *** [/scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql] Error 1
+   #+END_SRC
+
+   Διερευνούμε το πρόβλημα τρέχοντας =make --just-print
+   sql-dump-parts= με σκοπό να βρούμε επακριβώς την αλληλουχία εντολών
+   που προκάλεσαν το πρόβλημα και ανακαλύπτουμε πως η εντολή που
+   αποτυγχάνει είναι:
+
+
+   #+BEGIN_SRC sh
+     $ java -jar /scratch/cperivol/wikipedia-mirror/tools/mwdumper.jar   --format=sql:1.5 /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml > /root/path/wikipedia-parts//enwiki-20131202-pages-articles20.xml-p011125004p013324998.sql
+   #+END_SRC
+
+   Ευτυχώς αυτή η εντολή δεν τρέχει για μεγάλο διάστημα έτσι μπορούμε
+   εύκολα να πειραματιστούμε. Εδώ είναι το =time= output:
+
+   #+BEGIN_SRC sh
+     26.65s user 1.73s system 78% cpu 35.949 total
+   #+END_SRC
+
+   Το λάθος φαίνεται να συμβαίνει κατά την διάρκεια του διαβάσματος του
+   XML dump συνεπώς δεν είναι ειδικό για το SQL output. Αυτό θα μπορούσε
+   να είναι χρήσιμο για να διαπιστώσουμε ποιο άρθρο προκαλεί το λάθος,
+   αποσύροντάς το και ελπίζοντας να λυθεί το πρόβλημα. Για να το
+   εντοπίσουμε κατ αρχάς προσπαθήσαμε να κάνουμε export σε XML:
+
+
+   #+BEGIN_SRC sh
+     $ java -jar /scratch/cperivol/wikipedia-mirror/tools/mwdumper.jar   --format=xml /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml > /tmp/just-a-copy.xml
+   #+END_SRC
+
+   Όπως ήταν αναμενόμενο, το ίδιο λάθος εμφανίστηκε. Στη συνέχεια
+   κοιτάμε τα τελευταία δύο άρθρα που έγιναν export. Θέλουμε να
+   μπορούμε να αυτοματοποιήσουμε τη διαδικασία συνεπώς το κάνουμε
+   χρησιμοποιόντας shell commands και όχι με το χέρι: Ξεκινάμε
+   τυπώνοντας με αντίστροφη σειρά το xml αρχείο που δημιουργήθηκε,
+   βρίσκοντας τις τελευταίες δύο εμφανίσεις του =<title>=
+   χρησιμοποιόντας το εργαλείο =grep= και αναστρέφοντας ξανά τις
+   προκύπτουσες γραμμές για να τυπώσουμε με την αρχική σειρά.
+   Σημειώνουμε ότι το εργαλείο =tac= είναι μέρος των
+   coreutils{{{ref(coreutils)}}} άλλα όχι του BSD
+   toybox{{{ref(bsd_toybox)}}}. Κατά συνέπεια θα υπάρχει σε όλες τις
+   διανομές GNU linux προεγκατεστημένο άλλα όχι και σε mac os x και
+   BSD.  Δουλεύει όπως cat, μόνο πoυ εμφανίζει τις γραμμές με
+   αντίστροφη σειρά):
+
+   #+BEGIN_SRC sh
+     $ tac /tmp/just-a-copy.xml | grep "<title>" -m 2 | tac
+           <title>The roaring 20s</title>
+           <title>Cranopsis bocourti</title> # <- This is the last one
+   #+END_SRC
+
+   Αυτή η λειτουργία τελειώνει γρήγορα παρά το ότι το
+   =/tmp/just-a-copy.xml= είναι αρκετά μεγάλο διότι το εργαλείο =tac=
+   ψάχνει πρώτα το τέλος του αρχείου και διαβάζει προς τα πίσω μέχρι
+   το =grep= να βρει τα 2 περιστατικά που ψάχνει για =<title>= και
+   κλείνει. Στο filesystem =ext3=, και τα παρόμοια filesystems, κατά
+   την διαδικασία αυτή δεν διασχίζεται ολόκληρο το αρχείο. Πράγματι,
+   από τον κώδικα =tac= βλέπουμε ότι γίνεται χρήση της =lseek= που
+   αναζητεί το τέλος του αρχείου χωρίς να το προσπελάσει ολόκληρο και
+   στη συνέχεια διαβάζει αντίστροφα:
+
+   #+BEGIN_SRC c
+     if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+         error (0, errno, _("%s: seek failed"), quotef (file));
+     /* Shift the pending record data right to make room for the new.
+        The source and destination regions probably overlap.  */
+     memmove (G_buffer + read_size, G_buffer, saved_record_size);
+     past_end = G_buffer + read_size + saved_record_size;
+     /* For non-regexp searches, avoid unnecessary scanning. */
+     if (sentinel_length)
+         match_start = G_buffer + read_size;
+     else
+         match_start = past_end;
+
+     if (safe_read (input_fd, G_buffer, read_size) != read_size)
+     {
+         error (0, errno, _("%s: read error"), quotef (file));
+         return false;
+     }
+   #+END_SRC
+
+   Ας σώσουμε την διαδρομή από το αρχικό xml αρχείο σε μια μεταβλητή
+   γιατί θα το χρησιμοποιήσουμε χρησιμοποιούμε πολύ. Έτσι από δω και
+   πέρα το =$ORIGINAL_XML= θα έχει διαδρομή από το αρχικό xml.
+
+   #+BEGIN_SRC sh
+     $ export ORIGINAL_XML=/scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml
+   #+END_SRC
+
+   Πρώτα ας δούμε αν κάτι περίεργο συμβαίνει με το xml αρχείο
+
+   #+BEGIN_SRC sh
+     $ grep "<title>Cranopsis bocourti</title>" -A 200 -B 100 $ORIGINAL_XML | less
+   #+END_SRC
+
+   Τίποτα περίεργο δεν βρέθηκε, έτσι δεν μπορούμε πραγματικά να
+   διορθώσουμε το πρόβλημα επιτόπου. Θα προσπαθήσουμε να αποσύρουμε
+   ολόκληρο το άρθρο και ελπίζουμε ότι θα δουλέψει (spoiler alert:
+   δουλεύει). Δεν μπρούμε όμως να κάνουμε κανονικό parsing του xml
+   format μιας που το μέσο μέγεθος του αρχείου που αντιμετωπίζουμε
+   είναι της τάξης των δεκάδες GB. Θα ήταν καλύτερα να βρούμε έναν πιο
+   γρήγορο και πιο low level τρόπο να ανασύρουμε το αρχείο. Θα
+   χρησιμοποιήσουμε λοιπόν καθαρά byte και string operations.
+
+   Θα προσπαθήσουμε αρχικά να επιθεωρήσουμε τους parents του τίτλου
+   από το προβληματικό άρθρο.  Ευτυχώς το xml που δημιουργήθηκε είναι
+   indented, έτσι μπορούμε να βρούμε τους parents που βασιζόμενοι σε
+   αυτό. Αριθμήσαμε 6 spaces από indentation στη γραμμή που ο mwdumper
+   απέτυχε, έτσι θα ψάξουμε προς τα πίσω από εκεί για τις γραμμές στις
+   οποίες το indentation μειώνεται. Οι γραμμές αυτές θα
+   αντιπροσωπεύουν τους προγόνους του άρθρου μέσα στην ιεραρχία του
+   XML:
+
+   #+BEGIN_SRC sh
+     $ for i in {0..6}; do \
+         echo "Level $i:"; \
+         tac /tmp/just-a-copy.xml | grep "^ \{$i\}<[^/]" -m 1 -n | tac; \
+     done
+
+     Level 0:
+     17564960:<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd" version="0.3" xml:lang="en">
+     Level 1:
+     Level 2:
+     38:  <page>
+     Level 3:
+     Level 4:
+     35:    <revision>
+     Level 5:
+     Level 6:
+     26:      <text xml:space="preserve">&lt;!-- This article was auto-generated by [[User:Polbot]]. --&gt;
+   #+END_SRC
+
+   Φαίνεται ότι η δομή του συγκεκριμένου xml έχει ως εξής: κάθε =page=
+   βρίσκεται σε σε ένα domain που ονομάζεται =mediawiki=. Θα
+   μπορούσαμε να δούμε αυτό επίσης και από την java source αλλά αν και
+   πιο ακριβό από άποψη υπολογιστικών πόρων είναι πιο γρήγορο από το
+   να προσπαθήσουμε να διαβάσουμε τη java του mwdumper.
+
+   Ο πιο εύκολος τρόπος να αφαιρέσουμε αυτό το άρθρο θα ήταν το
+   εργαλείο =awk=. Αλλά είναι πολύ αργό για τους σκοπούς μας και
+   θέλουμε να βελτιστοποιήσουμε και να αυτοματοποιήσουμε την όλη
+   διαδικασία. Πρώτα ας προσπαθήσουμε απλώς να συγκρίνουμε το orginal
+   xml και το xml που δημιουργήσαμε byte προς byte μιας που αυτό είναι
+   πολύ γρήγορη διεργασία, με την ελπίδα πως το άρθρο υπό συζήτηση θα
+   είναι η μόνη διαφορά και έτσι θα μπορούμε πανεύκολα να βρούμε το
+   σημείο οπού θα αρχίσουμε διαγράφουμε:
+
+   #+BEGIN_SRC sh
+     $ cmp /tmp/just-a-copy.xml $ORIGINAL_XML
+     /tmp/just-a-copy.xml /scratch/cperivol/wikipedia-mirror/drafts/wikipedia-parts/enwiki-20131202-pages-articles20.xml-p011125004p013324998.fix.xml differ: byte 2, line 1
+   #+END_SRC
+
+   Η πρώτη διαφορά είναι στο 2ο byte, συνεπώς σίγουρα δεν πρόκειται
+   περί του άρθρου υπό συζήτηση.
+
+   #+BEGIN_SRC sh
+     $ head $ORIGINAL_XML
+     <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.8/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.8/ http://www.mediawiki.org/xml/export-0.8.xsd" version="0.8" xml:lang="en">
+       <siteinfo>
+         <sitename>Wikipedia</sitename>
+         <base>http://en.wikipedia.org/wiki/Main_Page</base>
+         <generator>MediaWiki 1.23wmf4</generator>
+         <case>first-letter</case>
+         <namespaces>
+           <namespace key="-2" case="first-letter">Media</namespace>
+           <namespace key="-1" case="first-letter">Special</namespace>
+           <namespace key="0" case="first-letter" />
+
+     $ head /tmp/just-a-copy.xml
+     <?xml version="1.0" encoding="utf-8" ?>
+     <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.3/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.3/ http://www.mediawiki.org/xml/export-0.3.xsd" version="0.3" xml:lang="en">
+       <siteinfo>
+         <sitename>Wikipedia</sitename>
+         <base>http://en.wikipedia.org/wiki/Main_Page</base>
+         <generator>MediaWiki 1.23wmf4</generator>
+         <case>first-letter</case>
+         <namespaces>
+           <namespace key="-2">Media</namespace>
+   #+END_SRC
+
+   Τα γνωρίσματα των xml tags είναι αρκετά διαφορετικά. Ελπίζουμε
+   τουλάχιστον τα line numbers να συμπίπτουν ώστε αν δε μπορούμε να
+   πάμε κατ ευθείαν στο byte που μας ενδιαφέρει για να αρχίσουμε να
+   διαγράφουμε, τουλάχιστον να μπορούμε γρήγορα να μετρήσουμε τα
+   newlinεs για να βρούμε το άρθρο. Μετρήσαμε τον αριθμό των γραμμών
+   στο =/tmp/just-a-copy.xml= και ελπίζουμε ότι η αντίστοιχη γραμμή
+   στο =$ORIGINAL_XML= θα αναφέρεται στο προβληματικό άρθρο. Εάν αυτό
+   συμβεί μπορούμε να αγνοήσουμε τις περιβάλλουσες xml πληροφορίες και
+   να σβήσουμε το προβληματικό άρθρο με βάση αυτήν την πληροφορία. Θα
+   χρησιμοποιήσουμε =wc= το οποίο είναι αρκετά γρήγορο.
+
+   #+BEGIN_SRC sh
+     $ wc -l /tmp/just-a-copy.xml
+     17564961 /tmp/just-a-copy.xml
+   #+END_SRC
+
+   Και η αντίστοιχη γραμμή στο =$ORIGINAL_XML= είναι:
+
+   #+BEGIN_SRC sh
+     $ sed "17564960q;d" $ORIGINAL_XML
+     [[Willie Jones (American football)|Willie Jones]],
+   #+END_SRC
+
+   Ποδόσφαιρο (football)... καμιά σχέση με τα βατράχια
+   (frogs). Φαίνεται ότι δεν μπορούμε να αποφύγουμε κάποιο επίπεδο του
+   parsing.
+
+*** Parsing
+
+    Θα κάνουμε τις ακόλουθες θεωρήσεις για να αποφύγουμε το σε βάθος
+    parsing του εγγράφου:
+
+    - Το XML στο αρχικό αρχείο είναι valid.
+    - Κάθε XML μέσα στο άρθρο είναι HTML escaped
+
+    Κατ αρχάς δουλεύοντας με γραμμές είναι αργή διαδικασία γιατί το
+    user space code χρειάζεται να ψάχνει newlines. Δουλεύοντας με
+    bytes αναθέτουμε εργασία στο kernel, επιταχύνοντας την εργασία
+    σημαντικά. Έτσι το =dd= είναι το σωστό εργαλείο για την συγκεκριμένη
+    δουλειά.  Αλλά πρώτα θα βρούμε σε ποιο byte είναι το άρθρο που μας
+    ενδιαφέρει
+
+    #+BEGIN_SRC sh
+      $ grep -b "<title>Cranopsis bocourti</title>" -m 1 $ORIGINAL_XML
+      1197420547:    <title>Cranopsis bocourti</title>
+    #+END_SRC
+
+    Αυτό ίσως πάρει κάποιο χρόνο αλλά δυστυχώς είναι η μόνη μας
+    επιλογή.  Η στρατηγική μας είναι να φτιάξουμε 2 αρχεία: το
+    =/tmp/original_tail.xml= το οποίο να περιέχει όλα τα δεδομένα που
+    υπάρχουν *μετά* τη σελίδα που θέλουμε να βγάλουμε και το
+    =/tmp/original_head.xml= το οποίο περιέχει όλα τα δεδομένα *πριν*
+    τη σελίδα που θέλουμε να βγάλουμε.
+
+    Τώρα θα χρησιμοποιήσουμε =sed= να ψάξει για =</page>= μετά το byte
+    1197420547 το οποίο θα είναι το σημείο \(x\). Βάζουμε το μέρος του
+    =$ORIGINAL_XML= μετά στο σημείο \(x\) μέσα στο αρχείο
+    =/tmp/original_tail.xml=:
+
+    #+BEGIN_SRC sh
+      $ dd if=$ORIGINAL_XML skip=1197420547 ibs=1 | sed '0,/<\/page>/d' > /tmp/original_tail.xml
+    #+END_SRC
+
+    Θαυμάσια, αυτό δούλεψε! Το =dd= δεν αντιγράφει αντίστροφα έτσι θα
+    χρειαστεί να κάνουμε κάτι πιο περίπλοκο για να κατασκευάσουμε
+    =/tmp/original_head.xml=. Ας υποθέσουμε ότι η θέση που βρήκαμε τον
+    τίτλο της σελίδας που θέλουμε να αφαιρέσουμε είναι \(\alpha =
+    1197420547\) και το σημείο που η σελίδα αρχίζει είναι στο σημείο
+    \(\beta\). Είναι ασφαλές να υποθέσουμε ότι \( \beta > \alpha -
+    1000 \) (μπορούσαμε να αλλάξουμε τη σταθερά 1000 εάν αυτή η
+    υπόθεση ήταν λάθος, αλλά τελικά ήταν σωστή). Με αυτό τον τρόπο
+    χρειάζεται μόνο να ψάξουμε στο 1Kb για τη συμβολοσειρά =<page>=.
+
+    Αυτό θα ήταν ισοδύναμο με το εξής: αντί να κάνουμε copy τα bytes
+    στο εύρος \([0, \beta)\), να συνδέσουμε δυο διαστήματα \(
+    [0,\alpha - 1000] \cup (\alpha - 1000, \beta) \) δημιουργώντας ένα
+    subshell το οποίο θα έχει πρώτο output το πρώτο εύρος και στη
+    συνέχεια output \( (\alpha - 1000, \alpha) \) σταματόντας όταν
+    βρεί =<page>=, όπως φαίνεται στον παρακάτω κώδικα. Το αποτέλεσμα
+    της διεργασίας αυτής είναι το αρχείο =/tmp/original_head.xml=:
+
+    #+BEGIN_SRC sh
+      $ (dd count=$((1197420547-1000)) ibs=1 if=$ORIGINAL_XML; \
+         dd if=$ORIGINAL_XML count=1000 skip=$((1197420547-1000)) ibs=1 \
+             | tac | sed '/<page>/,$d' | tac) > /tmp/original_head.xml
+    #+END_SRC
+
+    τελικά ενώνουμε το =/tmp/original_head.xml= με το
+    =/tmp/original_tail.xml= στο αρχείο που δουλεύει κανονικά μ το
+    mwdumper.
+
+    # There is some semi-interesting stuff going on when one parses
+    # just the article. Maybe include that later...
+    # https://github.com/infolab-csail/wikipedia-mirror/issues/3#issuecomment-40738778
+
+
+*** Η τελική λύση
+
+    Όλα τα παραπάνω χρησιμοποιήθηκαν για να συντεθεί ένα script που
+    υπάρχει στο =data/xml-parse.sh= το οποίο χρησιμοποιήθηκε από το
+    makefiles για να απομακρύνει όλα τα προβληματικά άρθρα. Εάν το
+    =mwdumper= αποτύχει, ταυτοποιούμε το άρθρο που προκάλεσε το
+    πρόβλημα και το απομακρύνουμε χρησιμοποιώντας =xml-parse.sh=. Στη
+    συνέχεια ξανατρέχουμε το mwdumper.  Το επαναλαμβάνουμε αυτό μέχρι
+    το mwdumper να πετύχει. Συνολικά τα προβληματικά άρθρα είναι
+    περίπου 10-15, και είναι διαφορετικά ανάλογα με το dump που
+    χρησιμοποιείται.
+
+*** Καλύπτοντας με κενά
+
+    Από την παραπάνω έκθεση των τρόπων που αντιμετωπίσουμε το θέμα του
+    άρθρου που σπάει παραλείψαμε κάτι προφανές. Μια θεματικά
+    διαφορετική προσέγγιση: το να καλύψουμε το άρθρο που προκαλεί το
+    πρόβλημα με κενά. Μόλις εντοπίσουμε το εύρος στο οποίο η σελίδα
+    βρίσκεται μπορούμε να κάνουμε =mmap= επακριβώς στο τμήμα του
+    =$ORIGINAL_XML= και στη συνέχεια να κάνουμε =memset= καλύποντας το
+    με χαρακτήρες κενών.  Η το πρόγραμμα ζει στο
+    =data/page_remover.c=, Παρακάτω παρουσιάζουμε την κλήση στο
+    =mmap=:
+
+    #+BEGIN_SRC c
+      ctx->off = off-pa_off;
+      ctx->fd = open(fname, O_RDWR, 0x0666);
+      if (ctx->fd == -1) {
+          perror("open");
+          return NULL;
+      }
+
+      ctx->size = len;
+      ctx->data = mmap(0, len+ctx->off, PROT_READ | PROT_WRITE,
+      	         MAP_SHARED, ctx->fd, pa_off);
+      if (ctx->data == MAP_FAILED) {
+          perror ("mmap");
+          return NULL;
+      }
+    #+END_SRC
+
+    και το =memset=
+
+    #+BEGIN_SRC c
+      /* You MIGHT want to thread this but I dont think it will make
+       * much more difference than memset. */
+      memset(ctx->data + ctx->off, ' ', ctx->size);
+    #+END_SRC
+
+    Περιέργως αυτό δεν έλυσε το πρόβλημα του mwdumper το οποίο δείχνει
+    ότι μάλλον πρόκειται για memory leak από τη μεριά του =xerces= αλλά
+    αυτό ξεπερνά τους στόχους της παρούσας εργασίας.
+
+
+
+*** Η εντολή sed
+
+    Στο κεφάλαιο για το xerces bug αναφέραμε την χρήση της εντολής sed
+    και ίσως να είναι χρήσιμο να το αναπτύξουμε περεταίρω. =sed= είναι
+    ένα unix εργαλείο πού βρίσκεται στο πακέτο GNU coreutils το οποίο
+    σύμφωνα με το man page είναι ένας stream editor που φιλτράρει και
+    μεταμορφώνει κείμενο. Η βασική λειτουργία είναι ότι το "pattern
+    space", ή το input stream το οποίο είναι ένα unix stream --- που
+    έρχεται από το αρχείο, ένα pipe ή απλά stdin --- περνά μέσα από
+    ένα προγραμματίσιμο pipeline. Εκτυπώνεται είτε αυτούσιο το
+    modified pattern space είτε --- με τη χρήση του =-n= flag ---
+    επιλεγμένα τμήματα αυτού.  Ας δούμε τη χρήση που κάναμε παραπάνω
+    για το sed.
+
+    Αρχικά χρησιμοποιήσαμε sed για να εκτυπώσουμε μια μεμονωμένη line
+    σε ένα αρχείο:
+
+    #+BEGIN_SRC sh
+      $ sed "17564960q;d"
+    #+END_SRC
+
+
+    Αυτό το =sed= πρόγραμμα διαχωρίζει τις εντολές με semicolon
+    (=;=). Το =sed= απαριθμεί τις γραμμές του input stream και τρέχει
+    καθένα από τις εντολές διαχωρισμένες με ";" σε σειρά μέχρι μια να
+    επιτύχει.
+
+    Οι εντολές εδώ είναι =17564960q= και =d=. Η =17564960q= θα
+    σταματήσει το sed όταν φτάσει η παρούσα γραμμή είναι η γραμμή
+    νούμερο 17564960. Η =d= θα απορρίπτει την παρούσα γραμμή κάθε
+    φορά. Έτσι το sed απορρίπτει γραμμές μέχρι να συναντήσει τη γραμμή
+    17564960 την οποία εκτυπώνει και τελειώνει.
+
+    Χρησιμοποιούμε μια εντολή sed ως μέρος μιας σειράς εντολών shell
+    piped όλες μαζί με στόχο να εκτυπωθούν όλες ο γραμμές ενός stream
+    μετά από ένα συγκεκριμένο μοτίβο (στην περίπτωσή μας =</page>=).
+
+    #+BEGIN_SRC sh
+      $ sed '0,/<\/page>/d'
+    #+END_SRC
+
+
+    αυτή τη φορά είχαμε μόνο μια εντολή sed, =d=. To =sed= απαριθμεί
+    στις γραμμές στο stream, απορρίπτοντας γραμμές στο εύρος των
+    γραμμών από 0 μέχρι τη γραμμή που ταυτίζεται με το =<\/page>=,
+    ουσιαστικά τυπώνοντας μόνο γραμμές μετά το =</page>=.
+
+    Η τελική μας χρήση του =sed= είναι η αντίστροφη της προηγούμενης,
+
+    #+BEGIN_SRC sh
+      $ sed '/<page>/,$d'
+    #+END_SRC
+
+    Εδώ το sed απαριθμεί ξανά σε όλες τις lines τουstream. Αυτή τη
+    φορά απορρίπτοντας γραμμές ανάμεσα στην πρώτη και αυτήν που
+    ταιριάζει το =<page>= μέχρι την τελική γραμμή, σημειωμένη με =$=.
+** Λεπτομερώς τα Makefiles
+   :PROPERTIES:
+   :CUSTOM_ID: app:makefiles
+   :END:
+
+
+   Ας αρχίσουμε με ένα παράδειγμα, σώζουμε το ακόλουθο ως Makefile σε
+   ένα project που περιέχει τα αρχεία =foo.c=, =foo.h=, =bar.c= και
+   =bar.h=:
+
+   αυτό σημαίνει ότι για να χτίσουμε το εκτελέσιμο =foobar=
+   χρειαζόμαστε =foo.o= και =bar.o=. Και για να χτίσουμε =foo.o= και
+   =bar.o= χρειαζόμαστε =foo.c= και =foo.h=, και =bar.c= και =bar.h=
+   αντίστοιχα.
+
+   Επίσης παρέχουμε εντολές για να χτισθεί το foo.o, bar.o και
+   foobar, οι οποίες είναι
+
+   - =gcc foo.c -c -o foo.o=
+   - =gcc bar.c -c -o bar.o=
+   - και =gcc foo.o bar.o -o foobar=
+
+   αντίστοιχα. παρατηρούμε ότι δεν υπάρχουν κανόνες για τα =.c= και
+   =.h= αρχεία. Αυτό συμβαίνει γιατί το =make= πρέπει να αποτυγχάνει
+   εάν δεν είναι παρόντα. Έτσι εάν τρέχουμε το =make foobar=, το
+   =make= θα ελέγχει για την ύπαρξη του =foobar= και την ημερομηνία
+   της τροποποίησης. Εάν το =foobar= λείπει ή η ημερομηνία
+   τροποποίησης είναι προηγούμενη από τις εξαρτήσεις του (δηλαδή
+   =foo.o= και =bar.o=) αυτό θα ξαναχτιστεί. Εάν κάποια από
+   εξαρτήσεις απουσιάζει η ίδια λογική ισχύει και για αυτή. Με αυτό
+   τον τρόπο εάν χτίσουμε μια φορά το =foobar=, και μετά
+   τροποποιήσουμε το =bar.c= και ξανατρέξουμε =make foobar=, το =make= θα
+   θεωρήσει αναδρομικά ότι:
+
+   - το =bar.o= είναι out of date όσον αφορά την εξάρτηση =bar.c=
+   - Όταν =bar.o= έχει πλέον μια πιο πρόσφατη ημερομηνία μετατροπής
+     από το =foobar= και για αυτό το τελευταίο είναι out of date όσον
+     αφορά την dependencyτου =bar.o=, έτσι χρειάζεται να ξανχτιστεί.
+
+   με αυτόν τον τρόπο το =make= πετυχαίνει μια σχεδόν βέλτιστη
+   στρατηγική για την επίτευξη κάθε φορά του ελάχιστου ποσοστού των
+   απαιτούμενων στόχων. Τώρα που ξεκαθαρίσαμε την βασική λογική των
+   =make= ας κάνουμε πιο σαφή μερικά από τα βασικά χαρακτηριστικά
+   τους που κάνουν τη ζωή μας πιο εύκολη.
+
+*** Phony targets
+
+    Μερικές εργασίες δεν είναι αρχεία και χρειάζονται να τρέχουν κάθε
+    φορά που το make τις συμπεριλαμβάνει στο dependency tree. Γι αυτά
+    έχουμε ένα ειδικό keyword .PHONY:.
+
+    Παρακάτω είναι ένα παράδειγμα.
+
+    # code
+    #+BEGIN_SRC makefile
+      .PHONY:
+      clean:
+          rm -rf *
+    #+END_SRC
+
+    Αυτό λέει στο =make= ότι κανένα αρχείο ονομαζόμενο clean δε θα
+    δημιουργηθεί τρέχοντας =rm -rf *=, και επίσης ακόμα και εάν
+    υπάρχει ένα up-to-date ονομαζόμενο αρχείο ονομαζόμενο =clean=,
+    αυτό το target θα τρέχει ανεξάρτητα.
+
+    Αξίζει να σημειώσουμε ότι οι phony εξαρτήσεις πάντα θα θεωρούνται
+    out of date.
+
+    Για παράδειγμα:
+
+    #+BEGIN_SRC makefile
+      .PHONY:
+      say-hello:
+          echo "hello"
+
+      test.txt: say-hello
+          touch test.txt
+    #+END_SRC
+
+    Όταν το =touch test.txt= θα τρέχει κάθε φορά που τρέχουμε =make
+    test.txt= απλώς γιατί το =make= δεν μπορεί να γνωρίζει με
+    βεβαιότητα ότι το phony target =say-hello= δεν άλλαξε τίποτε
+    σημαντικό για το =test.txt=. Για αυτό το λόγο τα phony targets
+    χρησιμοποιούνται για user facing tasks.
+
+*** Variables
+
+    Τα makefiles μπορούν να έχουν μεταβλητές ορισμένες με ποικίλους
+    τρόπους. Μερικές περιπτώσεις που έχουν γίνει για να
+    χρησιμοποιηθούν στην wikiepedia-mirror παρουσιάζονται παρακάτω.
+
+**** Αναδρομικές μεταβλητές
+
+     #+BEGIN_SRC makefile
+       OBJCETS = foo.o bar.o
+
+       show:
+           echo $(OBJECTS)
+     #+END_SRC
+
+     Τρέχοντας =make show= θα εμφανίσει =foo.o bar.o= στην
+     κονσόλα. Όλες οι μεταβλητές αντικαθιστώνται με τις τιμές τους αν
+     βάλει κάνεις πρενθέσεις γύρω από το όνομά τους και προθέσει ένα
+     δολάριο (=$=). Οι μεταβλητέσ των makefiles δεν έχουν τύπους,
+     αναφορά σε μια μεταβλητή είναι ισοδύναμη με string substitution,
+     όπως είναι και στο shell scripting.
+
+     Οι μεταβλητές που ορίζονται με ένα απλό =\== είναι recursively
+     expanded. Αυτό σημαίνει ότι αφού το όνομα της μεταβλητής
+     αντικαθίσταται από την τιμή της μια αναδρομική διαδικασία
+     συνεχίζει να κάνει expand τις τιμές που προκύπτουν με την ίδια
+     τη μεταβλητή ακόμα στο local scope.
+
+     #+BEGIN_SRC makefile
+       library = foo
+
+       foo-libs = -lfoo
+       foo-includes = -I./include/foo
+
+       bar-libs = -lbar
+       bar-includes = -I./include/bar
+
+       libs = $($(library)-libs)
+       includes = $($(library)-includes)
+
+       waz:
+          gcc waz.c $(includes) $(libs)
+     #+END_SRC
+
+     τρέχοντας =make=
+
+     #+BEGIN_SRC makefile
+       gcc waz.c $(includes) $(libs)
+       gcc waz.c $($(library)-includes) $($(library)-libs)
+       gcc waz.c $(foo-includes) $(foo-libs)
+       gcc waz.c -I./include/foo -lfoo
+     #+END_SRC
+
+     Παρατηρήστε πως οι αναφορές στις μεταβλητές καθαυτές
+     δημιουργήθηκαν.
+
+     Μεταβλητές μπορούν επίσης να ορισθούν στην εντολή =make=
+
+     #+BEGIN_SRC sh
+       $ make --just-print library=bar
+       gcc waz.c -I./include/bar -lbar
+     #+END_SRC
+
+
+**** Simple variables
+
+     Μερικές φορές δεν είναι επιθυμητό για τις μεταβλητές να είναι
+     expanded επ αόριστον:
+
+     #+BEGIN_SRC makefile
+       kurma = the world $(support1)
+       animal1 = four elephants
+       animal2 = tortoise
+       support1 = supported by $(animal1) $(support2)
+       support2 := supported by a $(animal2) $(support2)
+
+       all:
+          echo $(kurma)
+     #+END_SRC
+
+     Εδώ πορσπαθουμε να δημιουργήσουμε ένα άπειρο μήνυμα.
+
+     #+BEGIN_SRC sh
+       $ make --just-print
+       Makefile:5: *** Recursive variable `support2' references itself (eventually).  Stop.
+     #+END_SRC
+
+     το σύστημα μεταβλητών δηλαδή είναι κατά κάποιον τρόπο
+     total{{{ref(total_function)}}}, με άλλα λογία η εύρεση της τιμής
+     μεταβλητών μπορεί να είναι αναδρομική άλλα πρέπει να
+     τερματίζει. Μπορούμε να αποφύγουμε αυτόν τον περιορισμό
+     ορίζοντας μεταβλητές με ~:=~:
+
+
+     #+BEGIN_SRC sh
+       make --just-print
+       echo the world supported by four elephants supported by a tortoise
+     #+END_SRC
+
+**** Automatic variables
+
+     Το Makefile επίσης ορίζει μερικές contextual μεταβλητές οι
+     οποίες είναι ορισμένες. Οι πιο σημαντικές automatic variables
+     που ορίζει το gnu make είναι οι ακόλουθες
+
+     - =$@=: Το όνομα του αρχείου του target. Εάν το target είναι ένα
+       archive member, τότε =$@= είναι το όνομα του archive
+       αρχείου. Στο pattern rule που έχει πολλαπλά targets, $@ είναι
+       το όνομα του οποιουδήποτε target που κάνει το rule’s recipe να
+       τρέχει.
+     - =$%=: Το όνομα τουtarget member, όταν το target είναι ένα
+       archive member. Για παράδειγμα, εάν το target είναι
+       =foo.a(bar.o)= τότε =$%= είναι =bar.o= και =$@= είναι
+       =foo.a=. =$%= είναι άδειο όταν το target δεν είναι ένα archive
+       member.
+     - =$<=: Το όνομα του πρώτου prerequisite. Εάν το target πήρε το
+       recipe του από έναν implicit rule, αυτό θα είναι το πρώτο
+       prerequisite που προστέθηκε από το implicit rule.
+     - =$?=: Τα ονόματα από όλες τις εξαρτήσεις που είναι νεότερα από
+       το target, με κενά μεταξύ τους . Για τα prerequisites που
+       είναι archive members, μόνο named member
+       χρησιμοποιούνται(βλέπε Archives).
+     - =$^=: Τα ονόματα όλων των prerequisites, με κενά μεταξύ
+       τους. Για τα prerequisites τα οποία είναι archive members,
+       μόνο των named member χρησιμοποιείται. ένα
+       target έχει μόνο ένα prerequisite σε κάθε άλλο αρχείο από το
+       οποίο εξαρτάται, αναξαρτήτως από το πόσες φορές κάθε αρχείο
+       είναι καταχωρημένο ως ένα no matter how many times each file
+       prerequisite. Έτσι εάν τοποθετήσουμε στη λίστα ένα
+       prerequisite για περισσότερο από μια φορά για ένα target, η
+       value του =$ˆ= περιέχει μόνο ένα αντίγραφο του ονόματος.
+
+**** Συναρτήσεις
+
+     Οι συναρτήσεις είναι παρόμοιες με μεταβλητές ως προς το ότι και
+     αυτές γίνονται expand σε συμβολοσειρές. Η μόνη διαφορά είναι ότι
+     επιδέχονται παραμέτρους.
+
+     #+BEGIN_SRC makefile
+       greet = "Hello $1 (from $2)"
+       john-greets = $(call greet,$1,John)
+
+       .PHONY:
+       all:
+             @echo $(call john-greets,Chris)
+     #+END_SRC
+
+     Εδώ η έξοδος είναι
+
+     #+BEGIN_SRC sh
+       $ make
+       Hello Chris (from John)
+     #+END_SRC
+
+** Πηγαίοι κωδικές wikipedia-mirror helpers
+   :PROPERTIES:
+   :CUSTOM_ID: app:helper-source
+   :END:
+
+
+*** =page_remover.c=
+
+    #+BEGIN_SRC c
+      /*
+       * Copyright 2014 Chris Perivolaropoulos <cperivol@csail.mit.edu>
+       *
+       * This program is free software: you can redistribute it and/or
+       * modify it under the terms of the GNU General Public License as
+       * published by the Free Software Foundation, either version 3 of the
+       * License, or (at your option) any later version.
+       *
+       * This program is distributed in the hope that it will be useful, but
+       * WITHOUT ANY WARRANTY; without even the implied warranty of
+       * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+       *
+       * See the GNU General Public License for more details.  You should
+       * have received a copy of the GNU General Public License along with
+       * this program.
+       *
+       * If not, see <http://www.gnu.org/licenses/>.
+       *
+       * This should fill a range in a file with spaces. This is an in-place
+       * operation so it should be pretty fast.
+       *
+       * Usage: page_remover PATH OFFSET LENGHT
+       */
+
+      #include <assert.h>
+      #include <fcntl.h>
+      #include <pthread.h>
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+      #include <sys/mman.h>
+      #include <sys/stat.h>
+      #include <sys/types.h>
+      #include <semaphore.h>
+      #include <unistd.h>
+      #include <unistd.h>
+
+      #define USAGE_INFO "page_remover PATH OFFSET LENGTH"
+      #define PRINT(ctx, args...) do { sem_wait(&ctx->stdio_mutex);	\
+  				     printf(args);			\
+  				     fflush(stdout);		\
+  				     sem_post(&ctx->stdio_mutex);	\
+  				     } while(0)
+
+      typedef struct context {
+          int fd;
+          size_t size;
+          off_t off;
+          sem_t stdio_mutex;
+          void* data;
+      } context_t;
+
+      context_t* context_init(char* fname, off_t off, size_t len)
+      {
+          context_t * ctx = (context_t*)malloc(sizeof(context_t));
+          off_t pa_off = off & ~(sysconf(_SC_PAGE_SIZE) - 1);
+
+          sem_init(&ctx->stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
+
+          PRINT(ctx, "Opening %s at %lu (len: %lu)\n", fname, off, len);
+
+          ctx->off = off-pa_off;
+          ctx->fd = open(fname, O_RDWR, 0x0666);
+          if (ctx->fd == -1) {
+  	    perror("open");
+  	    return NULL;
+          }
+
+          ctx->size = len;
+          ctx->data = mmap(0, len+ctx->off, PROT_READ | PROT_WRITE,
+  		         MAP_SHARED, ctx->fd, pa_off);
+          if (ctx->data == MAP_FAILED) {
+  	    perror ("mmap");
+  	    return NULL;
+          }
+
+          return ctx;
+      }
+
+      void context_destroy(context_t* ctx)
+      {
+          if (close (ctx->fd) == -1)
+  	    perror ("close");
+
+          if (munmap ((void*)ctx->data, ctx->size) == -1)
+  	    perror ("munmap");
+
+          sem_destroy(&ctx->stdio_mutex);
+          free(ctx);
+      }
+
+      int main(int argc, char *argv[])
+      {
+          if (argc != 4)
+  	    fprintf(stderr, USAGE_INFO);
+
+          context_t *ctx = context_init(argv[1], atoi(argv[2]), atoi(argv[3]));
+
+          /* You MIGHT want to thread this but I dont think it will make
+           ,* much more difference than memset. */
+          memset(ctx->data + ctx->off, ' ', ctx->size);
+
+          context_destroy(ctx);
+          return 0;
+      }
+
+    #+END_SRC
+
+*** =utf8thread.c=
+
+    #+BEGIN_SRC c
+      #include <assert.h>
+      #include <fcntl.h>
+      #include <pthread.h>
+      #include <stdio.h>
+      #include <stdlib.h>
+      #include <string.h>
+      #include <sys/mman.h>
+      #include <sys/stat.h>
+      #include <sys/types.h>
+      #include <semaphore.h>
+      #include <unistd.h>
+      #include <unistd.h>
+
+      sem_t stdio_mutex;
+
+      #define PRINT(args...) do {sem_wait(&stdio_mutex);	\
+  	    printf(args);					\
+  	    fflush(stdout);					\
+  	    sem_post(&stdio_mutex);				\
+          } while(0)
+
+      /* #define DEBUG(args...)		PRINT(args) */
+      #define DEBUG(...)
+
+      #define DEFAULT_CHAR ' '
+      #define WORKERS 8
+      #define MESSAGE_DENSITY 1000000000
+
+      typedef unsigned long long u64;
+
+      #define UTF_LC(l) ((0xff >> (8 - (l))) << (8 - (l)))
+      #define UTF_CHECK(l, c) (((UTF_LC(l) & (c)) == UTF_LC(l)) && (0 == ((c) & (1 << (7-(l))))))
+
+
+      #define UTF_LEN(x) (UTF_CHECK(6, x) ? 6 :	\
+  		        UTF_CHECK(5, x) ? 5 :	\
+  		        UTF_CHECK(4, x) ? 4 :	\
+  		        UTF_CHECK(3, x) ? 3 :	\
+  		        UTF_CHECK(2, x) ? 2 : -1)
+
+      struct crange {
+          u64 start, end;
+      };
+
+      /* Get return the next character after the last correct one. */
+      inline u64 valid_utf8(u64 c)
+      {
+          char i;
+          /* Ascii */
+          if ((*(char*)c & 0x80) == 0)
+  	    return c+1;
+
+          /*  */
+          for (i = UTF_LEN(*(char*)c)-1; i>0; i--) {
+  	    c++;
+  	    if (!UTF_CHECK(1, *(char*)c)) {
+  	        return (u64)NULL;
+  	    }
+          }
+
+          return i<0 ? 0 : c+1;
+      }
+
+
+      void* fix_range(void* _r)
+      {
+          struct crange* r = _r;
+          u64 tmp, id = r->start;
+          long long unsigned count = 0;
+
+          while ((u64)r->start < (u64)r->end) {
+  	    if (count++ % MESSAGE_DENSITY == 0)
+  	        printf ("[worker: 0x%016llx] Done with %lluK.\n", id, count % 1024);
+
+  	    if (!(tmp = valid_utf8(r->start))){
+  	        PRINT("Invalid char 0x%x (next: 0x%x)\n",
+  		      ,*(char*)r->start, *(char*)(r->start+1));
+  	        ,*((char*)r->start) = DEFAULT_CHAR;
+  	        (r->start)++;
+  	    } else {
+  	        r->start = tmp;
+  	    }
+          }
+
+          PRINT ("[worker: 0x%016llx] OUT\n", id);
+          return NULL;
+      }
+
+      void run(u64 p, u64 sz)
+      {
+          int n, i;
+          u64 wsize;
+          pthread_t workers[WORKERS];
+          struct crange rngs[WORKERS];
+
+          wsize = sz/WORKERS + 1;
+          printf("Base address: 0x%016llx, step size: 0x%016llx\n", p, wsize);
+
+          for (i=0; i<WORKERS; i++){
+  	    rngs[i].start = p + wsize*i;
+  	    rngs[i].end = p + wsize*i + wsize;
+
+  	    PRINT("Spawning worker %d on range [0x%016llx, 0x%016llx), %llu bytes...", i, rngs[i].start, rngs[i].end, wsize);
+  	    if ((n = pthread_create(workers+i, NULL, fix_range, (void*)(rngs+i)))) {
+  	        PRINT("FAIL\n");
+  	        perror("worker");
+  	        return;
+  	    }
+  	    PRINT("OK\n");
+          }
+
+          PRINT ("Wrapping up...\n");
+          for (i=0; i<WORKERS; i++) {
+  	    PRINT ("Joining worker %d...", i);
+  	    pthread_join(workers[i], NULL);
+  	    PRINT ("OK\n");
+  	    PRINT("Worker %d went through %llu bytes.\n",
+  	          i, (u64)rngs[i].end - (u64)rngs[i].start);
+          }
+      }
+
+
+      int main(int argc, char *argv[])
+      {
+          int fd;
+          long long int sz, p;
+          struct stat buf;
+
+          sem_init(&stdio_mutex, 0 /* Shared. Usually ignored */ , 1);
+
+          fd = open(argv[1], O_RDWR, 0x0666);
+          if (fd == -1) {
+  	    perror("open");
+  	    return 1;
+          }
+
+          fstat(fd, &buf);
+          sz = buf.st_size;
+          printf("File size: 0x%016llx\n", sz);
+
+          p = (u64)mmap (0, buf.st_size, PROT_READ | PROT_WRITE , MAP_SHARED, fd, 0);
+          if (p == -1) {
+  	    perror ("mmap");
+  	    return 1;
+          }
+
+          run(p, buf.st_size);
+
+          if (close (fd) == -1) {
+  	    perror ("close");
+  	    return 1;
+          }
+
+
+          if (munmap ((void*)p, buf.st_size) == -1) {
+  	    perror ("munmap");
+  	    return 1;
+          }
+
+          sem_destroy(&stdio_mutex);
+
+          return 0;
+      }
+    #+END_SRC
+
+*** =sql-clear.sh=
+
+    #+BEGIN_SRC sh
+      #!/bin/bash
+      MUSER="$1"
+      MPASS="$2"
+      MDB="$3"
+      MYSQL=$4
+
+      # Detect paths
+      AWK=$(which awk)
+      GREP=$(which grep)
+
+      if [ $# -ne 4 ]
+      then
+  	    echo "Usage: $0 {MySQL-User-Name} {MySQL-User-Password} {MySQL-Database-Name} {MySQL executable to use}"
+  	    echo "Drops all tables from a MySQL"
+  	    exit 1
+      fi
+
+      TABLES=$($MYSQL -u $MUSER -p$MPASS $MDB -e 'show tables' | $AWK '{ print $1}' | $GREP -v '^Tables' )
+
+      for t in $TABLES
+      do
+  	    echo "Clearing $t table from $MDB database..."
+  	    $MYSQL -u $MUSER -p$MPASS $MDB -e "truncate table $t"
+      done
+    #+END_SRC
+
+*** =webmonitor.py=
+
+    #+BEGIN_SRC python
+      """
+      Just feed pairs of
+
+      <epoc date> <float value>
+
+      or even just
+
+      <float value>
+
+      One way to do that would be
+
+          $ <cmd> stdbuf -oL awk "{print \$1/$$max}" | python webmonitor.py
+
+      and I will plot them on port 8888. This will also pipe the input right
+      out to the output. Strange input will be ignored and piped this way,
+      but this needs to be done by awk aswell in the above example.
+      """
+
+      import sys
+      import json
+      import time
+
+      from threading import Thread
+      from collections import deque
+
+      import tornado.websocket as websocket
+      import tornado.ioloop
+      import tornado.web
+
+      HTML = """
+      <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+      <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+          <title>DrNinjaBatmans Websockets</title>
+
+          <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
+          <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+
+          <script>
+      var chart; // global
+      var url = location.hostname + ':' + (parseInt(location.port));
+      var ws = new WebSocket('ws://' + url + '/websocket');
+      ws.onmessage = function(msg) {
+          add_point(msg.data);
+      };
+
+      // ws.onclose = function() { alert('Connection closed.'); };
+
+      var add_point = function(point) {
+          var series = chart.series[0],
+  	    shift = series.data.length > %d;
+          chart.series[0].addPoint(eval(point), true, shift);
+      };
+
+      $(document).ready(function() {
+          chart = new Highcharts.Chart(JSON.parse('%s'));
+      });
+          </script>
+
+        </head><body><div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div></body></html>
+      """
+
+      config = {
+          'visible_points': 10,
+          'py_chart_opts': { 'chart': { 'renderTo': 'container',
+                                        'defaultSeriesType': 'spline'},
+                             'title': { 'text': 'DrNinjaBatmans data'},
+                             'xAxis': { 'type': 'datetime',
+                                        'tickPixelInterval': '150'},
+                             'yAxis': { 'minPadding': 0.2,
+                                        'maxPadding': 0.2,
+                                        'title': {'text': 'Value',
+                                                  'margin': 80}
+                                    },
+                             'series': [{ 'name': 'Data',
+                                          'data': []}]}
+
+      }
+
+      def date_float(s):
+          try:
+              date, val = s.split()
+          except ValueError:
+              val = s.strip()
+              date = time.time()
+
+          return int(date), float(val)
+
+
+      def send_stdin(fn=date_float):
+          for raw in sys.stdin:
+              sys.stdout.write(raw)
+
+              # Ignore strange input.
+              try:
+                  jsn = json.dumps(fn(raw))
+
+                  buf.append(jsn)
+
+                  for w in websockets:
+                      try:
+                          w.write_message(jsn)
+                      except websocket.WebSocketClosedError:
+                          pass
+
+              except:
+                  pass
+
+          for ws in websockets:
+              ws.close()
+
+      class StdinSocket(websocket.WebSocketHandler):
+          def open(self):
+              for i in buf:
+                  self.write_message(i)
+
+              websockets.append(self)
+
+
+          def closs(self):
+              websockets.remove(self)
+
+      class MainHandler(tornado.web.RequestHandler):
+          def get(self):
+              self.write(HTML % (int(config['visible_points']),
+                                 json.dumps(config['py_chart_opts'])))
+
+
+      if __name__ == "__main__":
+          application = tornado.web.Application([
+              (r"/", MainHandler),
+              (r'/websocket', StdinSocket),
+          ])
+          buf = deque(maxlen=int(config['visible_points']))
+          websockets = []
+
+
+          config['args'] = []
+          for a in sys.argv[1:]:
+              if '=' in a:
+                  k, v = a.split('=', 1)
+                  config[k] = v
+              else:
+                  config['args'].append(a)
+
+          Thread(target=send_stdin).start()
+          application.listen(8888)
+          tornado.ioloop.IOLoop.instance().start()
+
+    #+END_SRC
+
+*** =xml-parse.sh=
+
+    #+BEGIN_SRC sh
+        #!/bin/bash
+      #
+      # Simply removing specific articles fixes the xerces error with
+      # UTF8. If the articles are alone the error goes away
+      # aswell. Extremely weird but that's life. Fortunately the article is
+      # just a stub about some toad (Cranopsis bocourti)
+      #
+      # xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]
+      #
+      # if `inplace` is there the c program will be used to cover the article
+      # with spaces. This is much faster. Should be anyway. Otherwise the
+      # page is just ommited and the result is dumped in stdout. Helping
+      # messages are dumped in stderr After this you can run:
+      #
+      # java -jar tools/mwdumper.jar RESULTING_XML --format=sql:1.5 > SQL_DUMP
+
+      set -e
+      set -o pipefail
+
+      if [[ $# -lt 2 ]]; then
+          echo "xml-parse.sh ORIGINAL_XML TITLE_OF_ARTICLE_TO_REMOVE [inplace]" 1>&2
+          exit 0
+      fi
+
+      function my_dd {
+          coreutils_version=$(dd --version | head -1 | cut -d\  -f3 | colrm 2 2 )
+          if [[ $coreutils_version -ge 822 ]]; then
+  	    eval "dd iflag=count_bytes iflag=direct oflag=seek_bytes ibs=1M $@"
+          else
+  	    echo "Your coreutils may be a bit old ($coreutils_version). 822 is the one cool kids use." >&2
+  	    eval "dd $@ ibs=1"
+          fi
+      }
+
+      ORIGINAL_XML=$1
+
+      # Dump a part of the file in sdout using dd.
+      # Usage:
+      # file_range <filename> <first_byte> <start|end|length>
+      #
+      # Length can be negative
+      function file_range {
+          file=$1
+          start=$2
+          len=$3
+
+
+          case $len in
+  	    "end") my_dd if=$file skip=$start || exit 1; return 0;;
+  	    "start") my_dd if=$file count=$start || exit 1; return 0;;
+  	    "") echo "len was empty (file: $file, start: $start, len $len). Correct format <filename> <byte start> <length|'start'|'end'>" 1>&2; exit 1;;
+  	    ,*) ;;
+          esac
+
+          if [[ $len -gt 0 ]]; then
+  	    # Dump to stdout
+  	    my_dd if=$file skip=$start count=$len || exit 1
+          else
+  	    skip=$(($start + ($len)))
+  	    len=$((- ($len)))
+
+  	    if [[ $skip -lt 0 ]]; then
+  	        skip=0
+  	        len=$start
+  	    fi
+
+  	    # Dump to stdout
+              my_dd if=$file skip=$skip count=$len || exit 1
+          fi
+      }
+
+      function backwards {
+          tac -b | rev
+      }
+
+      function byte_offset {
+          grep -b -o -m 1 -F  "$1" | cut -d : -f1
+      }
+
+      # Throw everything but the page in stdout
+      #
+      # neg_xml_page "Barack Obama"
+      function neg_xml_page {
+          term="<title>$1</title>"
+          title_offset=$(cat $ORIGINAL_XML | byte_offset "$term")
+          echo -e "\n\tMethod: $2(blank is ok)" 1>&2
+          echo -e "\tsearch term: $term" 1>&2
+          echo -e "\tfile: $ORIGINAL_XML" 1>&2
+          echo -e "\ttitle offset: $title_offset" 1>&2
+
+          # Fail the term is invalid
+          if [ -z "$title_offset" ]; then
+  	    echo "Found '$title_offset' Grep-ing (cat  $ORIGINAL_XML | grep -b -m 1 -F \"$term\" | cut -d: -f1)" 1>&2
+  	    exit 1
+          fi
+
+          to_page_start=$(($(file_range $ORIGINAL_XML $title_offset -1000 | backwards | byte_offset "$(echo '<page>' | rev)")+7))
+          echo -e "\tto page start (relative): $to_page_start" 1>&2
+
+          file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>" >&2
+          echo $(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) >&2
+          to_page_end=$(($(file_range $ORIGINAL_XML $title_offset end | byte_offset "</page>")+7)) # len('</page>') == 7
+          echo -e "\tto page end (relative): $to_page_end" 1>&2
+
+          page_start=$(($title_offset - $to_page_start +1 ))
+          echo -e "\tpage start: $page_start" 1>&2
+
+          page_end=$(($title_offset + $to_page_end))
+          echo -e "\tpage end: $page_end" 1>&2
+
+          echo -e "\tbytes to copy: $(($(du -b $ORIGINAL_XML | cut -f1) - $page_start + $page_end))" 1>&2
+
+          echo "Going to copy $page_start bytes" 1>&2
+          file_range $ORIGINAL_XML $page_start start
+          echo "Finished the first half up to $page_start, $(( $(du -b $ORIGINAL_XML | cut -f 1) - $page_end )) to go" 1>&2
+          file_range $ORIGINAL_XML $page_end end
+          echo "Finished the whole thing." 1>&2
+      }
+
+      # Put stdin betwinn mediawiki tags and into stdout
+      function mediawiki_xml {
+          (head -1 $ORIGINAL_XML; sed -n "/<siteinfo>/,/<\/siteinfo>/p;/<\/siteinfo>/q" $ORIGINAL_XML ; cat - ; tail -1 $ORIGINAL_XML )
+      }
+
+      # 1: XML File
+      # 2: Article
+      # 3: Method (leave blank)
+      # Assert that the file is there and is not empty
+      fsize=$(du -b $ORIGINAL_XML | cut -f1)
+      if [[ 0 -eq $fsize ]]; then
+          echo "ERROR: empty xml file $ORIGINAL_XML" 1>&2
+          exit 1
+      fi
+
+      echo "Will remove article '$2' from file $1 (size: $fsize)" 1>&2
+      if ! neg_xml_page "$2" "$3"; then
+          ret=$?
+          echo "XML parsing script failed" 1>&2
+          exit $ret;
+      fi
+    #+END_SRC
 
 * Βιβλιογραφία
   #+INCLUDE: "../references.org"
