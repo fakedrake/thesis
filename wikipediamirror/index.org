@@ -188,7 +188,7 @@ wikipedia.org.
   to install and setup mwdumper (see below). You can do that by making
   sure the following succeeds:
 
-  #+BEGIN_SRC text
+  #+BEGIN_SRC sh
     $ mvn --version
   #+END_SRC
 

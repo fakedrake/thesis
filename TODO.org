@@ -1,8 +1,29 @@
 * Draft 5.0
-** DONE Acknowledgements
-** TODO Fix title and toc
-** TODO Add google assistant to
+** Strucutre
+*** TODO Cover
+*** TODO Photo
+*** DONE Preface
+*** TODO πιστοποίηση
+*** DONE Table of contents
+*** DONE Main body
+*** TODO Appendices
+*** TODO Bibliography
+*** TODO Code
+*** Formatting
+**** DONE Paragraph space 12pt
+**** DONE Font: Arial 11pt
+**** DONE Margins: 3.54 cm up dowj
+**** DONE Margins: 3.17cm leftright
+**** DONE Both side ustification
+**** DONE Code: Courirer 7pt
+** TODO Unify and letter appendices
 ** TODO Move appendices to the end
+** TODO Refernces about the infolab/mit/python/google assistant and the rest
+** TODO Spellcheck
+** TODO if easy UoP at the footer
+** TODO font size 14
+** DONE Preface
+** DONE Fix title and toc
 ** DONE Take abstact off the contents
 ** DONE Explain stuff
 
@@ -15,7 +36,7 @@
    - backend
 
 ** DONE Add examples
-** TODO Refernces about the infolab
+** DONE Acknowledgements
 * Draft 4.0
 ** DONE Translation
 ** DONE Lookup refrerences

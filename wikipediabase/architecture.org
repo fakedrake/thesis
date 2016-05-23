@@ -24,7 +24,7 @@
   type that gets rendered into html so that the provided information
   makes sense in the context that it is provided. For example:
 
-  #+BEGIN_SRC text
+  #+BEGIN_EXAMPLE
     {{Infobox scientist
     | name              = Gerhard Gentzen
     | image             = Gerhard Gentzen.jpg
@@ -44,7 +44,7 @@
     | known_for         =
     | awards            =
     }}
-  #+END_SRC
+  #+END_EXAMPLE
 
   will yield:
 

@@ -18,7 +18,7 @@
 \begin{thebibliography}{99}
 #+END_EXPORT
 
-{{{ref(wikipedia_sandbox)}}}
+{{{deref(wikipedia_sandbox)}}}
 {{{deref(start)}}} Boris Katz: Annotating the World Wide Web using
 Natural Language (RIAO '97)
 {{{deref(omnibase)}}} Boris Katz, Sue

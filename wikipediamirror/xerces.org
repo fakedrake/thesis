@@ -19,7 +19,7 @@ detail.
 So here is exactly what happens: while =make sql-dump-parts= is
 running the following is encountered:
 
-#+BEGIN_SRC text
+#+BEGIN_SRC sh
   ...
 
   376,000 pages (14,460.426/sec), 376,000 revs (14,460.426/sec)

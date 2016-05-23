@@ -3,15 +3,14 @@
 
 ((nil
   (compile-root . "/Users/drninjabatman/Projects/thesis/greek/")
-  (compile-command . "xelatex -interaction nonstopmode thesis.tex && open thesis.pdf")
+  (compile-command . "xelatex -interaction nonstopmode thesis.tex")
+  (ispell-dictionary . "el")
   (google-translate-default-source-language . "el")
   (google-translate-default-target-language . "en")
-  (org-latex-title-command . "")
   (org-latex-packages-alist
    ("" "listings")
    ("" "float"))
   (org-latex-listings . t)
-  (ispell-dictionary . "el")
   (org-latex-listings-options
    ("columns" "fixed")
    ("breaklines")

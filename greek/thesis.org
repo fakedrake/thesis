@@ -1,22 +1,29 @@
 #+TITLE:       Εξορύττοντας σχεσιακά δεδομένα από την Wikipedia
 #+AUTHOR:      Χρήστος Περιβολαρόπουλος
-#+DATE:        Tuesday 9q May 2016
+#+DATE:        Δευτέρα 23 Μαΐου 2016
 #+EMAIL:       cperivol@csail.mit.edu
-#+DESCRIPTION: Making sense of semi structured data in wikipedia.
+#+DESCRIPTION: Making sense of semi strlouctured data in wikipedia.
 #+KEYWORDS:
 #+LATEX_CLASS: report
 #+LANGUAGE:    en
-#+OPTIONS:     H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t f:t TeX:t
+#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t
 #+STARTUP:     showall
 #+LATEX_HEADER: \usepackage{fontspec}
-#+LATEX_HEADER: \setmainfont{Times}
+#+LATEX_HEADER: \setmainfont[size=11pt]{Arial}
+#+LATEX_HEADER: \setmonofont[size=7pt]{Courier}
+#+LATEX_HEADER: \usepackage[english,greek]{babel}
+#+LATEX_HEADER: \usepackage[iso-8859-7]{inputenc}
+#+LATEX_HEADER: \renewcommand{\contentsname}{Περιεχόμενα}
+#+LATEX_HEADER: \renewcommand{\chaptername}{Κεφάλαιο}
+#+LATEX_HEADER: \renewcommand{\partname}{Ενότητα}
+#+LATEX_HEADER: \usepackage[a4paper, top=3.54cm, bottom=3.54cm, left=3.17cm, right=3.17cm]{geometry}
+#+LATEX_HEADER: \input{./header.tex}
 #+MACRO:       ref \cite{$1}
 #+MACRO:       deref \bibitem{$1}
 
 #+BEGIN_EXPORT latex
-\input{./header.tex}
+\setlength{\parskip}{12pt}
 #+END_EXPORT
-
 * Εισαγωγή
 
   Η παρούσα εργασία έχει σαν στόχο να βελτιώσει τη δυναντότητα
@@ -121,7 +128,7 @@
   αποδίδεται σε html. Για παράδειγμα:
 
 
-  #+BEGIN_SRC text
+  #+BEGIN_EXAMPLE
     {{Infobox scientist
     | name              = Gerhard Gentzen
     | image             = Gerhard Gentzen.jpg
@@ -141,7 +148,7 @@
     | known_for         =
     | awards            =
     }}
-  #+END_SRC
+  #+END_EXAMPLE
 
   Θα παράξει το εξής:
 
@@ -227,7 +234,7 @@
 
    Η WikipediaBase παρέχει τις ακόλουθες λειτουργίες:
 
-*** Η εντολή get
+*** Η εντολή =get=
 
     Δεδομένης μιας class, ενός symbol, και ενός τυποποιημένου
     attribute, δηλαδή ενός χαρακτηριστικού με typecode, η εντολή =get=
@@ -1099,109 +1106,12 @@
    Ο ορισμός συνωνύμων είναι δουλειά του backend. Για το λόγο αυτό
    αναλαμβάνει η WikipediaBase να ορίσει τα απαιτούμενα συνώνυμα.
 
-
-*** Καλά και κακά συνώνυμα
-
-    Υπάρχουν κανόνες για το ποιο είναι καλό ή κακό συνώνυμο
-
-    - Δεν πρέπει να ξεκινούν με άρθρα ("the", "a", "an")
-    - Δεν πρέπει να ξεκινούν με "File:" or "TimedText:".
-    - Δεν πρέπει να περιέχουν HTML anchors. Πχ
-      "Alexander_Pushkin#Legacy"
-    - Δεν πρέπει να ξεκινούν με τα ακόλουθα:
-      - "List of "
-      - "Lists of "
-      - "Wikipedia: "
-      - "Category: "
-      - ":Category: "
-      - "User: "
-      - "Image: "
-      - "Media: "
-      - "Arbitration in location"
-      - "Communications in location"
-      - "Constitutional history of location"
-      - "Economy of location"
-      - "Demographics of location"
-      - "Foreign relations of location"
-      - "Geography of location"
-      - "History of location"
-      - "Military of location"
-      - "Politics of location"
-      - "Transport in location"
-      - "Outline of topic"
-    - Δεν πρέπει να ταιριάζει =\d\d\d\d in location= ή =location in
-      \d\d\d\d=
-    - Δεν πρέπει να είναι ονόματα των disabiguation pages. Για να το
-      κάνουμε αυτό έτσι ώστε να συμπεριλαμβάνει όλες τις σχετικές
-      σελίδες (συμπεριλαμβανομένων των τυπογραφικών λαθών) εννοούμε
-      σύμβολα που ταιριάζουν με =\([Dd]isambig[\^)]*\)=.
-    - Συνώνυμα που α) θα μπορούσαν να εκληφθούν ότι ξεκινούν με άρθρα
-      και β) μπορεί να εκλείπουν κάτι χρήσιμο. Αυτό σημαίνει ότι για
-      παράδειγμα "A. House" (συνώνυμο του «Abraham House") είναι
-      ελλιπών προδιαγραφών διότι ενδέχεται να παραπλανήσει το START
-      στην περίπτωση των ερωτήσεων όπως "Πόσο κοστίζει ένα σπίτι στη
-      Silicon Valley;". Αφετέρου "a priori" μπορεί να διατηρηθεί
-      επειδή δεν υπάρχουν λογικές ερωτήματα όπου "α" είναι ένα άρθρο
-      πριν "priori".
-
-*** Παραγωγή συνωνύμων
-
-    Για να συμβιβάσουμε αυτούς τους περιορισμούς δύο μέθοδοι
-    χρησιμοποιούνται: qualification και modification των υποψήφιων
-    συνωνύμων. Πρώτα προσπαθούμε τη modification μέθοδο και αν αυτό
-    αποτύχει επιχειρούμε να εκτελέσουμε qualification. Οι κανόνες για
-    modification έχουν ως εξής:
-
-    - Να διαγράψουμε τα άρθρα από την αρχή ενός συνωνύμου:
-      - "A "
-      - "An "
-      - "The "
-      - "(The) "
-      - The&nbsp;
-      - κτλ
-    - Να δημιουργούμε και και τα δύο versions, με και χωρίς
-      παρενθέσεις. Πχ, δεδομένου του συμβόλου "Raven (journal)"
-      δημιουργούμε:
-
-      - "Raven (journal)"
-      - "Raven"
-
-    - Να χρησιμοποιήσουμε τη συμβολοσειρά πριν και μετά το slash, αλλά όχι
-      το αρχικό =symbol=, πχ. δεδομένου του =symbol= "Russian
-      language/Russian alphabet" δημιουργούμε
-
-      - "Russian language"
-      - "Russian alphabet"
-
-    - Να αναστρέψουμε των ανεστραμμένων συμβόλων με κόμματα. Πχ δεδομένου
-      "Congo, Democratic Republic Of The", αναστρέφουμε για να πάρουμε
-      "Democratic Republic Of The Congo"
-    - Ώς συνήθως, να απορρίψουμε leading articles εάν είναι
-      αναγκαίο. Π.χ. δοθέντος συμβόλου "Golden ratio, the" το
-      αντικαθιστούμε με "the Golden ratio", στη συνέχεια διαγράφουμε
-      τα άρα για πάρουμε: "Golden ratio" το ίδιο συμβάνει για τα a,
-      an, κτλ.
-
-    Με αυτό τον τρόπο δημιουργήσαμε ένα αρχικό πακέτο συνωνύμων από το
-    ίδιο το όνομα του αντικειμένου. Επιπλέον μπορούμε να
-    δημιουργήσουμε άλλο ένα πακέτο από τα wikipedia redirects στο
-    άρθρο. Η Wikipedia παρέχει ένα SQL dump για όλα τα redirects. Για
-    να φορτώσουμε τον πίνακα του SQL dump σε μια βάση δεδομένων όπου
-    έχουμε φορτώσει ήδη τα δεδομένα της wikipedia:
-
-    #+BEGIN_SRC sh
-     wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz \
-       -O redirect.sql.gz && gzcat redirect.sql.gz | mysql
-    #+END_SRC
-
-    Και στη συνέχεια μπορούμε να τρέξομε το SQL query για να βρούμε
-    όλα τα συνώνυμα του (καλά και κακά) Bill Clinton:
-
-    #+BEGIN_SRC sql
-     select page_title, rd_title from redirect join page on rd_from = page_id and (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
-    #+END_SRC
-
-    Για το πλήρες output δείτε στο παράρτημα.
+   Δεν είναι όλα τα συνώνυμα που μπορούμε να δημιουργήσουμε
+   αποδεκτά. Σε γενικές γραμμές συνώνυμα που δεν θα σκεφτόταν ένας
+   άνθρωπος δεν είναι αποδεκτά. Λεπτομέρειες για τις ευρετικές που
+   χρησιμοποιούμε για να αποφασίσουμε αν ένα συνώνυμο είναι αποδεκτό η
+   όχι καθώς και ο τρόπος που παράγουμε συνώνυμα υπάρχουν στο
+   παράρτημα.
 
 ** Databases and data sources
 
@@ -1453,6 +1363,171 @@
     #+END_SRC
 
 ** Παραρτήματα
+*** Παραγωγή συνωνύμων
+
+    Για να συμβιβάσουμε αυτούς τους περιορισμούς δύο μέθοδοι
+    χρησιμοποιούνται: qualification και modification των υποψήφιων
+    συνωνύμων. Πρώτα προσπαθούμε τη modification μέθοδο και αν αυτό
+    αποτύχει επιχειρούμε να εκτελέσουμε qualification. Οι κανόνες για
+    modification έχουν ως εξής:
+
+    - Να διαγράψουμε τα άρθρα από την αρχή ενός συνωνύμου:
+      - "A "
+      - "An "
+      - "The "
+      - "(The) "
+      - The&nbsp;
+      - κτλ
+    - Να δημιουργούμε και και τα δύο versions, με και χωρίς
+      παρενθέσεις. Πχ, δεδομένου του συμβόλου "Raven (journal)"
+      δημιουργούμε:
+
+      - "Raven (journal)"
+      - "Raven"
+
+    - Να χρησιμοποιήσουμε τη συμβολοσειρά πριν και μετά το slash, αλλά όχι
+      το αρχικό =symbol=, πχ. δεδομένου του =symbol= "Russian
+      language/Russian alphabet" δημιουργούμε
+
+      - "Russian language"
+      - "Russian alphabet"
+
+    - Να αναστρέψουμε των ανεστραμμένων συμβόλων με κόμματα. Πχ δεδομένου
+      "Congo, Democratic Republic Of The", αναστρέφουμε για να πάρουμε
+      "Democratic Republic Of The Congo"
+    - Ώς συνήθως, να απορρίψουμε leading articles εάν είναι
+      αναγκαίο. Π.χ. δοθέντος συμβόλου "Golden ratio, the" το
+      αντικαθιστούμε με "the Golden ratio", στη συνέχεια διαγράφουμε
+      τα άρα για πάρουμε: "Golden ratio" το ίδιο συμβάνει για τα a,
+      an, κτλ.
+
+    Με αυτό τον τρόπο δημιουργήσαμε ένα αρχικό πακέτο συνωνύμων από το
+    ίδιο το όνομα του αντικειμένου. Επιπλέον μπορούμε να
+    δημιουργήσουμε άλλο ένα πακέτο από τα wikipedia redirects στο
+    άρθρο. Η Wikipedia παρέχει ένα SQL dump για όλα τα redirects. Για
+    να φορτώσουμε τον πίνακα του SQL dump σε μια βάση δεδομένων όπου
+    έχουμε φορτώσει ήδη τα δεδομένα της wikipedia:
+
+    #+BEGIN_SRC sh
+     wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-redirect.sql.gz \
+       -O redirect.sql.gz && gzcat redirect.sql.gz | mysql
+    #+END_SRC
+
+    Και στη συνέχεια μπορούμε να τρέξομε το SQL query για να βρούμε
+    όλα τα συνώνυμα του (καλά και κακά) Bill Clinton:
+
+    #+BEGIN_SRC sql
+      mysql> select page_title, rd_title from \
+      redirect join page on
+      rd_from = page_id and
+      (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
+      (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
+      +-------------------------------------+--------------+
+      | page_title                          | rd_title     |
+      +-------------------------------------+--------------+
+      | BillClinton                         | Bill_Clinton |
+      | William_Jefferson_Clinton           | Bill_Clinton |
+      [.. see below for a formated verison of the data ...]
+      | William_Jefferson_Clinton           | Bill_Clinton |
+      +-------------------------------------+--------------+
+      46 rows in set (11.77 sec)
+    #+END_SRC
+
+
+    #+ATTR_LATEX: :environment longtable
+    | =page_title=                          | =rd_title=     |
+    |---------------------------------------+----------------|
+    | =BillClinton=                         | =Bill_Clinton= |
+    | =William_Jefferson_Clinton=           | =Bill_Clinton= |
+    | =President_Clinton=                   | =Bill_Clinton= |
+    | =William_Jefferson_Blythe_IV=         | =Bill_Clinton= |
+    | =Bill_Blythe_IV=                      | =Bill_Clinton= |
+    | =Clinton_Gore_Administration=         | =Bill_Clinton= |
+    | =Buddy_(Clinton's_dog)=               | =Bill_Clinton= |
+    | =Bill_clinton=                        | =Bill_Clinton= |
+    | =William_Jefferson_Blythe_III=        | =Bill_Clinton= |
+    | =President_Bill_Clinton=              | =Bill_Clinton= |
+    | =Bull_Clinton=                        | =Bill_Clinton= |
+    | =Clinton,_Bill=                       | =Bill_Clinton= |
+    | =William_clinton=                     | =Bill_Clinton= |
+    | =42nd_President_of_the_United_States= | =Bill_Clinton= |
+    | =Bill_Jefferson_Clinton=              | =Bill_Clinton= |
+    | =William_J._Clinton=                  | =Bill_Clinton= |
+    | =Billl_Clinton=                       | =Bill_Clinton= |
+    | =Bill_Clinton\=                       | =Bill_Clinton= |
+    | =Bill_Clinton's_Post_Presidency=      | =Bill_Clinton= |
+    | =Bill_Clinton's_Post-Presidency=      | =Bill_Clinton= |
+    | =Klin-ton=                            | =Bill_Clinton= |
+    | =Bill_J._Clinton=                     | =Bill_Clinton= |
+    | =William_Jefferson_"Bill"_Clinton=    | =Bill_Clinton= |
+    | =William_Blythe_III=                  | =Bill_Clinton= |
+    | =William_J._Blythe=                   | =Bill_Clinton= |
+    | =William_J._Blythe_III=               | =Bill_Clinton= |
+    | =Bil_Clinton=                         | =Bill_Clinton= |
+    | =WilliamJeffersonClinton=             | =Bill_Clinton= |
+    | =William_J_Clinton=                   | =Bill_Clinton= |
+    | =Bill_Clinton's_sex_scandals=         | =Bill_Clinton= |
+    | =Billy_Clinton=                       | =Bill_Clinton= |
+    | =Willam_Jefferson_Blythe_III=         | =Bill_Clinton= |
+    | =William_"Bill"_Clinton=              | =Bill_Clinton= |
+    | =Billll_Clinton=                      | =Bill_Clinton= |
+    | =Bill_Klinton=                        | =Bill_Clinton= |
+    | =William_Clinton=                     | =Bill_Clinton= |
+    | =Willy_Clinton=                       | =Bill_Clinton= |
+    | =William_Jefferson_(Bill)_Clinton=    | =Bill_Clinton= |
+    | =Bubba_Clinton=                       | =Bill_Clinton= |
+    | =MTV_president=                       | =Bill_Clinton= |
+    | =MTV_President=                       | =Bill_Clinton= |
+    | =The_MTV_President=                   | =Bill_Clinton= |
+    | =Howard_G._Paster=                    | =Bill_Clinton= |
+    | =Clintonesque=                        | =Bill_Clinton= |
+    | =William_Clinton=                     | =Bill_Clinton= |
+    | =William_Jefferson_Clinton=           | =Bill_Clinton= |
+
+
+*** Καλά και κακά συνώνυμα
+
+    Υπάρχουν κανόνες για το ποιο είναι καλό ή κακό συνώνυμο
+
+    - Δεν πρέπει να ξεκινούν με άρθρα ("the", "a", "an")
+    - Δεν πρέπει να ξεκινούν με "File:" or "TimedText:".
+    - Δεν πρέπει να περιέχουν HTML anchors. Πχ
+      "Alexander_Pushkin#Legacy"
+    - Δεν πρέπει να ξεκινούν με τα ακόλουθα:
+      - "List of "
+      - "Lists of "
+      - "Wikipedia: "
+      - "Category: "
+      - ":Category: "
+      - "User: "
+      - "Image: "
+      - "Media: "
+      - "Arbitration in location"
+      - "Communications in location"
+      - "Constitutional history of location"
+      - "Economy of location"
+      - "Demographics of location"
+      - "Foreign relations of location"
+      - "Geography of location"
+      - "History of location"
+      - "Military of location"
+      - "Politics of location"
+      - "Transport in location"
+      - "Outline of topic"
+    - Δεν πρέπει να ταιριάζει =\d\d\d\d in location= ή =location in
+      \d\d\d\d=
+    - Δεν πρέπει να είναι ονόματα των disabiguation pages. Για να το
+      κάνουμε αυτό έτσι ώστε να συμπεριλαμβάνει όλες τις σχετικές
+      σελίδες (συμπεριλαμβανομένων των τυπογραφικών λαθών) εννοούμε
+      σύμβολα που ταιριάζουν με =\([Dd]isambig[\^)]*\)=.
+    - Συνώνυμα που α) θα μπορούσαν να εκληφθούν ότι ξεκινούν με άρθρα
+      και β) μπορεί να εκλείπουν κάτι χρήσιμο. Αυτό σημαίνει ότι για
+      παράδειγμα "A. House" (συνώνυμο του «Abraham House") είναι
+      ελλιπών προδιαγραφών διότι ενδέχεται να παραπλανήσει το START
+      στην περίπτωση των ερωτήσεων όπως "Πόσο κοστίζει ένα σπίτι στη
+      Silicon Valley;". Αφετέρου "a priori" μπορεί να διατηρηθεί
+      επειδή δεν υπάρχουν λογικές ερωτήματα όπου "α" είναι ένα άρθρο
+      πριν "priori".
 
 
 *** Παράδειγμα python unit test
@@ -1534,78 +1609,6 @@
 
        OK
     #+END_SRC
-
-*** Βρίσκοντας συνώνυμα με MySQL
-
-
-
-    #+BEGIN_SRC sql
-      mysql> select page_title, rd_title from \
-      redirect join page on
-      rd_from = page_id and
-      (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
-      (rd_title = "Bill_Clinton" or page_title = "Bill_Clinton");
-      +-------------------------------------+--------------+
-      | page_title                          | rd_title     |
-      +-------------------------------------+--------------+
-      | BillClinton                         | Bill_Clinton |
-      | William_Jefferson_Clinton           | Bill_Clinton |
-      [.. see below for a formated verison of the data ...]
-      | William_Jefferson_Clinton           | Bill_Clinton |
-      +-------------------------------------+--------------+
-      46 rows in set (11.77 sec)
-    #+END_SRC
-
-
-    #+ATTR_LATEX: :environment longtable
-    | =page_title=                          | =rd_title=     |
-    |---------------------------------------+----------------|
-    | =BillClinton=                         | =Bill_Clinton= |
-    | =William_Jefferson_Clinton=           | =Bill_Clinton= |
-    | =President_Clinton=                   | =Bill_Clinton= |
-    | =William_Jefferson_Blythe_IV=         | =Bill_Clinton= |
-    | =Bill_Blythe_IV=                      | =Bill_Clinton= |
-    | =Clinton_Gore_Administration=         | =Bill_Clinton= |
-    | =Buddy_(Clinton's_dog)=               | =Bill_Clinton= |
-    | =Bill_clinton=                        | =Bill_Clinton= |
-    | =William_Jefferson_Blythe_III=        | =Bill_Clinton= |
-    | =President_Bill_Clinton=              | =Bill_Clinton= |
-    | =Bull_Clinton=                        | =Bill_Clinton= |
-    | =Clinton,_Bill=                       | =Bill_Clinton= |
-    | =William_clinton=                     | =Bill_Clinton= |
-    | =42nd_President_of_the_United_States= | =Bill_Clinton= |
-    | =Bill_Jefferson_Clinton=              | =Bill_Clinton= |
-    | =William_J._Clinton=                  | =Bill_Clinton= |
-    | =Billl_Clinton=                       | =Bill_Clinton= |
-    | =Bill_Clinton\=                       | =Bill_Clinton= |
-    | =Bill_Clinton's_Post_Presidency=      | =Bill_Clinton= |
-    | =Bill_Clinton's_Post-Presidency=      | =Bill_Clinton= |
-    | =Klin-ton=                            | =Bill_Clinton= |
-    | =Bill_J._Clinton=                     | =Bill_Clinton= |
-    | =William_Jefferson_"Bill"_Clinton=    | =Bill_Clinton= |
-    | =William_Blythe_III=                  | =Bill_Clinton= |
-    | =William_J._Blythe=                   | =Bill_Clinton= |
-    | =William_J._Blythe_III=               | =Bill_Clinton= |
-    | =Bil_Clinton=                         | =Bill_Clinton= |
-    | =WilliamJeffersonClinton=             | =Bill_Clinton= |
-    | =William_J_Clinton=                   | =Bill_Clinton= |
-    | =Bill_Clinton's_sex_scandals=         | =Bill_Clinton= |
-    | =Billy_Clinton=                       | =Bill_Clinton= |
-    | =Willam_Jefferson_Blythe_III=         | =Bill_Clinton= |
-    | =William_"Bill"_Clinton=              | =Bill_Clinton= |
-    | =Billll_Clinton=                      | =Bill_Clinton= |
-    | =Bill_Klinton=                        | =Bill_Clinton= |
-    | =William_Clinton=                     | =Bill_Clinton= |
-    | =Willy_Clinton=                       | =Bill_Clinton= |
-    | =William_Jefferson_(Bill)_Clinton=    | =Bill_Clinton= |
-    | =Bubba_Clinton=                       | =Bill_Clinton= |
-    | =MTV_president=                       | =Bill_Clinton= |
-    | =MTV_President=                       | =Bill_Clinton= |
-    | =The_MTV_President=                   | =Bill_Clinton= |
-    | =Howard_G._Paster=                    | =Bill_Clinton= |
-    | =Clintonesque=                        | =Bill_Clinton= |
-    | =William_Clinton=                     | =Bill_Clinton= |
-    | =William_Jefferson_Clinton=           | =Bill_Clinton= |
 
 *** Χαρακτηριστικά για τον person classifier
 **** Category regexes
@@ -1757,7 +1760,7 @@
    και είναι πιθανό να προκύψουν προβλήματα κατά το dumping.
 
 
-*** Στοιχεία του stack.
+*** Στοιχεία του stack
 
     Παρουσιάζεται κάθε στοιχείο του stack με περισσότερες λεπτομέρειες
     παρακάτω.
@@ -1915,7 +1918,7 @@
    mwdumper (βλέπε παρακάτω). Μπορεί να γίνει αυτό αν βεβαιωθούμε ότι
    το παρακάτω δουλεύει:
 
-   #+BEGIN_SRC text
+   #+BEGIN_SRC sh
      $ mvn --version
    #+END_SRC
 
@@ -2182,7 +2185,7 @@
    Επιπλέον περιλαμβάνεται μια σειρά από shell εντολές για την
    μεταφορά από την πρώτη στη δεύτερη κατάσταση. Το αποτέλεσμα είναι
    οτι ο χρήστης απαιτεί τη δημιουργία ενός αρχείου και το =make=
-   τρέχει οσο το δυνατόν λιγοτερες διεργασίες, αποφεύγοντας να
+   τρέχει όσο το δυνατόν λιγοτερες διεργασίες, αποφεύγοντας να
    ξαναδημιουργήσει αρχεία που χρειάζεται αλλα ήδη
    υπάρχουν. Λεπτομέρειες για τη λειτουργία των makefiles θα βρείτε
    στο παράρτημα.
@@ -2217,42 +2220,42 @@
    - *Main memory:* 64G
    - *HDD:* (spinning disk) 500GB + 2Tb
 
-     Εφ όσον το βασικό bottleneck είναι η δημιουργία βάσης δεδομένων
-     --- δηλαδή οι επιδόσεις της MySQL --- δόθηκε μεγάλη προσοχή και
-     πειραματισμός στη σωστή ρύθμιση της βάσης, άλλα η επιτάχυνση ήταν
-     εν τέλη ελάχιστη και έτσι τα περισσότερα απ' όσα δοκιμάστηκαν δεν
-     περιλήφθηκαν στα Makefiles.
+   Εφ όσον το βασικό bottleneck είναι η δημιουργία βάσης δεδομένων
+   --- δηλαδή οι επιδόσεις της MySQL --- δόθηκε μεγάλη προσοχή και
+   πειραματισμός στη σωστή ρύθμιση της βάσης, άλλα η επιτάχυνση ήταν
+   εν τέλη ελάχιστη και έτσι τα περισσότερα απ' όσα δοκιμάστηκαν δεν
+   περιλήφθηκαν στα Makefiles.
 
-     Η backend engine που χρησιμοποιήσαμε για τη MySQL είναι η
-     InnoDB. Μερικές από της μεθόδους βελτιστοποίησης που επιχειρήθηκαν
-     παρουσιάζονται παρακάτω.
+   Η backend engine που χρησιμοποιήσαμε για τη MySQL είναι η
+   InnoDB. Μερικές από της μεθόδους βελτιστοποίησης που επιχειρήθηκαν
+   παρουσιάζονται παρακάτω.
 
-     - Ρύθμιση του
-       =innodb_buffer_pool_size={{{ref(innodb_buffer_pool_size)}}}. Ενώ
-       η διαθέσιμη μνήμη του ashmore είναι αρκετά μεγάλη, αυξάνοντας το
-       buffer pool μέχρι και κάποια GB δεν είχε σοβαρό αντίκτυπο στην
-       επίδοση.
-     - Αλλάζοντας το =innodb_flush_method={{{innodb_flush_method}}} σε
-       =O_DSYNC= για να αποφυγυμε κλήσεις στην
-       =fsync={{{ref(fsync}}}. Εν ολίγοις το πρόβλημα με την =fsync=
-       είναι ότι ψάχνει σειριακά τις mapped σελίδες ενός αρχείου για
-       dirty pages με αποτέλεσμα να γίνεται αργό για μεγάλα αρχεία.
-     - Ρυθμίζοντας το
-       =innodb_io_capacity={{{ref(innodb_io_capacity)}}}. Εν τέλη η
-       τιμή της μεταβλητής ήταν υψηλότερη από το bandwidth του σκληρού
-       δίσκου
+   - Ρύθμιση του
+     =innodb_buffer_pool_size={{{ref(innodb_buffer_pool_size)}}}. Ενώ
+     η διαθέσιμη μνήμη του ashmore είναι αρκετά μεγάλη, αυξάνοντας το
+     buffer pool μέχρι και κάποια GB δεν είχε σοβαρό αντίκτυπο στην
+     επίδοση.
+   - Αλλάζοντας το =innodb_flush_method={{{innodb_flush_method}}} σε
+     =O_DSYNC= για να αποφυγυμε κλήσεις στην
+     =fsync={{{ref(fsync}}}. Εν ολίγοις το πρόβλημα με την =fsync=
+     είναι ότι ψάχνει σειριακά τις mapped σελίδες ενός αρχείου για
+     dirty pages με αποτέλεσμα να γίνεται αργό για μεγάλα αρχεία.
+   - Ρυθμίζοντας το
+     =innodb_io_capacity={{{ref(innodb_io_capacity)}}}. Εν τέλη η
+     τιμή της μεταβλητής ήταν υψηλότερη από το bandwidth του σκληρού
+     δίσκου
 
-     Η μόνη βελτιστοποίηση που είχε αισθητό αποτέλεσμα ήταν η αλλαγή
-     του MySQL dump ώστε να θέτει
+   Η μόνη βελτιστοποίηση που είχε αισθητό αποτέλεσμα ήταν η αλλαγή
+   του MySQL dump ώστε να θέτει
 
-     #+BEGIN_SRC sql
+   #+BEGIN_SRC sql
       SET AUTOCOMMIT = 0; SET FOREIGN_KEY_CHECKS=0;
-     #+END_SRC
+   #+END_SRC
 
-     Αυτό επέτρεψε στο InnoDB να κάνει περισσότερη δουλειά στην κύρια
-     μνήμη πριν επικοινωνήσει με το δίσκο και επίσης μείωσε τη συνολική
-     δουλειά εμπιστευόμενη ότι οι τιμές των κελιών που αναφέρονταν σε
-     άλλους πίνακες όντως έδειχναν κάπου.
+   Αυτό επέτρεψε στο InnoDB να κάνει περισσότερη δουλειά στην κύρια
+   μνήμη πριν επικοινωνήσει με το δίσκο και επίσης μείωσε τη συνολική
+   δουλειά εμπιστευόμενη ότι οι τιμές των κελιών που αναφέρονταν σε
+   άλλους πίνακες όντως έδειχναν κάπου.
 
 ** Παραρτήματα
 *** To bug στη βιβλιοθήκη xerces
@@ -2269,7 +2272,7 @@
     Ιδού λοιπόν τι ακριβώς συμβαίνει: ενώ τρέχει το =make
     sql-dump-parts= εγείρεται το παρακάτω exception:
 
-    #+BEGIN_SRC text
+    #+BEGIN_SRC sh
       ...
 
       376,000 pages (14,460.426/sec), 376,000 revs (14,460.426/sec)
@@ -2330,7 +2333,7 @@
     χρησιμοποιόντας το εργαλείο =grep= και αναστρέφοντας ξανά τις
     προκύπτουσες γραμμές για να τυπώσουμε με την αρχική σειρά.
     Σημειώνουμε ότι το εργαλείο =tac= είναι μέρος των
-    coreutils{{{ref(coreutils}}} άλλα όχι του BSD
+    coreutils{{{ref(coreutils)}}} άλλα όχι του BSD
     toybox{{{ref(bsd_toybox)}}}. Κατά συνέπεια θα υπάρχει σε όλες τις
     διανομές GNU linux προεγκατεστημένο άλλα όχι και σε mac os x και
     BSD.  Δουλεύει όπως cat, μόνο πoυ εμφανίζει τις γραμμές με
