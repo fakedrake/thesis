@@ -1,8 +1,8 @@
 * Draft 5.0
 ** Strucutre
-*** TODO Photo
-*** TODO πιστοποίηση
 *** TODO Code
+*** DONE Photo
+*** DONE πιστοποίηση
 *** DONE Cover
 *** DONE Appendices
 *** DONE Bibliography
