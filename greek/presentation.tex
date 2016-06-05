@@ -351,9 +351,9 @@
 \begin{frame}
   \frametitle{Επιδόσεις}
   \begin{itemize}
-  \item *CPU:* Xeon E5-1607 3GHz 4-Core 64 bit
-  \item *Main memory:* 64G
-  \item  *HDD:* (spinning disk) 500GB + 2Tb
+  \item \textbf{CPU:} Xeon E5-1607 3GHz 4-Core 64 bit
+  \item \textbf{Main memory:} 64G
+  \item \textbf{HDD:} (spinning disk) 500GB + 2Tb
   \end{itemize}
 \end{frame}
 
@@ -383,11 +383,11 @@
   Βελτιστοποιήσεις στη βάση που επιχειρήθηκαν:
 
   \begin{itemize}
-  \item \texttt{innodb\_buffer\_pool\_size} \in (16Μ, 5GB)
+  \item \texttt{innodb\_buffer\_pool\_size} \(\in\) (16Μ, 5GB)
   \item Απενεργοποίηση της \texttt{fsync}
-  \item \texttt{innodb_io_capacity} ήταν μεγαλύτερη από το bandwidth
+  \item \texttt{innodb\_io\_capacity} ήταν μεγαλύτερη από το bandwidth
     του δίσκου.
-  \item \texttt{SET AUTOCOMMIT = 0; SET FOREIGN_KEY_CHECKS=0;} κατά τη
+  \item \texttt{SET AUTOCOMMIT = 0; SET FOREIGN\_KEY\_CHECKS=0;} κατά τη
     διάρκεια των dumps.
   \end{itemize}
 \end{frame}
@@ -414,12 +414,12 @@
 \begin{frame}
   \frametitle{Links}
   \begin{itemize}
-  \item https://github.com/infolab-csail/WikipediaBase
-  \item https://github.com/infolab-csail/wikipedia-mirror
-  \item https://github.com/fakedrake/overlay_parse
-  \item https://bitnami.com/
-  \item https://en.wikipedia.org/
-  \item https://dev.mysql.com/doc/refman/5.5/en/innodb-parameters.html
+  \item \texttt{https://github.com/infolab-csail/WikipediaBase}
+  \item \texttt{https://github.com/infolab-csail/wikipedia-mirror}
+  \item \texttt{https://github.com/fakedrake/overlay\_parse}
+  \item \texttt{https://bitnami.com/}
+  \item \texttt{https://en.wikipedia.org/}
+  \item \texttt{https://dev.mysql.com/doc/refman/5.5/en/innodb-parameters.html}
   \end{itemize}
 \end{frame}
 \end{document}
