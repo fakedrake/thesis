@@ -65,7 +65,7 @@
 \section{Το οικοσύστημα του START}
 % Ογκος πληροφορίας (διαδικτυο/wikipedia)
 \begin{frame}
-  \frametitle{Ενας ωκεανός πληροφορίας}
+  \frametitle{Ένας ωκεανός πληροφορίας}
   \textit{As of 2014 Google has indexed 200 Terabytes (TB) of data. \\
     \hfill --- http://www.websitemagazine.com/} \\
 
@@ -77,10 +77,10 @@
   \vfiil
 \end{frame}
 
-% Ας κανουμε μερικά βήματα πίσω.
+% Ας κάνουμε μερικά βήματα πίσω.
 \begin{frame}[fragile]{Εμπόδια στη χρήση της πληροφορίας}
   \begin{itemize}
-  \item Αδόμητη πληροφορία κατανοήσιμη μονό από ανθρώπους ---
+  \item Αδόμητη πληροφορία κατανοήσιμη μόνο από ανθρώπους ---
     πχ. ελεύθερο κείμενο, διαγράμματα, video
   \item Προϋπόθεση από το χρήστη να γνωρίζει τη δομή της πληροφορίας
   \item Προϋπόθεση από το χρήστη να γνωρίζει ειδικά εργαλεία και/ή τα
@@ -168,7 +168,7 @@
   \item Person --- Αν το άρθρο αναφέρεται σε άνθρωπο, το γένος του, η
     ημ. γέννησης κτλ
   \item Sections --- Αυτούσιο κείμενο του άρθρου
-  \item Term --- συντεταγμένες, εικόνες, αριθμό, κύρια ονόματα,
+  \item Term --- συντεταγμένες, εικόνες, αριθμός, κύρια ονόματα,
     περίληψη άρθρου, URL και αριθμός λέξεων
   \item Error --- Ένδειξη ότι δεν βρέθηκε το χαρακτηριστικό.
   \end{itemize}
@@ -246,6 +246,14 @@
 \end{frame}
 
 % Date parser χ
+\begin{frame}
+  \frametitle{Αναγνώριση χρονικών διαστημάτων}
+
+  \hfill
+  \emph{Mary Shakespeare, née Arden, (c. 1537–1608) was the mother of
+    William Shakespeare.}
+  \hfill
+\end{frame}
 %% Colorful example from test
 \begin{frame}
   \frametitle{Αναγνώριση χρονικών διαστημάτων}
@@ -292,7 +300,7 @@
   \item<2-> Στήσιμο του server stack
   \item<3-> Εγκατάσταση του Mediawiki
   \item<4-> Κατέβασμα και αποκωδικοποίηση των wikipedia dumps
-  \item<5-> Φόρτωση των dumps στη wikipedia
+  \item<5-> Φόρτωση των dumps στη βάση MySQL
   \item<6-> Ρύθμιση του mediawiki να μιμείται τη wikipedia
   \item<7-> {\color{gray}Ρύθμιση της βάσης δεδομένων για επιδόσεις
       συγκρίσιμες με wikipedia.org}
@@ -339,7 +347,7 @@
   \vfill
   \begin{itemize}
   \item<2-> Γνωστό bug άλλα δύσκολα αναπαράξιμο.
-  \item<3-> Μονό του το προβληματικό άρθρο δεν έσπαγε.
+  \item<3-> Μόνο του το προβληματικό άρθρο δεν έσπαγε.
   \item<4-> Καλυμμένο με κενά έσπαγε.
   \item<5-> Αποσπασμένο από το XML αρχείο δούλευε. \onslide<6>
     Αυτοματοποιήσαμε αυτή τη διαδικασία.
@@ -362,8 +370,8 @@
   Επιδόσεις δημιουργίας της βάσης (ανάλογα τη φορά):
 
   \begin{itemize}
-  \item Προεπεξεργασία των dumps \~10 λεπτά
-  \item Δημιουργία της βάσης \~10 ώρες
+  \item Προεπεξεργασία των dumps περίπου 10 ώρες.
+  \item Δημιουργία της βάσης περίπου 10 μέρες.
   \end{itemize}
 \end{frame}
 
@@ -393,13 +401,13 @@
   \end{itemize}
 \end{frame}
 
-\section{Επίλογος}
+\section{Συμπεράσματα}
 
 \begin{frame}
   \frametitle{Συμπεράσματα WikipediaBase}
 
   \begin{itemize}
-  \item Το WikipediaBase χρησιμοποιείται από το START
+  \item Το WikipediaBase χρησιμοποιείται επιτυχημένα από το START
   \item modular
   \item επεκτάσιμο
   \item γρήγορο
@@ -420,6 +428,7 @@
 
   \begin{itemize}
   \item Δημιουργεί πιστά αντίγραφα της wikipedia
+  \item Αυτοματοποιεί πλήρως τη διαδικασία.
   \item Τα αντίγραφα αυτά επιδέχονται βελτίωση στην ταχύτητά τους.
   \end{itemize}
 \end{frame}
