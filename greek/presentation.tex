@@ -51,11 +51,11 @@
 
 \maketitle
 
-% Σχετικα με την εργασία
+% Σχετικά με την εργασία
 \begin{frame}
-  Η εργασία αυτή έγινε υπο την επίβλεψη των κ. Κυριάκο Σγάρμπα του
+  Η εργασία αυτή έγινε υπό την επίβλεψη των κ. Κυριάκο Σγάρμπα του
   Τμήματος Ηλεκτρολόγων Μηχανικών και Τεχνολογίας Υπολογιστών
-  Πανεπιστημίου Πατρών και κ. Boris Katz απο το InfoLab του CSAIL MiT.
+  Πανεπιστημίου Πατρών και κ. Boris Katz από το InfoLab του CSAIL MiT.
 \end{frame}
 
 \begin{frame}{Δομή}
@@ -80,7 +80,7 @@
 % Ας κανουμε μερικά βήματα πίσω.
 \begin{frame}[fragile]{Εμπόδια στη χρήση της πληροφορίας}
   \begin{itemize}
-  \item Αδομητη πληροφορία κατανοήσιμη μονο απο ανθρώπους ---
+  \item Αδόμητη πληροφορία κατανοήσιμη μονό από ανθρώπους ---
     πχ. ελεύθερο κείμενο, διαγράμματα, video
   \item Προϋπόθεση από το χρήστη να γνωρίζει τη δομή της πληροφορίας
   \item Προϋπόθεση από το χρήστη να γνωρίζει ειδικά εργαλεία και/ή τα
@@ -103,7 +103,7 @@
 
 \section{WikipediaBase}
 
-% Τυποι πληροφορίας λ
+% Τύποι πληροφορίας λ
 \begin{frame}
   \frametitle{Πληροφορίες που διαχειρίζεται κυρίως το WikipediaBase}
   \begin{itemize}
@@ -164,7 +164,7 @@
 \begin{frame}
   \frametitle{Resolvers}
   \begin{itemize}
-  \item Infobox --- Χαρακτηριστικά απο το infobox
+  \item Infobox --- Χαρακτηριστικά από το infobox
   \item Person --- Αν το άρθρο αναφέρεται σε άνθρωπο, το γένος του, η
     ημ. γέννησης κτλ
   \item Sections --- Αυτούσιο κείμενο του άρθρου
@@ -177,8 +177,8 @@
 \begin{frame}
   \frametitle{Classifiers}
   \begin{itemize}
-  \item Term --- παντα \texttt{wikipedia-term}
-  \item Infobox --- απο τον τύπο του infobox
+  \item Term --- πάντα \texttt{wikipedia-term}
+  \item Infobox --- από τον τύπο του infobox
   \item Person --- Ευρετικές για το αν το άρθρο αναφέρεται σε πρόσωπο.
   \end{itemize}
 \end{frame}
@@ -189,7 +189,7 @@
 \begin{frame}
   \frametitle{Provider/Acquirer model}
 
-  Διαχωρισμός της λογικής που σχετίζεται με το χειρισμό δεδομένων απο
+  Διαχωρισμός της λογικής που σχετίζεται με το χειρισμό δεδομένων από
   τη λογική που καθορίζει τις πηγές της.
 
   \vfill
@@ -212,7 +212,7 @@
 \begin{frame}
   \frametitle{Συνώνυμα}
 
-  Περισσότερα από ένα σύμβολα μπορεί αν αντιστοιχούν στην ίδια
+  Περισσότερα από ένα σύμβολα μπορεί να αντιστοιχούν στην ίδια
   οντότητα.
 
   \hfill
@@ -329,20 +329,20 @@
 \begin{frame}
   \frametitle{Mwdumper}
 
-  Μετατροπή απο XML σε MySQL: \bf{mwdumper}
+  Μετατροπή από XML σε MySQL: \bf{mwdumper}
 \end{frame}
 % Bugs
 
 \begin{frame}
   \frametitle{xerces bug} Stack overflow στην αποκωδικοποίηση κάποιων
-  άρθρων απο την XML library (xerces).
+  άρθρων από την XML library (xerces).
   \vfill
   \begin{itemize}
   \item<2-> Γνωστό bug άλλα δύσκολα αναπαράξιμο.
   \item<3-> Μονό του το προβληματικό άρθρο δεν έσπαγε.
   \item<4-> Καλυμμένο με κενά έσπαγε.
-  \item<5-> Αφαιρετέο από το XML αρχείο δούλευε.\onslide<6>
-    Αυτοματοποιήσουμε αυτή τη διαδικασία.
+  \item<5-> Αποσπασμένο από το XML αρχείο δούλευε. \onslide<6>
+    Αυτοματοποιήσαμε αυτή τη διαδικασία.
   \end{itemize}
 \end{frame}
 
@@ -358,11 +358,12 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Compile time επιδόσεις}
   Επιδόσεις δημιουργίας της βάσης (ανάλογα τη φορά):
 
   \begin{itemize}
-  \item Προεπεξεργασία των dumps ~10 λεπτά
-  \item Δημιουργία της βάσης ~10 ώρες
+  \item Προεπεξεργασία των dumps \~10 λεπτά
+  \item Δημιουργία της βάσης \~10 ώρες
   \end{itemize}
 \end{frame}
 
@@ -395,9 +396,53 @@
 \section{Επίλογος}
 
 \begin{frame}
+  \frametitle{Συμπεράσματα WikipediaBase}
+
+  \begin{itemize}
+  \item Το WikipediaBase χρησιμοποιείται από το START
+  \item modular
+  \item επεκτάσιμο
+  \item γρήγορο
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Μελλοντικά για το WikipediaBase}
+  \begin{itemize}
+  \item Καλύτερη εκμετάλλευση του κυρίου σώματος του κειμένου
+  \item Αποδοτικότερη χρήση δικτύου
+  \item Συνδυασμός πολλών άρθρων για απάντηση ερωτήσεων.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Συμπεράσματα WikipediaMirror}
+
+  \begin{itemize}
+  \item Δημιουργεί πιστά αντίγραφα της wikipedia
+  \item Τα αντίγραφα αυτά επιδέχονται βελτίωση στην ταχύτητά τους.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Links και βιβλιογραφία}
+  \begin{itemize}
+  \item Boris Katz: Annotating the World Wide Web using Natural Language (RIAO ’97)
+  \item Boris Katz et. al.: Omnibase: Uniform Access to Heterogeneous
+    Data for Question Answering (NLDB 2002).
+  \item \texttt{https://github.com/infolab-csail/WikipediaBase}
+  \item \texttt{https://github.com/infolab-csail/wikipedia-mirror}
+  \item \texttt{https://github.com/fakedrake/overlay\_parse}
+  \item \texttt{https://bitnami.com/}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
   \frametitle{Ευχαριστίες}
 
-  Ευχαριστώ τους καθηγητές μου κ Σγάρμπα, κ Katz και κ Φακωτάκη.
+  Ευχαριστώ τους καθηγητές μου κ Σγάρμπα, κ Katz και κ Φακωτάκη καθώς
+  και όλα τα μέλη της Ακαδημαϊκής κοινότητας του τμήματος ΗΜΤΥ και του
+  MIT InfoLab.
 
 \end{frame}
 
@@ -409,17 +454,5 @@
   \hfill --- Edsger W. Dijkstra}
   \vfill
 
-\end{frame}
-
-\begin{frame}
-  \frametitle{Links}
-  \begin{itemize}
-  \item \texttt{https://github.com/infolab-csail/WikipediaBase}
-  \item \texttt{https://github.com/infolab-csail/wikipedia-mirror}
-  \item \texttt{https://github.com/fakedrake/overlay\_parse}
-  \item \texttt{https://bitnami.com/}
-  \item \texttt{https://en.wikipedia.org/}
-  \item \texttt{https://dev.mysql.com/doc/refman/5.5/en/innodb-parameters.html}
-  \end{itemize}
 \end{frame}
 \end{document}
