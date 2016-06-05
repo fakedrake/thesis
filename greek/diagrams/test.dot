@@ -1,0 +1,4 @@
+digraph G {
+        node[shape=box];
+        "A long description of a node" -> "short description";
+}

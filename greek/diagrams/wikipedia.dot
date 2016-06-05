@@ -1,0 +1,36 @@
+digraph G {
+        question [shape=plaintext, label="Question",group=s];
+        answer [shape=plaintext, label="Answer",group=t];
+        start [shape=box, label="InfoLab's START", rank=max];
+        omnibase [shape=box, label="Omnibase",group=o];
+        wikipediabase [shape=box, label="WikipediaBase",group=w];
+        imdb [label="IMDB", group=o];
+        cia [label="CIA Factbook",group=o];
+        wordnet [label="Wordnet",group=o];
+        etc [shape=plaintext, label="...",group=o];
+        wikipedia [shape=house, label="Wikipedia", group=w];
+
+        // Arrows
+        question -> start -> answer;
+        start->{wikipediabase;omnibase;}[dir=both];
+        wikipediabase -> wikipedia[dir=both];
+        omnibase -> {imdb;wordnet;cia;etc}[dir=both];
+
+        // Implicit orderings
+        {rank=same; question; answer; start;}
+        {rank=same
+                ls2[style=invis,shape=point,group=s];
+                omnibase; wikipediabase;
+                lt2[style=invis,shape=point,group=t]}
+        {rank=same
+                ls3[style=invis,shape=point,group=s];
+                wikipedia, imdb wordnet; cia; etc;
+                lt3[style=invis,shape=point,group=t];
+        }
+
+        edge[style=invis]
+        question->ls2->ls3;
+        answer->lt2->lt3;
+        ls2->wikipediabase -> omnibase->ls2;
+        ls3->wikipedia -> imdb -> wordnet -> cia -> etc->ls3;
+}

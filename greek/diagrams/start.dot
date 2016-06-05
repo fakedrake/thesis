@@ -1,0 +1,13 @@
+digraph G {
+        start [shape=box, label="InfoLab's START"];
+        question [shape=plaintext, label="Question"];
+        answer [shape=plaintext, label="Answer"]
+        corpus [shape=plaintext, label="Text corpus"]
+        {rank=same; l1[style=invis,shape=point]; question; answer; start;}
+        {rank=same l2[style=invis,shape=point]; corpus}
+        question -> start;
+        start -> answer;
+        corpus -> start;
+        edge[style=invis]
+        l1->l2
+}
